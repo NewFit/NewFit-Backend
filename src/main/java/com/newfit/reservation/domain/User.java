@@ -17,7 +17,7 @@ import java.util.List;
 public class User {
 
     // User 테이블 PK 입니다.
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // 실제 사용자의 이름을 나타냅니다.

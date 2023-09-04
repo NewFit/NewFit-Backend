@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Credit {
 
     // Credit 테이블 PK 입니다.
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // Authority 테이블과의 연관관계를 나타내는 FK 입니다.
