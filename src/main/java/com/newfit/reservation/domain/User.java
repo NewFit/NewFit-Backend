@@ -1,6 +1,7 @@
 package com.newfit.reservation.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,8 @@ public class User {
     private String username;
 
     // 사용자의 이메일을 나타냅니다.
+    // email validation 을 위해 어노테이션 추가했습니다.
+    @Email
     @Column(nullable = false)
     private String email;
 
