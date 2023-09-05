@@ -68,4 +68,19 @@ public class User {
     // 양방향 연관관계를 나타냅니다.
     @OneToMany(mappedBy = "user")
     private List<Authority> authorityList = new ArrayList<>();
+
+
+    /* =========== update method  =========== */
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
+    public void updateTel(String tel) {
+        this.tel = tel;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
