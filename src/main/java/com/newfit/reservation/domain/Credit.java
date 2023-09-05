@@ -1,15 +1,17 @@
 package com.newfit.reservation.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Range;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // Entity 클래스는 기본생성자가 필수로 있어야 합니다.
                                                     // 다만, Entity 객체를 직접 생성자로 생성할 일은 없을듯 하여 protected 로 설정했습니다.
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Credit {
 
     // Credit 테이블 PK 입니다.
@@ -39,9 +41,27 @@ public class Credit {
     @Column(nullable = false)
     private Long amount;
 
-    // 연관관계 편의 메소드입니다.
-    public void setAuthorityRelation(Authority authority) {
+    // 양방향 연관관계를 위해 있었던 기존의 연관관계 편의 메소드를 Authority 클래스로 옮겼습니다.
+    // 대신에 authority 필드에 값을 세팅해주는 기본 setter 메소드를 추가했습니다.
+    public void updateAuthority(Authority authority) {
         this.authority = authority;
-        authority.getCreditList().add(this);
+    }
+
+    // Credit 생성 메소드에서 초기 amount 값 설정하기 위한 필드입니다.
+    // @Transient 어노테이션을 사용하여 영속성 컨텍스트의 관리를 받지 않도록 했습니다.
+    @Transient
+    private static final Long INITIAL_VALUE = 0L;
+
+    // 생성 메소드입니다
+    /* getMonth 메소드가 아니라 getMonthValue 메소드 사용한 이유
+     -> ENUM 값이 아닌 1 ~ 12의 int 값을 바로 리턴해 주기 때문입니다. */
+    public static Credit createCredit() {
+        LocalDate now = LocalDate.now();
+
+        return Credit.builder()
+                .year((short) now.getYear())
+                .month((short) now.getMonthValue())
+                .amount(INITIAL_VALUE)
+                .build();
     }
 }
