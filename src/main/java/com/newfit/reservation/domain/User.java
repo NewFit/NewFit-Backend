@@ -57,6 +57,10 @@ public class User {
     @Column(nullable = false)
     private Long balance;
 
+    // 사용자의 프로필 사진 정보를 나타냅니다.
+    @Column(name = "file_path", nullable = false)
+    private String filePath;
+
     // 양방향 연관관계를 나타냅니다.
     @OneToMany(mappedBy = "user")
     private List<Report> reportList = new ArrayList<>();
@@ -82,5 +86,9 @@ public class User {
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void updateFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

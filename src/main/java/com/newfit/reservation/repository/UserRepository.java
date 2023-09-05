@@ -20,7 +20,6 @@ public class UserRepository {
     }
 
     // 사용자의 회원 정보를 업데이트(변경)하는 메소드입니다.
-    // 사용자 프로필 사진 정보는 나중에 포함하겠습니다.
     public Long update(User updateUser) {
 
         // 업데이트할 user 조회합니다.
@@ -41,6 +40,10 @@ public class UserRepository {
             findUser.updateTel(updateUser.getTel());
         }
 
+        //사용자가 프로필 사진 수정사항을 제출했으면 프로필 사진 정보 업데이트합니다.
+        if(updateUser.getFilePath() != null) {
+            findUser.updateFilePath(updateUser.getFilePath());
+        }
         return updateUser.getId();
     }
 
