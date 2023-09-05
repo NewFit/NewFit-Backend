@@ -41,4 +41,12 @@ public class Authority {
     // 양방향 연관관계를 나타냅니다.
     @OneToMany(mappedBy = "authority")
     private List<Credit> creditList = new ArrayList<>();
+
+    // 연관관계 편의 메소드입니다.
+    // Gym과의 연관관계 편의 메소드는 논의가 필요합니다.
+    public void setUserRelation(User user) {
+        this.user = user;
+        user.getAuthorityList().add(this);
+    }
+
 }

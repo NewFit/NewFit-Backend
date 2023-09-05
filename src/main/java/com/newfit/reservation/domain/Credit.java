@@ -38,4 +38,10 @@ public class Credit {
     // 사용자가 획득한 크레딧의 양을 나타냅니다.
     @Column(nullable = false)
     private Long amount;
+
+    // 연관관계 편의 메소드입니다.
+    public void setAuthorityRelation(Authority authority) {
+        this.authority = authority;
+        authority.getCreditList().add(this);
+    }
 }

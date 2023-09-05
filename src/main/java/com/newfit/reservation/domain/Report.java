@@ -27,5 +27,11 @@ public class Report {
     // 버그 내용을 나타냅니다.
     @Column(nullable = false)
     private String content;
+
+    // 연관관계 편의 메소드입니다.
+    public void setUserRelation(User user) {
+        this.user = user;
+        user.getReportList().add(this);
+    }
 }
 
