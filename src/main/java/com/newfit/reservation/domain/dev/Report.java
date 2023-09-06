@@ -1,5 +1,6 @@
-package com.newfit.reservation.domain;
+package com.newfit.reservation.domain.dev;
 
+import com.newfit.reservation.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,9 +10,9 @@ import lombok.*;
                                                     // 다만, Entity 객체를 직접 생성자로 생성할 일은 없을듯 하여 protected 로 설정했습니다.
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class Proposal {
+public class Report {
 
-    // Proposal 테이블 PK 입니다.
+    // Report 테이블 PK 입니다.
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -20,18 +21,18 @@ public class Proposal {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // 기능 이름을 나타냅니다.
+    // 버그 제목을 나타냅니다.
     @Column(nullable = false)
-    private String name;
+    private String subject;
 
-    // 기능 내용을 나타냅니다.
+    // 버그 내용을 나타냅니다.
     @Column(nullable = false)
     private String content;
 
     // 연관관계 편의 메소드입니다.
     public void setUserRelation(User user) {
         this.user = user;
-        user.getProposalList().add(this);
+        user.getReportList().add(this);
     }
 }
 
