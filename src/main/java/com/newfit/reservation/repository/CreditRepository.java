@@ -2,6 +2,7 @@ package com.newfit.reservation.repository;
 
 import com.newfit.reservation.domain.Credit;
 import jakarta.persistence.EntityManager;
+
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,7 @@ public class CreditRepository {
         em.persist(credit);
         return credit.getId();
     }
-
+  
     // DB에서 Credit 엔티티 객체의 id를 통해 조회하는 메소드입니다.
     public Optional<Credit> findOne(Long creditId) {
         return Optional.ofNullable(em.find(Credit.class, creditId));

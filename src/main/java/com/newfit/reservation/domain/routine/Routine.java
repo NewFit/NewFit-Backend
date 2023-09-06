@@ -1,26 +1,28 @@
-package com.newfit.reservation.domain;
+package com.newfit.reservation.domain.routine;
 
-import com.newfit.reservation.domain.location.EmdArea;
+
+import com.newfit.reservation.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Gym {
+public class Routine {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "emd_id")
-    private EmdArea location;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String tel;
+    private Long count = 0L;
+
 }

@@ -20,7 +20,6 @@ public class AuthorityRepository {
         return authority.getId();
     }
 
-
     // DB에서 Authority 엔티티 객체의 id를 통해 조회하는 메소드입니다.
     public Optional<Authority> findOne(Long authorityId) {
         return Optional.ofNullable(em.find(Authority.class, authorityId));
