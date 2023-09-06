@@ -26,7 +26,7 @@ public class EquipmentRoutine {
     @JoinColumn(name = "routine_id")
     private Routine routine;
 
-    @Column(columnDefinition = "INTERVAL",nullable = false)
+    @Column(nullable = false)
     private Duration duration;
 
 }
