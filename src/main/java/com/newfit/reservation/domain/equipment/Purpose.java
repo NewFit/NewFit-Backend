@@ -14,5 +14,5 @@ public enum Purpose {
     ;
 
 
-    private final String part;
+    private final String description;
 }
