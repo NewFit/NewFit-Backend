@@ -17,7 +17,7 @@ public class Equipment {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "")
+    @JoinColumn(name = "gym_id", nullable = false)
     private Gym gym_id;
 
     @Column(nullable = false)
