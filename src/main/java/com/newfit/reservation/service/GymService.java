@@ -11,6 +11,6 @@ public class GymService {
     private final GymRepository gymRepository;
 
     public Long save(Gym gym) {
-        return gymRepository.save(gym);
+        return gymRepository.save(gym).getId();
     }
 }
