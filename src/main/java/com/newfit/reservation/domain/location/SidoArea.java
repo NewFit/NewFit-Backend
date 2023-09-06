@@ -1,4 +1,4 @@
-package com.newfit.reservation.domain;
+package com.newfit.reservation.domain.location;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

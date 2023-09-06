@@ -1,5 +1,6 @@
 package com.newfit.reservation.domain;
 
+import com.newfit.reservation.domain.location.EmdArea;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

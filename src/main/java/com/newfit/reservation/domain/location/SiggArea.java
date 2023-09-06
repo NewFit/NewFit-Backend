@@ -1,4 +1,4 @@
-package com.newfit.reservation.domain;
+package com.newfit.reservation.domain.location;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,14 +11,14 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EmdArea {
+public class SiggArea {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sigg_id")
-    private SiggArea siggArea;
+    @JoinColumn(name = "sido_id")
+    private SidoArea sidoArea;
 
     @Column(name = "adm_code", nullable = false)
     private String admCode;
@@ -29,6 +29,6 @@ public class EmdArea {
     @Column(nullable = false)
     private String version;
 
-    @OneToMany(mappedBy = "location")
-    private List<Gym> gyms = new ArrayList<>();
+    @OneToMany(mappedBy = "siggArea")
+    private List<EmdArea> emdAreas = new ArrayList<>();
 }

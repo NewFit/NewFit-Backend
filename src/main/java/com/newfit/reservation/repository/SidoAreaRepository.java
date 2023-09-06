@@ -1,6 +1,6 @@
 package com.newfit.reservation.repository;
 
-import com.newfit.reservation.domain.SidoArea;
+import com.newfit.reservation.domain.location.SidoArea;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
