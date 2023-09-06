@@ -3,10 +3,10 @@ package com.newfit.reservation.domain.equipment;
 import com.newfit.reservation.domain.Gym;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EquipmentGym {
@@ -16,11 +16,11 @@ public class EquipmentGym {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "equipment_id")
+    @JoinColumn(name = "equipment_id", nullable = false)
     private Equipment equipment_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gym_id")
+    @JoinColumn(name = "gym_id", nullable = false)
     private Gym gym_id;
 
     @Enumerated(EnumType.STRING)

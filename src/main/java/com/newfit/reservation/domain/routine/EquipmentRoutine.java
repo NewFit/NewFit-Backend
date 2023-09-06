@@ -4,10 +4,12 @@ package com.newfit.reservation.domain.routine;
 import com.newfit.reservation.domain.equipment.Equipment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+import java.time.Duration;
+
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EquipmentRoutine {
@@ -24,7 +26,7 @@ public class EquipmentRoutine {
     @JoinColumn(name = "routine_id")
     private Routine routine;
 
-    @Column(nullable = false)
-    private Long time;
+    @Column(columnDefinition = "INTERVAL",nullable = false)
+    private Duration duration;
 
 }

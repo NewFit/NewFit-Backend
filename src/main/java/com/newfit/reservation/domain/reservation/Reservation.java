@@ -3,14 +3,15 @@ package com.newfit.reservation.domain.reservation;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Reservation {
 
     @Id
@@ -18,11 +19,11 @@ public class Reservation {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reserver_id")
+    @JoinColumn(name = "reserver_id", nullable = false)
     private User reserver;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "equipment_gym_id")
+    @JoinColumn(name = "equipment_gym_id", nullable = false)
     private EquipmentGym equipmentGym;
 
     @Column(nullable = false)
@@ -35,6 +36,7 @@ public class Reservation {
     private Long repetition_number;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
 }

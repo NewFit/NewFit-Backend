@@ -4,10 +4,10 @@ package com.newfit.reservation.domain.routine;
 import com.newfit.reservation.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Routine {
@@ -23,6 +23,6 @@ public class Routine {
     @Column(nullable = false)
     private String name;
 
-    private final Long count = 0L;
+    private Long count = 0L;
 
 }
