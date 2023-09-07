@@ -1,7 +1,6 @@
 package com.newfit.reservation.service;
 
-import com.newfit.reservation.domain.Proposal;
-import com.newfit.reservation.domain.Report;
+import com.newfit.reservation.domain.dev.Proposal;
 import com.newfit.reservation.dto.request.CreateProposalRequestDto;
 
 import com.newfit.reservation.repository.ProposalRepository;

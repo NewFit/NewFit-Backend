@@ -1,5 +1,7 @@
 package com.newfit.reservation.domain;
 
+import com.newfit.reservation.domain.dev.Proposal;
+import com.newfit.reservation.domain.dev.Report;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;

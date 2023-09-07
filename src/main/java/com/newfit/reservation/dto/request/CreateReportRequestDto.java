@@ -1,6 +1,6 @@
 package com.newfit.reservation.dto.request;
 
-import com.newfit.reservation.domain.Report;
+import com.newfit.reservation.domain.dev.Report;
 import lombok.Getter;
 import lombok.Setter;
 
