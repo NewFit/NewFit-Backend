@@ -1,6 +1,6 @@
 package com.newfit.reservation.repository;
 
-import com.newfit.reservation.domain.Proposal;
+import com.newfit.reservation.domain.dev.Proposal;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

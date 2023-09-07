@@ -1,5 +1,7 @@
 package com.newfit.reservation.domain;
 
+import com.newfit.reservation.domain.dev.Proposal;
+import com.newfit.reservation.domain.dev.Report;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
@@ -57,6 +59,10 @@ public class User {
     @Column(nullable = false)
     private Long balance;
 
+    // 사용자의 프로필 사진 정보를 나타냅니다.
+    @Column(name = "file_path", nullable = false)
+    private String filePath;
+
     // 양방향 연관관계를 나타냅니다.
     @OneToMany(mappedBy = "user")
     private List<Report> reportList = new ArrayList<>();
@@ -68,4 +74,23 @@ public class User {
     // 양방향 연관관계를 나타냅니다.
     @OneToMany(mappedBy = "user")
     private List<Authority> authorityList = new ArrayList<>();
+
+
+    /* =========== update method  =========== */
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
+    public void updateTel(String tel) {
+        this.tel = tel;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateFilePath(String filePath) {
+        this.filePath = filePath;
+    }
 }
