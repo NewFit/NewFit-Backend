@@ -1,9 +1,9 @@
-package com.newfit.reservation.service;
+package com.newfit.reservation.service.dev;
 
 import com.newfit.reservation.domain.dev.Proposal;
 import com.newfit.reservation.dto.request.CreateProposalRequestDto;
 
-import com.newfit.reservation.repository.ProposalRepository;
+import com.newfit.reservation.repository.dev.ProposalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
