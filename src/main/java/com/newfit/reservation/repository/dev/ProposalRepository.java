@@ -1,4 +1,4 @@
-package com.newfit.reservation.repository;
+package com.newfit.reservation.repository.dev;
 
 import com.newfit.reservation.domain.dev.Proposal;
 import jakarta.persistence.EntityManager;

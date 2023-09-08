@@ -1,4 +1,4 @@
-package com.newfit.reservation.repository;
+package com.newfit.reservation.repository.location;
 
 
 import com.newfit.reservation.domain.location.SiggArea;

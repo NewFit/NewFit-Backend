@@ -1,4 +1,4 @@
-package com.newfit.reservation.repository;
+package com.newfit.reservation.repository.equipment;
 
 import com.newfit.reservation.domain.equipment.Equipment;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,6 +1,7 @@
-package com.newfit.reservation.service;
+package com.newfit.reservation.service.routine;
 
-import com.newfit.reservation.repository.EquipmentGymRepository;
+
+import com.newfit.reservation.repository.routine.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class EquipmentGymService {
+public class RoutineService {
 
-    private final EquipmentGymRepository equipmentGymRepository;
+    private final RoutineRepository routineRepository;
 }

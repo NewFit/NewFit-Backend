@@ -1,7 +1,6 @@
-package com.newfit.reservation.service;
+package com.newfit.reservation.service.location;
 
-import com.newfit.reservation.repository.EmdAreaRepository;
-import com.newfit.reservation.repository.SiggAreaRepository;
+import com.newfit.reservation.repository.location.EmdAreaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

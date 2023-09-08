@@ -1,9 +1,9 @@
-package com.newfit.reservation.service;
+package com.newfit.reservation.service.dev;
 
 import com.newfit.reservation.domain.dev.Report;
 import com.newfit.reservation.dto.request.CreateReportRequestDto;
 
-import com.newfit.reservation.repository.ReportRepository;
+import com.newfit.reservation.repository.dev.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
