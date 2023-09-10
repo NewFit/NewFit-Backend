@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  /* Entity 클래스는 기본생성자가 필수로 있어야 합니다. 다만, Entity 객체를
                                                       직접 생성자로 생성할 일은 없을듯 하여 protected 로 설정했습니다.*/
 @Table(name = "users")  // default 이름인 user 는 sql 예약어와 겹쳐서 users 로 테이블 이름 변경했습니다.
-public class User {
+public class User extends BaseEntity{
 
     // User 테이블 PK 입니다.
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

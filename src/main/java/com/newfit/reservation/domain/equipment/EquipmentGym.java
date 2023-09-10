@@ -1,5 +1,6 @@
 package com.newfit.reservation.domain.equipment;
 
+import com.newfit.reservation.domain.BaseEntity;
 import com.newfit.reservation.domain.Gym;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EquipmentGym {
+public class EquipmentGym extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
