@@ -1,6 +1,6 @@
 package com.newfit.reservation.domain.reservation;
 
-import com.newfit.reservation.domain.BaseEntity;
+import com.newfit.reservation.domain.BaseTimeEntity;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import jakarta.persistence.*;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Reservation extends BaseEntity {
+public class Reservation extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
