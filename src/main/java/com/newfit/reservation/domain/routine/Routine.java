@@ -1,7 +1,7 @@
 package com.newfit.reservation.domain.routine;
 
 
-import com.newfit.reservation.domain.BaseTimeEntity;
+import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

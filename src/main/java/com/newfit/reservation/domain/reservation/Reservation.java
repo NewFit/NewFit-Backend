@@ -1,6 +1,6 @@
 package com.newfit.reservation.domain.reservation;
 
-import com.newfit.reservation.domain.BaseTimeEntity;
+import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import jakarta.persistence.*;

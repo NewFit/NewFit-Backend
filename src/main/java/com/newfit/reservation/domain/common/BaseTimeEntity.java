@@ -1,4 +1,4 @@
-package com.newfit.reservation.domain;
+package com.newfit.reservation.domain.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
