@@ -1,6 +1,7 @@
 package com.newfit.reservation.domain.routine;
 
 
+import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Routine {
+public class Routine extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
