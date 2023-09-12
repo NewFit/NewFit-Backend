@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @ResponseStatus(HttpStatus.OK)
 @RestController
-@RequestMapping("/api/v1/gyms")
+@RequestMapping("/api/v1/gyms/authority")
 @RequiredArgsConstructor
 public class GymApiController {
     private final AuthorityService authorityService;
@@ -23,8 +23,8 @@ public class GymApiController {
     }
 
     @GetMapping
-    public ListResponseDto<GymResponseDto> list(@RequestHeader(value = "User-Id") Long id) {
-        return authorityService.list(id);
+    public ListResponseDto<GymResponseDto> listRegistration(@RequestHeader(value = "User-Id") Long id) {
+        return authorityService.listRegistration(id);
     }
 
     @DeleteMapping
