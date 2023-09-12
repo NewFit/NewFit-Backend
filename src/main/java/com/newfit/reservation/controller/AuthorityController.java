@@ -1,9 +1,9 @@
 package com.newfit.reservation.controller;
 
-import com.newfit.reservation.dto.request.GymRequestDto;
-import com.newfit.reservation.dto.response.GymResponseDto;
-import com.newfit.reservation.dto.response.ListResponseDto;
+import com.newfit.reservation.dto.request.AuthorityRequestDto;
+import com.newfit.reservation.dto.response.GymListResponse;
 import com.newfit.reservation.service.AuthorityService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,25 +11,25 @@ import org.springframework.web.bind.annotation.*;
 
 @ResponseStatus(HttpStatus.OK)
 @RestController
-@RequestMapping("/api/v1/gyms/authority")
+@RequestMapping("/api/v1/authority")
 @RequiredArgsConstructor
-public class GymApiController {
+public class AuthorityController {
     private final AuthorityService authorityService;
 
     @PostMapping
     public Long register(@RequestHeader(value = "User-Id") Long userId,
-                         @RequestBody GymRequestDto request) {
+                         @Valid @RequestBody AuthorityRequestDto request) {
         return authorityService.register(userId, request.getGymId());
     }
 
     @GetMapping
-    public ListResponseDto<GymResponseDto> listRegistration(@RequestHeader(value = "User-Id") Long id) {
+    public GymListResponse listRegistration(@RequestHeader(value = "User-Id") Long id) {
         return authorityService.listRegistration(id);
     }
 
     @DeleteMapping
     public void delete(@RequestHeader(value = "User-Id") Long userId,
-                       @RequestBody GymRequestDto request) {
+                       @Valid @RequestBody AuthorityRequestDto request) {
         authorityService.delete(userId, request.getGymId());
     }
 }
