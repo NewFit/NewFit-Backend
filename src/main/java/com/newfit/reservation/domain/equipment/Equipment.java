@@ -19,7 +19,7 @@ public class Equipment extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id", nullable = false)
-    private Gym gym_id;
+    private Gym gym;
 
     @Column(nullable = false)
     private String name;
