@@ -3,8 +3,8 @@ package com.newfit.reservation.service;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.User;
+import com.newfit.reservation.dto.response.GymListResponse;
 import com.newfit.reservation.dto.response.GymResponseDto;
-import com.newfit.reservation.dto.response.ListResponseDto;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.GymRepository;
 import com.newfit.reservation.repository.UserRepository;
@@ -42,12 +42,13 @@ public class AuthorityService {
         authorityRepository.deleteByUserIdAndGymId(userId, gymId);
     }
 
-    public ListResponseDto<GymResponseDto> list(Long id) {
-        return ListResponseDto.<GymResponseDto>builder()
-                .data(authorityRepository.findAuthoritiesByUserId(id)
+    public GymListResponse listRegistration(Long id) {
+        return GymListResponse.builder()
+                .gyms(authorityRepository.findAuthoritiesByUserId(id)
                         .stream()
                         .map(GymResponseDto::new)
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toList())
+                )
                 .build();
     }
 }
