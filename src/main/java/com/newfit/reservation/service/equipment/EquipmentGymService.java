@@ -1,6 +1,7 @@
 package com.newfit.reservation.service.equipment;
 
 import com.newfit.reservation.domain.Gym;
+import com.newfit.reservation.domain.equipment.Condition;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
@@ -42,5 +43,13 @@ public class EquipmentGymService {
 
         EquipmentGymListResponse response = new EquipmentGymListResponse(gym.getName(), allByGym.size(), equipmentResponses);
         return response;
+    }
+
+    /*
+    EquipmentGym의 Condition을 수정
+     */
+    public void updateCondition(Long equipmentGymId, Condition condition) {
+        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).get();
+        equipmentGym.updateCondition(condition);
     }
 }
