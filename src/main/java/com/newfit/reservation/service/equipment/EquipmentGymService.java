@@ -52,4 +52,12 @@ public class EquipmentGymService {
         EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).get();
         equipmentGym.updateCondition(condition);
     }
+
+    /*
+    equipmentGym 삭제
+     */
+    public void deleteEquipmentGym(Long equipmentGymId) {
+        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).get();
+        equipmentGymRepository.delete(equipmentGym);
+    }
 }
