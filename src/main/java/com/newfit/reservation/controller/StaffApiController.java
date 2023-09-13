@@ -2,6 +2,7 @@ package com.newfit.reservation.controller;
 
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.equipment.Equipment;
+import com.newfit.reservation.dto.request.DeleteEquipmentGymRequest;
 import com.newfit.reservation.dto.request.DeleteEquipmentRequest;
 import com.newfit.reservation.dto.request.RegisterEquipmentRequest;
 import com.newfit.reservation.dto.request.UpdateConditionRequest;
@@ -79,6 +80,17 @@ public class StaffApiController {
         equipmentService.deleteEquipment(request.getEquipmentId());
         return ResponseEntity
                 .status(HttpStatus.OK)
+                .build();
+    }
+
+    /*
+    특정 EquipmentGym 삭제
+     */
+    @DeleteMapping("/equipment-gym")
+    public ResponseEntity<Void> deleteEquipmentGym(@RequestBody DeleteEquipmentGymRequest request) {
+        equipmentGymService.deleteEquipmentGym(request.getEquipmentGymId());
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
                 .build();
     }
 }
