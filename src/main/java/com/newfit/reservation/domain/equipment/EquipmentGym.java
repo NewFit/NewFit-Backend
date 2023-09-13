@@ -4,6 +4,7 @@ import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.Gym;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,21 @@ public class EquipmentGym extends BaseTimeEntity {
     @Column(nullable = false)
     private Condition condition;
 
+    @Builder
+    public EquipmentGym(Equipment equipment, Gym gym) {
+        this.equipment = equipment;
+        this.gym = gym;
+        this.condition = Condition.AVAILABLE;
+    }
+
+    public static EquipmentGym createEquipmentGym(Equipment equipment, Gym gym) {
+        return EquipmentGym.builder()
+                .equipment(equipment)
+                .gym(gym)
+                .build();
+    }
+
+    public void updateCondition(Condition condition) {
+        this.condition = condition;
+    }
 }

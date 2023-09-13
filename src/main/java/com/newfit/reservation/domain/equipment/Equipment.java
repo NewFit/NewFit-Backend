@@ -4,6 +4,7 @@ import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.Gym;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,5 +29,18 @@ public class Equipment extends BaseTimeEntity {
     @Column(nullable = false)
     private Purpose purpose;
 
+    @Builder
+    public Equipment(Gym gym, String name, Purpose purpose) {
+        this.gym = gym;
+        this.name = name;
+        this.purpose = purpose;
+    }
 
+    public static Equipment createEquipment(Gym gym, String name, Purpose purpose) {
+        return Equipment.builder()
+                .gym(gym)
+                .name(name)
+                .purpose(purpose)
+                .build();
+    }
 }
