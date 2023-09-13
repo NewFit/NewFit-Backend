@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Getter
 @Entity
@@ -28,6 +31,9 @@ public class Equipment extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Purpose purpose;
+
+    @OneToMany(mappedBy = "equipment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<EquipmentGym> equipmentGyms = new ArrayList<>();
 
     @Builder
     public Equipment(Gym gym, String name, Purpose purpose) {
