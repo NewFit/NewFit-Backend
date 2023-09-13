@@ -3,7 +3,9 @@ package com.newfit.reservation.controller;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.dto.request.RegisterEquipmentRequest;
+import com.newfit.reservation.dto.response.EquipmentGymListResponse;
 import com.newfit.reservation.service.AuthorityService;
+import com.newfit.reservation.service.GymService;
 import com.newfit.reservation.service.equipment.EquipmentGymService;
 import com.newfit.reservation.service.equipment.EquipmentService;
 import jakarta.validation.Valid;
@@ -21,6 +23,7 @@ public class StaffApiController {
     private final EquipmentService equipmentService;
     private final AuthorityService authorityService;
     private final EquipmentGymService equipmentGymService;
+    private final GymService gymService;
 
     /*
     user의 gym을 조회
@@ -40,5 +43,17 @@ public class StaffApiController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .build();
+    }
+
+    /*
+    모든 Gym을 조회하여 반환
+     */
+    @GetMapping("/equipment-gym")
+    public ResponseEntity<EquipmentGymListResponse> getAllEquipment(@RequestParam(name = "gym_id") Long gymId) {
+        Gym gym = gymService.findById(gymId).get();
+        EquipmentGymListResponse allInGym = equipmentGymService.findAllInGym(gym);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(allInGym);
     }
 }
