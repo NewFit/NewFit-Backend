@@ -3,6 +3,7 @@ package com.newfit.reservation.controller;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.dto.request.RegisterEquipmentRequest;
+import com.newfit.reservation.dto.request.UpdateConditionRequest;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
 import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.GymService;
@@ -55,5 +56,16 @@ public class StaffApiController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(allInGym);
+    }
+
+    /*
+    condition 수정
+     */
+    @PatchMapping("/equipment-gym/{equipmentGymId}")
+    public ResponseEntity<Void> updateEquipmentCondition(@PathVariable Long equipmentGymId, @RequestBody UpdateConditionRequest request) {
+        equipmentGymService.updateCondition(equipmentGymId, request.getCondition());
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }
