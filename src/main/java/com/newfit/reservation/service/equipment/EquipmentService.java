@@ -33,4 +33,11 @@ public class EquipmentService {
         // pk를 제외한 모든 것이 일치하는지 boolean으로 반환
         return equipmentRepository.findByGymAndNameAndPurpose(gym, name, purpose).isPresent();
     }
+
+    /*
+    equipment 삭제
+     */
+    public void deleteEquipment(Long equipmentId) {
+        equipmentRepository.deleteById(equipmentId);
+    }
 }
