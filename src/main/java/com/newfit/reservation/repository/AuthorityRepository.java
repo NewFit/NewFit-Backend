@@ -33,4 +33,15 @@ public class AuthorityRepository {
                 .setParameter("gymId", gymId)
                 .getResultList();
     }
+
+    /*
+    회원으로 Authority 조회
+     */
+    public Optional<Authority> findOneByUserId(Long userId) {
+        return Optional.ofNullable(em.createQuery("select a from Authority a"
+                        + " join fetch a.user u"
+                        + " where u.id =: userId", Authority.class)
+                .setParameter("userId", userId)
+                .getSingleResult());
+    }
 }
