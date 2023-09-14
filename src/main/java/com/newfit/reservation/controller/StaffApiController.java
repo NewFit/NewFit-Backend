@@ -64,7 +64,7 @@ public class StaffApiController {
     condition 수정
      */
     @PatchMapping("/equipment-gym/{equipmentGymId}")
-    public ResponseEntity<Void> updateEquipmentCondition(@PathVariable Long equipmentGymId, @RequestBody UpdateConditionRequest request) {
+    public ResponseEntity<Void> updateEquipmentCondition(@PathVariable Long equipmentGymId, @Valid @RequestBody UpdateConditionRequest request) {
         equipmentGymService.updateCondition(equipmentGymId, request.getCondition());
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
@@ -87,7 +87,7 @@ public class StaffApiController {
     특정 EquipmentGym 삭제
      */
     @DeleteMapping("/equipment-gym")
-    public ResponseEntity<Void> deleteEquipmentGym(@RequestBody DeleteEquipmentGymRequest request) {
+    public ResponseEntity<Void> deleteEquipmentGym(@Valid @RequestBody DeleteEquipmentGymRequest request) {
         equipmentGymService.deleteEquipmentGym(request.getEquipmentGymId());
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
