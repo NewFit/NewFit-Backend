@@ -33,4 +33,18 @@ public class AuthorityRepository {
                 .setParameter("gymId", gymId)
                 .getResultList();
     }
+
+    public void deleteByUserIdAndGymId(Long userId, Long gymId) {
+        em.createQuery("DELETE FROM Authority a where a.user.id = :userId AND a.gym.id= :gymId")
+                .setParameter("userId", userId)
+                .setParameter("gymId", gymId)
+                .executeUpdate();
+    }
+
+    public List<Authority> findAuthoritiesByUserId(Long id) {
+        return em.createQuery("SELECT a FROM Authority a WHERE a.user.id = :userId",
+                        Authority.class)
+                .setParameter("userId", id)
+                .getResultList();
+    }
 }
