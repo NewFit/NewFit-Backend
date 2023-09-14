@@ -3,6 +3,7 @@ package com.newfit.reservation.domain;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -56,4 +57,11 @@ public class Authority extends BaseTimeEntity {
     }
 
     // Gym과의 연관관계 편의 메소드는 논의가 필요합니다.
+    @Builder
+    public Authority(User user, Gym gym) {
+        this.user = user;
+        this.gym = gym;
+        this.accepted = false;
+        this.role = Role.USER;
+    }
 }

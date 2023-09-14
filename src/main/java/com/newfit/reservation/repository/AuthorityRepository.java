@@ -1,6 +1,7 @@
 package com.newfit.reservation.repository;
 
 import com.newfit.reservation.domain.Authority;
+import com.newfit.reservation.domain.Role;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -34,14 +35,27 @@ public class AuthorityRepository {
                 .getResultList();
     }
 
-    /*
-    회원으로 Authority 조회
-     */
-    public Optional<Authority> findOneByUserId(Long userId) {
-        return Optional.ofNullable(em.createQuery("select a from Authority a"
-                        + " join fetch a.user u"
-                        + " where u.id =: userId", Authority.class)
+    public void deleteByUserIdAndGymId(Long userId, Long gymId) {
+        em.createQuery("DELETE FROM Authority a where a.user.id = :userId AND a.gym.id= :gymId")
                 .setParameter("userId", userId)
-                .getSingleResult());
+                .setParameter("gymId", gymId)
+                .executeUpdate();
+    }
+
+    public List<Authority> findAuthoritiesByUserId(Long id) {
+        return em.createQuery("SELECT a FROM Authority a WHERE a.user.id = :userId",
+                        Authority.class)
+                .setParameter("userId", id)
+                .getResultList();
+    }
+
+    public Authority findOneByUserIdAndGymIdAndRole(Long userId, Long gymId, Role role) {
+        return em.createQuery("SELECT a from Authority a "
+                        +"where a.user.id =: userId and a.gym.id =: gymId and a.role =: role",
+                Authority.class)
+                .setParameter("userId", userId)
+                .setParameter("gymId", gymId)
+                .setParameter("role", role)
+                .getSingleResult();
     }
 }
