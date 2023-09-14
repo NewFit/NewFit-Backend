@@ -15,7 +15,6 @@ public class RegisterEquipmentRequest {
     @NotBlank
     private String name;
 
-    @NotBlank
     private Purpose purpose;
 
     @NotNull
