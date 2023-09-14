@@ -16,7 +16,7 @@ public class GymService {
         return gymRepository.save(gym).getId();
     }
 
-    public Optional<Gym> findById(Long gymId) {
-        return gymRepository.findById(gymId);
+    public Gym findById(Long gymId) {
+        return gymRepository.findById(gymId).orElseThrow(IllegalArgumentException::new);
     }
 }

@@ -53,7 +53,7 @@ public class StaffApiController {
      */
     @GetMapping("/equipment-gym")
     public ResponseEntity<EquipmentGymListResponse> getAllEquipment(@RequestParam(name = "gym_id") Long gymId) {
-        Gym gym = gymService.findById(gymId).get();
+        Gym gym = gymService.findById(gymId);
         EquipmentGymListResponse allInGym = equipmentGymService.findAllInGym(gym);
         return ResponseEntity
                 .status(HttpStatus.OK)
