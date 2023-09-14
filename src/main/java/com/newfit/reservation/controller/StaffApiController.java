@@ -1,6 +1,7 @@
 package com.newfit.reservation.controller;
 
 import com.newfit.reservation.domain.Gym;
+import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.dto.request.DeleteEquipmentGymRequest;
 import com.newfit.reservation.dto.request.DeleteEquipmentRequest;
@@ -34,10 +35,10 @@ public class StaffApiController {
     equipmentGym에 count만큼 등록
      */
     @PostMapping("/equipments")
-    public ResponseEntity<Void> registerEquipment(@Valid @RequestBody RegisterEquipmentRequest request) {
+    public ResponseEntity<Void> registerEquipment(@RequestParam(name = "gym_id") Long gymId, @Valid @RequestBody RegisterEquipmentRequest request) {
         // TODO: remove this userId and apply security
         Long userId = 1L;
-        Gym gym = authorityService.getGym(userId);
+        Gym gym = authorityService.getGym(userId, gymId, Role.MANAGER);
 
         Equipment equipment = equipmentService.registerEquipment(gym, request.getName(), request.getPurpose());
 
