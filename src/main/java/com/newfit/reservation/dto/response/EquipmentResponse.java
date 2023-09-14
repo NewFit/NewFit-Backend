@@ -8,10 +8,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class EquipmentResponse {
-    private Long id;
-    private String name;
-    private Purpose purpose;
-    private Condition condition;
+    private final Long id;
+    private final String name;
+    private final Purpose purpose;
+    private final Condition condition;
 }
