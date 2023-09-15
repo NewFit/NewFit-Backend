@@ -16,7 +16,6 @@ public class GymApiController {
 
     private final GymService gymService;
 
-
     // NewFit 서비스에 등록된 모든 헬스장을 반환합니다.
     @GetMapping("")
     public ResponseEntity<GymListResponse> getAllGyms() {
