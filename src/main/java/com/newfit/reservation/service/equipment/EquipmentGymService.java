@@ -38,7 +38,7 @@ public class EquipmentGymService {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
 
         List<EquipmentResponse> equipmentResponses = allByGym.stream()
-                .map(e -> new EquipmentResponse(e))
+                .map(EquipmentResponse::new)
                 .collect(Collectors.toList());
 
         EquipmentGymListResponse response = new EquipmentGymListResponse(gym.getName(), allByGym.size(), equipmentResponses);
