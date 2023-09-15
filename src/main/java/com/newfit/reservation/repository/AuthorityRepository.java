@@ -1,6 +1,7 @@
 package com.newfit.reservation.repository;
 
 import com.newfit.reservation.domain.Authority;
+import com.newfit.reservation.domain.Role;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -46,5 +47,15 @@ public class AuthorityRepository {
                         Authority.class)
                 .setParameter("userId", id)
                 .getResultList();
+    }
+
+    public Authority findOneByUserIdAndGymIdAndRole(Long userId, Long gymId, Role role) {
+        return em.createQuery("SELECT a from Authority a "
+                        +"where a.user.id =: userId and a.gym.id =: gymId and a.role =: role",
+                Authority.class)
+                .setParameter("userId", userId)
+                .setParameter("gymId", gymId)
+                .setParameter("role", role)
+                .getSingleResult();
     }
 }

@@ -2,6 +2,7 @@ package com.newfit.reservation.service;
 
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Gym;
+import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.dto.response.GymListResponse;
 import com.newfit.reservation.dto.response.GymResponseDto;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,5 +52,13 @@ public class AuthorityService {
                         .collect(Collectors.toList())
                 )
                 .build();
+    }
+
+    /*
+    userId로 조회
+    repository가 반환한 Authority의 Gym 반환
+     */
+    public Gym getGym(Long userId, Long gymId, Role role) {
+        return authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, role).getGym();
     }
 }

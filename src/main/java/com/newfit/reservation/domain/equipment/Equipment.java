@@ -4,8 +4,12 @@ import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.Gym;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -19,7 +23,7 @@ public class Equipment extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id", nullable = false)
-    private Gym gym_id;
+    private Gym gym;
 
     @Column(nullable = false)
     private String name;
@@ -28,5 +32,21 @@ public class Equipment extends BaseTimeEntity {
     @Column(nullable = false)
     private Purpose purpose;
 
+    @OneToMany(mappedBy = "equipment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<EquipmentGym> equipmentGyms = new ArrayList<>();
 
+    @Builder
+    public Equipment(Gym gym, String name, Purpose purpose) {
+        this.gym = gym;
+        this.name = name;
+        this.purpose = purpose;
+    }
+
+    public static Equipment createEquipment(Gym gym, String name, Purpose purpose) {
+        return Equipment.builder()
+                .gym(gym)
+                .name(name)
+                .purpose(purpose)
+                .build();
+    }
 }
