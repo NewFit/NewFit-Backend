@@ -3,11 +3,10 @@ package com.newfit.reservation.controller;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.equipment.Equipment;
-import com.newfit.reservation.dto.request.DeleteEquipmentGymRequest;
-import com.newfit.reservation.dto.request.DeleteEquipmentRequest;
-import com.newfit.reservation.dto.request.RegisterEquipmentRequest;
-import com.newfit.reservation.dto.request.UpdateConditionRequest;
+import com.newfit.reservation.dto.request.*;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
+import com.newfit.reservation.dto.response.UserAcceptResponse;
+import com.newfit.reservation.dto.response.UserAndAcceptRequestListResponse;
 import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.GymService;
 import com.newfit.reservation.service.equipment.EquipmentGymService;
@@ -93,5 +92,29 @@ public class StaffApiController {
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
+    }
+
+    /*
+    userId와 gymId를 받아서 해당 유저를 승인하는 메소드입니다.
+    AuthorityService에게 로직 실행을 위임한 뒤에 Dto를 넘겨받아 반환합니다.
+     */
+    @PostMapping("/authority")
+    public ResponseEntity<UserAcceptResponse> acceptUser(@Valid @RequestBody UserAcceptRequest requestDto) {
+        UserAcceptResponse userAcceptResponse = authorityService.acceptUser(requestDto.getUserId(), requestDto.getGymId());
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(userAcceptResponse);
+    }
+
+    /*
+    특정 Gym을 이용하는 유저 및 승인 요청을 보낸 유저를 리스트 형식으로 반환하는 메소드입니다.
+    마찬가지로 AuthorityService에게 로직 실행을 위임한 뒤에 Dto를 넘겨받아 반환합니다.
+     */
+    @GetMapping("/authority")
+    public ResponseEntity<UserAndAcceptRequestListResponse> getUserAndAcceptRequestList(@RequestParam("gym_id") Long gymId) {
+        UserAndAcceptRequestListResponse responseDto = authorityService.getUserAndAcceptRequestList(gymId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseDto);
     }
 }
