@@ -1,6 +1,7 @@
 package com.newfit.reservation.dto.response;
 
 import com.newfit.reservation.domain.Authority;
+import com.newfit.reservation.domain.Gym;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,4 +22,7 @@ public class GymResponseDto {
     public GymResponseDto(Authority authority) {
         this(authority.getGym().getName(), authority.getGym().getAddress());
     }
+
+    // Gym 객체로부터 GymResponseDto를 생성합니다.
+    public GymResponseDto(Gym gym) { this(gym.getName(), gym.getAddress()); }
 }
