@@ -1,0 +1,34 @@
+package com.newfit.reservation.dto.response;
+
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // AccessLevel을 PROTECTED로 제한합니다.
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class UserAndAcceptRequestListResponse {
+
+    private String gymName;
+
+    private int requestCount;
+    private List<UserAndAcceptRequestResponse> requests;
+
+    private int userCount;
+    private List<UserAndAcceptRequestResponse> users;
+
+    @Builder    // 생성자를 private으로 설정하고 빌더 패턴 적용함으로써 오직 빌더로만 객체 생성 가능합니다.
+    private UserAndAcceptRequestListResponse(String gymName,
+                                             List<UserAndAcceptRequestResponse> requests,
+                                             List<UserAndAcceptRequestResponse> users) {
+        this.gymName = gymName;
+        this.requests = requests;
+        this.requestCount = requests.size();
+        this.users = users;
+        this.userCount = users.size();
+    }
+}
