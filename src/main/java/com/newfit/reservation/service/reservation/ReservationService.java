@@ -6,8 +6,11 @@ import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.reservation.Reservation;
 import com.newfit.reservation.dto.request.ReservationRequest;
+import com.newfit.reservation.dto.response.ReservationDetailResponse;
+import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.dto.response.ReservationResponse;
 import com.newfit.reservation.repository.AuthorityRepository;
+import com.newfit.reservation.repository.GymRepository;
 import com.newfit.reservation.repository.UserRepository;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
 import com.newfit.reservation.repository.reservation.ReservationRepository;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
     private final EquipmentGymRepository equipmentGymRepository;
+    private final GymRepository gymRepository;
 
 
     private void validateReserverRegistration(Long userId, Gym gym) {
@@ -49,7 +54,7 @@ public class ReservationService {
         EquipmentGym usedEquipment = equipmentGymRepository.findAvailableByEquipmentId(equipmentId)
                 .stream()
                 .findFirst()
-                .orElseThrow(()-> new NoSuchElementException("There is no available equipment"));
+                .orElseThrow(() -> new NoSuchElementException("There is no available equipment"));
 
 
         // 사용자가 헬스장에 등록되어 있는지 확인
@@ -70,5 +75,19 @@ public class ReservationService {
         Reservation result = reservationRepository.save(reservation);
 
         return new ReservationResponse(result.getId());
+    }
+
+    public ReservationListResponse listReservation(Long reserverId, Long gymId) {
+        String gymName = gymRepository.findById(gymId)
+                .orElseThrow(IllegalAccessError::new)
+                .getName();
+
+        return ReservationListResponse.builder()
+                .gymName(gymName)
+                .reservationResponseList(reservationRepository.findAllByReserverId(reserverId)
+                        .stream()
+                        .map(ReservationDetailResponse::new)
+                        .collect(Collectors.toList()))
+                .build();
     }
 }
