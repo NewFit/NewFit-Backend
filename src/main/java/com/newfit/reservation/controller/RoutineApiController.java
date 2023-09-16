@@ -32,7 +32,7 @@ public class RoutineApiController {
     해당 Routine 객체를 이용하여 EquipmentRoutine 객체를 등록합니다. 그리고 생성된 Routine 객체의 id를 반환합니다.
      */
     @PostMapping("")
-    public ResponseEntity<Long> registerRoutine(@Valid @RequestBody RegisterRoutineRequest requestDto) {
+    public ResponseEntity<Void> registerRoutine(@Valid @RequestBody RegisterRoutineRequest requestDto) {
         // TODO: remove this userId and apply security
         Long userId = 1L;
 
@@ -48,6 +48,6 @@ public class RoutineApiController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(routine.getId());
+                .build();
     }
 }
