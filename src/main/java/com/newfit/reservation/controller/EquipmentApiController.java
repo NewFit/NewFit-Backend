@@ -31,14 +31,14 @@ public class EquipmentApiController {
         Gym gym = gymService.findById(gymId);
         EquipmentGymListResponse allInGym;
 
-        if (purpose == null && equipmentId == null) {
+        if (purpose == null && equipmentId == null) { //gymId만 들어온 경우
             allInGym = equipmentGymService.findAllInGym(gym);
-        } else if (purpose != null && equipmentId == null) {
+        } else if (purpose != null && equipmentId == null) { //gymId와 purpose가 들어온 경우
             allInGym = equipmentGymService.findAllInGymByPurpose(gym, purpose);
-        } else if (purpose == null && equipmentId != null) {
+        } else if (purpose == null && equipmentId != null) { //gymId와 equipment가 들어온 경우
             Equipment equipment = equipmentService.findById(equipmentId);
             allInGym = equipmentGymService.findAllInGymByEquipment(gym, equipment);
-        } else {
+        } else { // 모두 들어온 경우
             return ResponseEntity.badRequest().build();
         }
 
