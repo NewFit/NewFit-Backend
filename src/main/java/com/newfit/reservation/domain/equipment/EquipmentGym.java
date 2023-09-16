@@ -46,4 +46,12 @@ public class EquipmentGym extends BaseTimeEntity {
     public void updateCondition(Condition condition) {
         this.condition = condition;
     }
+
+    public void use() {
+        this.condition = Condition.OCCUPIED;
+    }
+
+    public void restore(){
+        this.condition = Condition.AVAILABLE;
+    }
 }
