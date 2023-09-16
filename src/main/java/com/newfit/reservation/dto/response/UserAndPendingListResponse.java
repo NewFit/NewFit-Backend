@@ -14,10 +14,8 @@ import java.util.List;
 public class UserAndPendingListResponse {
 
     private String gymName;
-
     private int requestCount;
     private List<UserAndPendingResponse> requests;
-
     private int userCount;
     private List<UserAndPendingResponse> users;
 
