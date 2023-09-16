@@ -5,6 +5,7 @@ import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.routine.Routine;
 import com.newfit.reservation.dto.request.RegisterRoutineRequest;
 import com.newfit.reservation.dto.request.UpdateRoutineRequest;
+import com.newfit.reservation.dto.response.RoutineListResponse;
 import com.newfit.reservation.service.GymService;
 import com.newfit.reservation.service.UserService;
 import com.newfit.reservation.service.routine.EquipmentRoutineService;
@@ -62,5 +63,19 @@ public class RoutineApiController {
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
+    }
+
+    @GetMapping("")
+    public ResponseEntity getAllRoutinesByUser() {
+        // TODO: remove this userId and apply security
+        Long userId = 1L;
+        User findUser = userService.findOneById(userId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        RoutineListResponse response = routineService.getAllRoutinesByUser(findUser);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 }
