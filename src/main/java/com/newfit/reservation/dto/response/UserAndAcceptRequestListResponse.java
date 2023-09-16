@@ -16,15 +16,15 @@ public class UserAndAcceptRequestListResponse {
     private String gymName;
 
     private int requestCount;
-    private List<UserAndAcceptRequestResponse> requests;
+    private List<UserAndPendingResponse> requests;
 
     private int userCount;
-    private List<UserAndAcceptRequestResponse> users;
+    private List<UserAndPendingResponse> users;
 
     @Builder    // 생성자를 private으로 설정하고 빌더 패턴 적용함으로써 오직 빌더로만 객체 생성 가능합니다.
     private UserAndAcceptRequestListResponse(String gymName,
-                                             List<UserAndAcceptRequestResponse> requests,
-                                             List<UserAndAcceptRequestResponse> users) {
+                                             List<UserAndPendingResponse> requests,
+                                             List<UserAndPendingResponse> users) {
         this.gymName = gymName;
         this.requests = requests;
         this.requestCount = requests.size();

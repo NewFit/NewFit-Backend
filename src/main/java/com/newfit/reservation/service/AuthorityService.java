@@ -87,11 +87,11 @@ public class AuthorityService {
 
         List<Authority> authorities = authorityRepository.findAuthoritiesByGym(gymId);
 
-        List<UserAndAcceptRequestResponse> requests = new ArrayList<>();
-        List<UserAndAcceptRequestResponse> users = new ArrayList<>();
+        List<UserAndPendingResponse> requests = new ArrayList<>();
+        List<UserAndPendingResponse> users = new ArrayList<>();
 
         for (Authority authority : authorities) {
-            UserAndAcceptRequestResponse response = new UserAndAcceptRequestResponse(authority);
+            UserAndPendingResponse response = new UserAndPendingResponse(authority);
 
             if(authority.getAccepted())
                 users.add(response);
