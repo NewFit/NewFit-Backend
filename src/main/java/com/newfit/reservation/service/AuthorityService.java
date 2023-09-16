@@ -67,9 +67,11 @@ public class AuthorityService {
     accepted 컬럼값을 true로 업데이트 합니다. 그 다음에 업데이트 결과를 반환할 Dto를 생성후 반환합니다.
      */
     public UserAcceptResponse acceptUser(Long userId, Long gymId) {
-        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndAccepted(userId, gymId)
-                .orElseThrow(IllegalArgumentException::new);
-        authority.updateAccepted(true);
+        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, Role.USER);
+        if(authority == null || authority.getAccepted())
+            throw new IllegalArgumentException();
+
+        authority.acceptUser();
 
         return UserAcceptResponse.builder()
                 .username(authority.getUser().getUsername())
