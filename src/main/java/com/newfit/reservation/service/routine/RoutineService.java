@@ -7,6 +7,8 @@ import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.domain.routine.EquipmentRoutine;
 import com.newfit.reservation.domain.routine.Routine;
 import com.newfit.reservation.dto.request.RoutineEquipmentRequest;
+import com.newfit.reservation.dto.response.RoutineListResponse;
+import com.newfit.reservation.dto.response.RoutineResponse;
 import com.newfit.reservation.repository.equipment.EquipmentRepository;
 import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import com.newfit.reservation.repository.routine.RoutineRepository;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +67,19 @@ public class RoutineService {
                             .duration(Duration.ofMinutes(routineRequest.getDuration()))
                             .build());
         }
+    }
+
+    // 특정 User가 생성한 모든 Routine을 조회하고 Dto로 변환하여 반환합니다.
+    public RoutineListResponse getAllRoutinesByUser(User user) {
+        List<Routine> findRoutines = routineRepository.findAllByUser(user);
+
+        List<RoutineResponse> routines = findRoutines.stream()
+                .map(RoutineResponse::new)
+                .collect(Collectors.toList());
+
+        return RoutineListResponse.builder()
+                .routines(routines)
+                .build();
     }
 
     // 해당 유저가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
