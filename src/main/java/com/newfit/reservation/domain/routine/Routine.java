@@ -5,6 +5,7 @@ import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,9 @@ public class Routine extends BaseTimeEntity {
 
     private Long count = 0L;
 
+    @Builder
+    private Routine(User user, String name) {
+        this.user = user;
+        this.name = name;
+    }
 }
