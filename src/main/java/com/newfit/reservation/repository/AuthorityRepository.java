@@ -58,13 +58,4 @@ public class AuthorityRepository {
                 .setParameter("role", role)
                 .getSingleResult();
     }
-
-    // 특정 userId와 gymId를 가지면서 accepted 컬럼이 false인 단일 Authority를 조회하는 메소드입니다.
-    public Optional<Authority> findOneByUserIdAndGymIdAndAccepted(Long userId, Long gymId) {
-        return Optional.ofNullable(em.createQuery("SELECT a from Authority a "
-                        +"where a.user.id = :userId and a.gym.id = :gymId and a.accepted = FALSE", Authority.class)
-                .setParameter("userId", userId)
-                .setParameter("gymId", gymId)
-                .getSingleResult());
-    }
 }
