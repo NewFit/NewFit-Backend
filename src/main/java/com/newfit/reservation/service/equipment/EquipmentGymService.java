@@ -96,4 +96,11 @@ public class EquipmentGymService {
         EquipmentGymListResponse response = new EquipmentGymListResponse(gym.getName(), allByGymAndEquipment.size(), equipmentResponses);
         return response;
     }
+
+    /*
+    EquipmentGymId로 EquipmentGym 조회
+     */
+    public EquipmentGym findOneById(Long equipmentGymId) {
+        return equipmentGymRepository.findById(equipmentGymId).get();
+    }
 }
