@@ -3,6 +3,7 @@ package com.newfit.reservation.controller;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.routine.Routine;
+import com.newfit.reservation.dto.request.DeleteRoutineRequest;
 import com.newfit.reservation.dto.request.RegisterRoutineRequest;
 import com.newfit.reservation.dto.request.UpdateRoutineRequest;
 import com.newfit.reservation.dto.response.RoutineListResponse;
@@ -80,5 +81,16 @@ public class RoutineApiController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
+    }
+
+    /*
+    특정 Routine을 삭제하는 메소드입니다.
+     */
+    @DeleteMapping("")
+    public ResponseEntity<Void> deleteRoutine(@Valid @RequestBody DeleteRoutineRequest requestDto) {
+        routineService.deleteRoutine(requestDto.getId());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
     }
 }
