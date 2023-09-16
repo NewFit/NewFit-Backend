@@ -6,6 +6,7 @@ import com.newfit.reservation.domain.routine.Routine;
 import com.newfit.reservation.dto.request.DeleteRoutineRequest;
 import com.newfit.reservation.dto.request.RegisterRoutineRequest;
 import com.newfit.reservation.dto.request.UpdateRoutineRequest;
+import com.newfit.reservation.dto.response.RoutineDetailResponse;
 import com.newfit.reservation.dto.response.RoutineListResponse;
 import com.newfit.reservation.service.GymService;
 import com.newfit.reservation.service.UserService;
@@ -92,5 +93,16 @@ public class RoutineApiController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .build();
+    }
+
+    /*
+    특정 Routine에 대한 세부사항을 반환하는 메소드입니다.
+     */
+    @GetMapping("")
+    public ResponseEntity<RoutineDetailResponse> getRoutineDetail(@RequestParam("id") Long id) {
+        RoutineDetailResponse routineDetail = routineService.getRoutineDetail(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(routineDetail);
     }
 }
