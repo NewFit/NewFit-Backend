@@ -4,6 +4,7 @@ import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.routine.Routine;
 import com.newfit.reservation.dto.request.RegisterRoutineRequest;
+import com.newfit.reservation.dto.request.UpdateRoutineRequest;
 import com.newfit.reservation.service.GymService;
 import com.newfit.reservation.service.UserService;
 import com.newfit.reservation.service.routine.EquipmentRoutineService;
@@ -12,10 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,6 +46,21 @@ public class RoutineApiController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .build();
+    }
+
+    /*
+    Routine을 업데이트하는 기능을 담당합니다. RoutineService에게 로직 실행을 위임합니다.
+     */
+    @PatchMapping("")
+    public ResponseEntity<Void> updateRoutine(@Valid @RequestBody UpdateRoutineRequest requestDto) {
+        Routine findRoutine = routineService.findById(requestDto.getRoutineId());
+        Gym findGym = gymService.findById(requestDto.getGymId());
+
+        routineService.updateRoutine(findGym, findRoutine, requestDto.getRoutineEquipments());
+
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
                 .build();
     }
 }
