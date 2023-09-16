@@ -5,6 +5,7 @@ import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,4 +41,18 @@ public class Reservation extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+
+    @Builder
+    public Reservation(User reserver,
+                       EquipmentGym equipmentGym,
+                       LocalDateTime startAt,
+                       LocalDateTime endAt,
+                       Long repetitionNumber) {
+        this.reserver = reserver;
+        this.equipmentGym = equipmentGym;
+        this.start_at = startAt;
+        this.end_at = endAt;
+        this.repetition_number = repetitionNumber;
+        this.status = Status.WAITING;
+    }
 }
