@@ -7,6 +7,8 @@ import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.domain.routine.EquipmentRoutine;
 import com.newfit.reservation.domain.routine.Routine;
 import com.newfit.reservation.dto.request.RoutineEquipmentRequest;
+import com.newfit.reservation.dto.response.RoutineDetailEquipmentResponse;
+import com.newfit.reservation.dto.response.RoutineDetailResponse;
 import com.newfit.reservation.dto.response.RoutineListResponse;
 import com.newfit.reservation.dto.response.RoutineResponse;
 import com.newfit.reservation.repository.equipment.EquipmentRepository;
@@ -91,6 +93,33 @@ public class RoutineService {
                 .orElseThrow(IllegalArgumentException::new);
         equipmentRoutineRepository.deleteAllByRoutine(findRoutine);
         routineRepository.deleteById(routineId);
+    }
+
+    /*
+    Routine id를 받아서 해당 Routine에 묶인 EquipmentRoutine을 조회합니다.
+    조회한 EquipmentRoutine들을 순회하며 Equipment를 조회합니다.
+    조회한 Equipment들을 RoutineDetailEquipmentResponse Dto로 변환하고 
+    Routine 정보와 함께 RoutineDetailResponse를 구성하여 반환합니다.
+     */
+    public RoutineDetailResponse getRoutineDetail(Long routineId) {
+        Routine findRoutine = routineRepository.findById(routineId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        List<EquipmentRoutine> findEquipmentRoutines = equipmentRoutineRepository.findAllByRoutine(findRoutine);
+
+        List<Equipment> findEquipments = findEquipmentRoutines.stream()
+                .map(EquipmentRoutine::getEquipment)
+                .collect(Collectors.toList());
+
+        List<RoutineDetailEquipmentResponse> equipments = findEquipments.stream()
+                .map(RoutineDetailEquipmentResponse::new)
+                .collect(Collectors.toList());
+
+        return RoutineDetailResponse.builder()
+                .id(findRoutine.getId())
+                .name(findRoutine.getName())
+                .equipments(equipments)
+                .build();
     }
 
     // 해당 유저가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
