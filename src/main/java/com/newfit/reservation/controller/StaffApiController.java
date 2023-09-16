@@ -6,7 +6,7 @@ import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.dto.request.*;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
 import com.newfit.reservation.dto.response.UserAcceptResponse;
-import com.newfit.reservation.dto.response.UserAndAcceptRequestListResponse;
+import com.newfit.reservation.dto.response.UserAndPendingListResponse;
 import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.GymService;
 import com.newfit.reservation.service.equipment.EquipmentGymService;
@@ -111,8 +111,8 @@ public class StaffApiController {
     마찬가지로 AuthorityService에게 로직 실행을 위임한 뒤에 Dto를 넘겨받아 반환합니다.
      */
     @GetMapping("/authority")
-    public ResponseEntity<UserAndAcceptRequestListResponse> getUserAndAcceptRequestList(@RequestParam("gym_id") Long gymId) {
-        UserAndAcceptRequestListResponse responseDto = authorityService.getUserAndAcceptRequestList(gymId);
+    public ResponseEntity<UserAndPendingListResponse> getUserAndAcceptRequestList(@RequestParam("gym_id") Long gymId) {
+        UserAndPendingListResponse responseDto = authorityService.getUserAndAcceptRequestList(gymId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(responseDto);
