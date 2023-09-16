@@ -2,8 +2,10 @@ package com.newfit.reservation.controller;
 
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.equipment.Equipment;
+import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.equipment.Purpose;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
+import com.newfit.reservation.dto.response.EquipmentInfoResponse;
 import com.newfit.reservation.service.GymService;
 import com.newfit.reservation.service.equipment.EquipmentGymService;
 import com.newfit.reservation.service.equipment.EquipmentService;
@@ -45,5 +47,15 @@ public class EquipmentApiController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(allInGym);
+    }
+
+    @GetMapping("/{equipmentGymId}")
+    public ResponseEntity<EquipmentInfoResponse> getEquipmentInfo(@PathVariable Long equipmentGymId) {
+        EquipmentGym equipmentGym = equipmentGymService.findOneById(equipmentGymId);
+        EquipmentInfoResponse allOccupiedTimes = reservationService.getAllOccupiedTimes(equipmentGym);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(allOccupiedTimes);
     }
 }
