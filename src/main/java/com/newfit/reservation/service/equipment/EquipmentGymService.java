@@ -4,6 +4,7 @@ import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.equipment.Condition;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
+import com.newfit.reservation.domain.equipment.Purpose;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
 import com.newfit.reservation.dto.response.EquipmentResponse;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
@@ -59,5 +60,40 @@ public class EquipmentGymService {
     public void deleteEquipmentGym(Long equipmentGymId) {
         EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).get();
         equipmentGymRepository.delete(equipmentGym);
+    }
+
+    /*
+    gym과 purpose로 EquipmentGymList 조회
+     */
+    public EquipmentGymListResponse findAllInGymByPurpose(Gym gym, Purpose purpose) {
+        List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
+        List<EquipmentGym> allByGymAndPurpose = allByGym
+                .stream()
+                .filter(equipmentGym -> equipmentGym.getEquipment().getPurpose().equals(purpose))
+                .collect(Collectors.toList());
+
+        List<EquipmentResponse> equipmentResponses = allByGymAndPurpose.stream()
+                .map(EquipmentResponse::new)
+                .collect(Collectors.toList());
+        EquipmentGymListResponse response = new EquipmentGymListResponse(gym.getName(), allByGymAndPurpose.size(), equipmentResponses);
+        return response;
+    }
+
+    /*
+    gym과 equipment로 EquipmentGymList 조회
+     */
+    public EquipmentGymListResponse findAllInGymByEquipment(Gym gym, Equipment equipment) {
+        List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
+        List<EquipmentGym> allByGymAndEquipment = allByGym
+                .stream()
+                .filter(equipmentGym -> equipmentGym.getEquipment().equals(equipment))
+                .collect(Collectors.toList());
+
+        List<EquipmentResponse> equipmentResponses = allByGymAndEquipment.stream()
+                .map(EquipmentResponse::new)
+                .collect(Collectors.toList());
+
+        EquipmentGymListResponse response = new EquipmentGymListResponse(gym.getName(), allByGymAndEquipment.size(), equipmentResponses);
+        return response;
     }
 }
