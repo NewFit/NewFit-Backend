@@ -65,8 +65,11 @@ public class RoutineApiController {
                 .build();
     }
 
+    /*
+    특정 user가 생성한 모든 Routine 객체를 조회합니다.
+     */
     @GetMapping("")
-    public ResponseEntity getAllRoutinesByUser() {
+    public ResponseEntity<RoutineListResponse> getAllRoutinesByUser() {
         // TODO: remove this userId and apply security
         Long userId = 1L;
         User findUser = userService.findOneById(userId)
