@@ -82,6 +82,17 @@ public class RoutineService {
                 .build();
     }
 
+    /*
+    Routine 객체를 삭제하는 메소드입니다. EquipmentRoutine 객체는 무조건 Routine 객체에 종속되므로
+    특정 Routine 객체를 삭제하는 경우 해당 Routine에 묶여있는 EquipmentRoutine 객체들도 모두 삭제합니다.
+     */
+    public void deleteRoutine(Long routineId) {
+        Routine findRoutine = routineRepository.findById(routineId)
+                .orElseThrow(IllegalArgumentException::new);
+        equipmentRoutineRepository.deleteAllByRoutine(findRoutine);
+        routineRepository.deleteById(routineId);
+    }
+
     // 해당 유저가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
     private boolean validateDuplicate(User user, String routineName) {
         return routineRepository.findByUserAndName(user, routineName).isPresent();
