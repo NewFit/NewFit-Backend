@@ -117,7 +117,7 @@ public class RoutineService {
 
         return RoutineDetailResponse.builder()
                 .id(findRoutine.getId())
-                .name(findRoutine.getName())
+                .routineName(findRoutine.getName())
                 .equipments(equipments)
                 .build();
     }

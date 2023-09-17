@@ -15,14 +15,14 @@ import java.util.List;
 public class RoutineDetailResponse {
 
     private Long id;
-    private String name;
+    private String routineName;
     private int equipmentsCount;
     private List<RoutineDetailEquipmentResponse> equipments;
 
     @Builder
-    private RoutineDetailResponse(Long id, String name, List<RoutineDetailEquipmentResponse> equipments) {
+    private RoutineDetailResponse(Long id, String routineName, List<RoutineDetailEquipmentResponse> equipments) {
         this.id = id;
-        this.name = name;
+        this.routineName = routineName;
         this.equipmentsCount = equipments.size();
         this.equipments = equipments;
     }
