@@ -25,9 +25,9 @@ public class ReservationService {
 
         List<Reservation> reservations = reservationRepository.findAllByEquipmentGym(equipmentGym);
 
-        // reservations에서 현재 시간보다 늦게 끝나거나 현재 시간으로부터 3시간 이후내로 시작되는 예약을 OccupiedTime 리스트로 변환
+        // reservations에서 현재 시간보다 늦게 끝나거나 현재 시간으로부터 2시간 이후내로 시작되는 예약을 OccupiedTime 리스트로 변환
         List<OccupiedTime> occupiedTimes = reservations.stream()
-                .filter(reservation -> reservation.getEnd_at().isAfter(now) || reservation.getStart_at().isAfter(now.plusHours(3)))
+                .filter(reservation -> reservation.getEnd_at().isAfter(now) || reservation.getStart_at().isAfter(now.plusHours(2)))
                 .map(reservation -> new OccupiedTime(reservation.getStart_at(), reservation.getEnd_at()))
                 .collect(Collectors.toList());
 
