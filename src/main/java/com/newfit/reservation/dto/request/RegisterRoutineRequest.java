@@ -15,9 +15,6 @@ import java.util.List;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RegisterRoutineRequest {
 
-    @NotNull
-    private Long gymId;
-
     @NotBlank
     private String name;
 

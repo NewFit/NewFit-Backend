@@ -33,7 +33,8 @@ public class RoutineApiController {
     해당 Routine 객체를 이용하여 EquipmentRoutine 객체를 등록합니다. 그리고 생성된 Routine 객체의 id를 반환합니다.
      */
     @PostMapping("")
-    public ResponseEntity<Void> registerRoutine(@Valid @RequestBody RegisterRoutineRequest requestDto) {
+    public ResponseEntity<Void> registerRoutine(@Valid @RequestBody RegisterRoutineRequest requestDto,
+                                                @RequestParam("gym_id") Long gymId) {
         // TODO: remove this authorityId and apply security
         Long authorityId = 1L;
 
@@ -41,7 +42,7 @@ public class RoutineApiController {
 
         Routine routine = routineService.registerRoutine(findAuthority, requestDto.getName());
 
-        Gym findGym = gymService.findById(requestDto.getGymId());
+        Gym findGym = gymService.findById(gymId);
 
         equipmentRoutineService.registerEquipmentRoutine(findGym, routine,
                 requestDto.getRoutineEquipments());
