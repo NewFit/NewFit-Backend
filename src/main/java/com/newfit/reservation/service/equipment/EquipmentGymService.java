@@ -101,6 +101,6 @@ public class EquipmentGymService {
     EquipmentGymId로 EquipmentGym 조회
      */
     public EquipmentGym findOneById(Long equipmentGymId) {
-        return equipmentGymRepository.findById(equipmentGymId).get();
+        return equipmentGymRepository.findById(equipmentGymId).orElseThrow(IllegalArgumentException::new);
     }
 }
