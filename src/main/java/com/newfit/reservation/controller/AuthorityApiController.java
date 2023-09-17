@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/authority")
 @RequiredArgsConstructor
-public class AuthorityController {
+public class AuthorityApiController {
     private final AuthorityService authorityService;
 
     @PostMapping
