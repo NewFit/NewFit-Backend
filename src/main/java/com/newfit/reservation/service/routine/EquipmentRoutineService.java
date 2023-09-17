@@ -36,10 +36,11 @@ public class EquipmentRoutineService {
 
             equipmentRoutineRepository.save(
                     EquipmentRoutine.builder()
-                    .equipment(equipment)
-                    .routine(routine)
-                    .duration(Duration.ofMinutes(routineRequest.getDuration()))
-                    .build());
+                            .equipment(equipment)
+                            .routine(routine)
+                            .duration(Duration.ofMinutes(routineRequest.getDuration()))
+                            .order(routineRequest.getOrder())
+                            .build());
         }
     }
 }

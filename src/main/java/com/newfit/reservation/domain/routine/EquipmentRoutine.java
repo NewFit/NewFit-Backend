@@ -30,10 +30,14 @@ public class EquipmentRoutine {
     @Column(nullable = false)
     private Duration duration;
 
+    @Column(nullable = false)
+    private Short order;
+
     @Builder
-    private EquipmentRoutine(Equipment equipment, Routine routine, Duration duration) {
+    private EquipmentRoutine(Equipment equipment, Routine routine, Duration duration, Short order) {
         this.equipment = equipment;
         this.routine = routine;
         this.duration = duration;
+        this.order = order;
     }
 }
