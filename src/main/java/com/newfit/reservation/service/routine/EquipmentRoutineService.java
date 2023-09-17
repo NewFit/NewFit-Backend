@@ -39,7 +39,7 @@ public class EquipmentRoutineService {
                             .equipment(equipment)
                             .routine(routine)
                             .duration(Duration.ofMinutes(routineRequest.getDuration()))
-                            .order(routineRequest.getOrder())
+                            .sequence(routineRequest.getSequence())
                             .build());
         }
     }

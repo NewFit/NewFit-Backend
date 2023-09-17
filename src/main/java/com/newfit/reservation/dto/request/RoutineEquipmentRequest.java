@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class RoutineEquipmentRequest {
 
     @NotNull
-    private Short order;
+    private Short sequence;
 
     @NotNull
     private Long equipmentId;
