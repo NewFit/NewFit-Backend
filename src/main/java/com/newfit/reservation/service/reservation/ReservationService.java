@@ -6,6 +6,7 @@ import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.reservation.Reservation;
 import com.newfit.reservation.dto.request.ReservationRequest;
+import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.dto.response.ReservationDetailResponse;
 import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.dto.response.ReservationResponse;
@@ -62,7 +63,6 @@ public class ReservationService {
 
 
         usedEquipment.use();
-        equipmentGymRepository.save(usedEquipment);
 
         Reservation reservation = Reservation.builder()
                 .reserver(reserver)
@@ -90,4 +90,14 @@ public class ReservationService {
                         .collect(Collectors.toList()))
                 .build();
     }
+
+    public ReservationResponse update(Long reservationId, ReservationUpdateRequest request) {
+        reservationRepository.findById(reservationId)
+                .orElseThrow()
+                .update(request);
+
+        return new ReservationResponse(reservationId);
+    }
+
+
 }
