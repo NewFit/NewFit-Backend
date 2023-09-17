@@ -16,7 +16,7 @@ import java.util.List;
 public class RegisterRoutineRequest {
 
     @NotBlank
-    private String name;
+    private String routineName;
 
     @NotNull
     private List<RoutineEquipmentRequest> routineEquipments;

@@ -30,7 +30,7 @@ public class RoutineApiController {
 
     /* 
     Routine을 새로 등록하는 기능을 담당합니다. Dto의 데이터를 이용해 먼저 Routine 객체를 등록하고
-    해당 Routine 객체를 이용하여 EquipmentRoutine 객체를 등록합니다. 그리고 생성된 Routine 객체의 id를 반환합니다.
+    해당 Routine 객체를 이용하여 EquipmentRoutine 객체를 등록합니다.
      */
     @PostMapping("")
     public ResponseEntity<Void> registerRoutine(@Valid @RequestBody RegisterRoutineRequest requestDto,
@@ -40,7 +40,7 @@ public class RoutineApiController {
 
         Authority findAuthority = authorityService.findById(authorityId);
 
-        Routine routine = routineService.registerRoutine(findAuthority, requestDto.getName());
+        Routine routine = routineService.registerRoutine(findAuthority, requestDto.getRoutineName());
 
         Gym findGym = gymService.findById(gymId);
 
