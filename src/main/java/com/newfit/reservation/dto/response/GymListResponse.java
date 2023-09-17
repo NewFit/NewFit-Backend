@@ -14,10 +14,10 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GymListResponse {
     private int gymCount;
-    private List<GymResponseDto> gyms;
+    private List<GymResponse> gyms;
 
     @Builder
-    private GymListResponse(List<GymResponseDto> gyms) {
+    private GymListResponse(List<GymResponse> gyms) {
         this.gymCount = gyms.size();
         this.gyms = gyms;
     }

@@ -1,6 +1,6 @@
 package com.newfit.reservation.controller;
 
-import com.newfit.reservation.dto.request.AuthorityRequestDto;
+import com.newfit.reservation.dto.request.AuthorityRequest;
 import com.newfit.reservation.dto.response.GymListResponse;
 import com.newfit.reservation.service.AuthorityService;
 import jakarta.validation.Valid;
@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/authority")
 @RequiredArgsConstructor
-public class AuthorityController {
+public class AuthorityApiController {
     private final AuthorityService authorityService;
 
     @PostMapping
     public Long register(@RequestHeader(value = "User-Id") Long userId,
-                         @Valid @RequestBody AuthorityRequestDto request) {
+                         @Valid @RequestBody AuthorityRequest request) {
         return authorityService.register(userId, request.getGymId());
     }
 
@@ -29,7 +29,7 @@ public class AuthorityController {
 
     @DeleteMapping
     public void delete(@RequestHeader(value = "User-Id") Long userId,
-                       @Valid @RequestBody AuthorityRequestDto request) {
+                       @Valid @RequestBody AuthorityRequest request) {
         authorityService.delete(userId, request.getGymId());
     }
 }

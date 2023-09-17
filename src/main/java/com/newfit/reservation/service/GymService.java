@@ -2,13 +2,12 @@ package com.newfit.reservation.service;
 
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.dto.response.GymListResponse;
-import com.newfit.reservation.dto.response.GymResponseDto;
+import com.newfit.reservation.dto.response.GymResponse;
 import com.newfit.reservation.repository.GymRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,8 +30,8 @@ public class GymService {
     public GymListResponse getAllGyms() {
         List<Gym> findGyms = gymRepository.findAll();
 
-        List<GymResponseDto> gyms = findGyms.stream()
-                .map(GymResponseDto::new)
+        List<GymResponse> gyms = findGyms.stream()
+                .map(GymResponse::new)
                 .collect(Collectors.toList());
 
         return GymListResponse.builder()

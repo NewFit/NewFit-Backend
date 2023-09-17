@@ -48,7 +48,7 @@ public class AuthorityService {
         return GymListResponse.builder()
                 .gyms(authorityRepository.findAuthoritiesByUserId(id)
                         .stream()
-                        .map(GymResponseDto::new)
+                        .map(GymResponse::new)
                         .collect(Collectors.toList())
                 )
                 .build();

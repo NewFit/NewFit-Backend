@@ -12,20 +12,20 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class GymResponseDto {
+public class GymResponse {
     private String gymName;
     private String address;
 
     @Builder
-    private GymResponseDto(String gymName, String address) {
+    private GymResponse(String gymName, String address) {
         this.gymName = gymName;
         this.address = address;
     }
 
-    public GymResponseDto(Authority authority) {
+    public GymResponse(Authority authority) {
         this(authority.getGym().getName(), authority.getGym().getAddress());
     }
 
     // Gym 객체로부터 GymResponseDto를 생성합니다.
-    public GymResponseDto(Gym gym) { this(gym.getName(), gym.getAddress()); }
+    public GymResponse(Gym gym) { this(gym.getName(), gym.getAddress()); }
 }

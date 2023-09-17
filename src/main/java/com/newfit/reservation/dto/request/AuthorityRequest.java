@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AuthorityRequestDto {
+public class AuthorityRequest {
     @NotNull
     private Long gymId;
 }
