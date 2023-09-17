@@ -1,7 +1,7 @@
 package com.newfit.reservation.service.dev;
 
 import com.newfit.reservation.domain.dev.Proposal;
-import com.newfit.reservation.dto.request.CreateProposalRequestDto;
+import com.newfit.reservation.dto.request.CreateProposalRequest;
 
 import com.newfit.reservation.repository.dev.ProposalRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +18,10 @@ public class ProposalService {        // ProposalRepository 에 단순 위임하
 
     private final ProposalRepository proposalRepository;
 
-    public Long saveProposal(CreateProposalRequestDto proposalRequestDto) {
+    public Long saveProposal(CreateProposalRequest proposalRequestDto) {
 
         // CreateProposalRequestDto 객체를 Proposal 엔티티 객체로 변환하는 메소드 사용했습니다.
-        Proposal proposal = CreateProposalRequestDto.proposalDto2Entity(proposalRequestDto);
+        Proposal proposal = CreateProposalRequest.proposalDto2Entity(proposalRequestDto);
         return proposalRepository.save(proposal);
     }
 
