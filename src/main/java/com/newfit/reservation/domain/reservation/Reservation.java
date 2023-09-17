@@ -3,6 +3,7 @@ package com.newfit.reservation.domain.reservation;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
+import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -54,5 +55,11 @@ public class Reservation extends BaseTimeEntity {
         this.end_at = endAt;
         this.repetition_number = repetitionNumber;
         this.status = Status.WAITING;
+    }
+
+
+    public void update(ReservationUpdateRequest request){
+        this.start_at = request.getStartAt();
+        this.end_at = request.getEndAt();
     }
 }
