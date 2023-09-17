@@ -1,8 +1,8 @@
 package com.newfit.reservation.service.routine;
 
 
+import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Gym;
-import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.domain.routine.EquipmentRoutine;
 import com.newfit.reservation.domain.routine.Routine;
@@ -35,12 +35,12 @@ public class RoutineService {
     이전에 등록한 루틴과 동일한 이름이라면 exception이 발생합니다.
     아니라면 새로운 Routine을 등록하고 그 Routine을 반환합니다.
      */
-    public Routine registerRoutine(User user, String routineName) {
-        if(validateDuplicate(user, routineName))
+    public Routine registerRoutine(Authority authority, String routineName) {
+        if(validateDuplicate(authority, routineName))
             throw new IllegalArgumentException();
 
         return routineRepository.save(Routine.builder()
-                .user(user)
+                .authority(authority)
                 .name(routineName)
                 .build());
     }
@@ -71,9 +71,9 @@ public class RoutineService {
         }
     }
 
-    // 특정 User가 생성한 모든 Routine을 조회하고 Dto로 변환하여 반환합니다.
-    public RoutineListResponse getAllRoutinesByUser(User user) {
-        List<Routine> findRoutines = routineRepository.findAllByUser(user);
+    // 특정 User의 Authority가 생성한 모든 Routine을 조회하고 Dto로 변환하여 반환합니다.
+    public RoutineListResponse getAllRoutinesByAuthority(Authority authority) {
+        List<Routine> findRoutines = routineRepository.findAllByAuthority(authority);
 
         List<RoutineResponse> routines = findRoutines.stream()
                 .map(RoutineResponse::new)
@@ -122,8 +122,8 @@ public class RoutineService {
                 .build();
     }
 
-    // 해당 유저가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
-    private boolean validateDuplicate(User user, String routineName) {
-        return routineRepository.findByUserAndName(user, routineName).isPresent();
+    // 해당 User의 Authority가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
+    private boolean validateDuplicate(Authority authority, String routineName) {
+        return routineRepository.findByAuthorityAndName(authority, routineName).isPresent();
     }
 }

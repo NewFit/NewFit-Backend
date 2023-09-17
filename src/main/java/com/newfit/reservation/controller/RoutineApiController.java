@@ -1,15 +1,15 @@
 package com.newfit.reservation.controller;
 
+import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Gym;
-import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.routine.Routine;
 import com.newfit.reservation.dto.request.DeleteRoutineRequest;
 import com.newfit.reservation.dto.request.RegisterRoutineRequest;
 import com.newfit.reservation.dto.request.UpdateRoutineRequest;
 import com.newfit.reservation.dto.response.RoutineDetailResponse;
 import com.newfit.reservation.dto.response.RoutineListResponse;
+import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.GymService;
-import com.newfit.reservation.service.UserService;
 import com.newfit.reservation.service.routine.EquipmentRoutineService;
 import com.newfit.reservation.service.routine.RoutineService;
 import jakarta.validation.Valid;
@@ -25,7 +25,7 @@ public class RoutineApiController {
 
     private final RoutineService routineService;
     private final EquipmentRoutineService equipmentRoutineService;
-    private final UserService userService;
+    private final AuthorityService authorityService;
     private final GymService gymService;
 
     /* 
@@ -34,13 +34,12 @@ public class RoutineApiController {
      */
     @PostMapping("")
     public ResponseEntity<Void> registerRoutine(@Valid @RequestBody RegisterRoutineRequest requestDto) {
-        // TODO: remove this userId and apply security
-        Long userId = 1L;
+        // TODO: remove this authorityId and apply security
+        Long authorityId = 1L;
 
-        User findUser = userService.findOneById(userId)
-                .orElseThrow(IllegalArgumentException::new);
+        Authority findAuthority = authorityService.findById(authorityId);
 
-        Routine routine = routineService.registerRoutine(findUser, requestDto.getName());
+        Routine routine = routineService.registerRoutine(findAuthority, requestDto.getName());
 
         Gym findGym = gymService.findById(requestDto.getGymId());
 
@@ -68,16 +67,15 @@ public class RoutineApiController {
     }
 
     /*
-    특정 user가 생성한 모든 Routine 객체를 조회합니다.
+    특정 User의 Authority가 생성한 모든 Routine 객체를 조회합니다.
      */
     @GetMapping("")
-    public ResponseEntity<RoutineListResponse> getAllRoutinesByUser() {
-        // TODO: remove this userId and apply security
-        Long userId = 1L;
-        User findUser = userService.findOneById(userId)
-                .orElseThrow(IllegalArgumentException::new);
+    public ResponseEntity<RoutineListResponse> getAllRoutinesByAuthority() {
+        // TODO: remove this authorityId and apply security
+        Long authorityId = 1L;
+        Authority findAuthority = authorityService.findById(authorityId);
 
-        RoutineListResponse response = routineService.getAllRoutinesByUser(findUser);
+        RoutineListResponse response = routineService.getAllRoutinesByAuthority(findAuthority);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -91,7 +89,7 @@ public class RoutineApiController {
     public ResponseEntity<Void> deleteRoutine(@Valid @RequestBody DeleteRoutineRequest requestDto) {
         routineService.deleteRoutine(requestDto.getId());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.NO_CONTENT)
                 .build();
     }
 

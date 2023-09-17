@@ -1,6 +1,7 @@
 package com.newfit.reservation.domain.routine;
 
 
+import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.User;
 import jakarta.persistence.*;
@@ -19,8 +20,8 @@ public class Routine extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "authority_id")
+    private Authority authority;
 
     @Column(nullable = false)
     private String name;
@@ -28,8 +29,8 @@ public class Routine extends BaseTimeEntity {
     private Long count = 0L;
 
     @Builder
-    private Routine(User user, String name) {
-        this.user = user;
+    private Routine(Authority authority, String name) {
+        this.authority = authority;
         this.name = name;
     }
 }
