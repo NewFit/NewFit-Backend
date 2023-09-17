@@ -99,5 +99,7 @@ public class ReservationService {
         return new ReservationResponse(reservationId);
     }
 
-
+    public void delete(Long reservationId){
+        reservationRepository.deleteById(reservationId);
+    }
 }
