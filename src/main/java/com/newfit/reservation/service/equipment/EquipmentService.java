@@ -40,4 +40,12 @@ public class EquipmentService {
     public void deleteEquipment(Long equipmentId) {
         equipmentRepository.deleteById(equipmentId);
     }
+
+    /*
+    EquipmentId로 Equipment조회
+     */
+    public Equipment findById(Long equipmentId) {
+        return equipmentRepository.findById(equipmentId)
+                .orElseThrow(IllegalArgumentException::new);
+    }
 }
