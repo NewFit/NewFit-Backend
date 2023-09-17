@@ -98,8 +98,8 @@ public class RoutineApiController {
     /*
     특정 Routine에 대한 세부사항을 반환하는 메소드입니다.
      */
-    @GetMapping("")
-    public ResponseEntity<RoutineDetailResponse> getRoutineDetail(@RequestParam("id") Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<RoutineDetailResponse> getRoutineDetail(@PathVariable("id") Long id) {
         RoutineDetailResponse routineDetail = routineService.getRoutineDetail(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
