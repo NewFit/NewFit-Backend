@@ -8,6 +8,7 @@ import com.newfit.reservation.service.reservation.ReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -40,4 +41,9 @@ public class ReservationApiController {
         return reservationService.update(reservationId, request);
     }
 
+    @DeleteMapping
+    public ResponseEntity<Void> deleteReservation(@RequestParam("reservation_id") Long reservationId){
+        reservationService.delete(reservationId);
+        return ResponseEntity.noContent().build();
+    }
 }
