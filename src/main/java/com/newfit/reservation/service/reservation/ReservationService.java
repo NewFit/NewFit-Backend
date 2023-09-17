@@ -1,8 +1,7 @@
 package com.newfit.reservation.service.reservation;
 
 
-import com.newfit.reservation.domain.Gym;
-import com.newfit.reservation.domain.User;
+import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.reservation.Reservation;
 import com.newfit.reservation.dto.request.ReservationRequest;
@@ -11,8 +10,6 @@ import com.newfit.reservation.dto.response.ReservationDetailResponse;
 import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.dto.response.ReservationResponse;
 import com.newfit.reservation.repository.AuthorityRepository;
-import com.newfit.reservation.repository.GymRepository;
-import com.newfit.reservation.repository.UserRepository;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
 import com.newfit.reservation.repository.reservation.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,27 +25,15 @@ import java.util.stream.Collectors;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
     private final EquipmentGymRepository equipmentGymRepository;
-    private final GymRepository gymRepository;
 
 
-    private void validateReserverRegistration(Long userId, Gym gym) {
-
-        authorityRepository.findAuthoritiesByUserId(userId)
-                .stream().parallel()
-                .filter(a -> a.getGym()
-                        .equals(gym))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
-    public ReservationResponse reserve(Long userId,
+    public ReservationResponse reserve(Long authorityId,
                                        Long equipmentId,
                                        ReservationRequest request) {
 
-        User reserver = userRepository.findOne(userId)
+        Authority reserver = authorityRepository.findOne(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
 
         // 사용 가능한 기구 하나를 가져옴
@@ -56,11 +41,6 @@ public class ReservationService {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("There is no available equipment"));
-
-
-        // 사용자가 헬스장에 등록되어 있는지 확인
-        validateReserverRegistration(userId, usedEquipment.getGym());
-
 
         usedEquipment.use();
 
@@ -77,14 +57,16 @@ public class ReservationService {
         return new ReservationResponse(result.getId());
     }
 
-    public ReservationListResponse listReservation(Long reserverId, Long gymId) {
-        String gymName = gymRepository.findById(gymId)
-                .orElseThrow(IllegalAccessError::new)
+    @Transactional(readOnly = true)
+    public ReservationListResponse listReservation(Long authorityId) {
+        String gymName = authorityRepository.findOne(authorityId)
+                .orElseThrow(IllegalArgumentException::new)
+                .getGym()
                 .getName();
 
         return ReservationListResponse.builder()
                 .gymName(gymName)
-                .reservationResponseList(reservationRepository.findAllByReserverId(reserverId)
+                .reservationResponseList(reservationRepository.findAllByAuthorityId(authorityId)
                         .stream()
                         .map(ReservationDetailResponse::new)
                         .collect(Collectors.toList()))
@@ -99,7 +81,7 @@ public class ReservationService {
         return new ReservationResponse(reservationId);
     }
 
-    public void delete(Long reservationId){
+    public void delete(Long reservationId) {
         reservationRepository.deleteById(reservationId);
     }
 }

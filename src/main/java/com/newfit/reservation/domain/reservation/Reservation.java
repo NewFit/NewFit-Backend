@@ -1,7 +1,7 @@
 package com.newfit.reservation.domain.reservation;
 
+import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
-import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import jakarta.persistence.*;
@@ -22,8 +22,8 @@ public class Reservation extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reserver_id", nullable = false)
-    private User reserver;
+    @JoinColumn(name = "authority_id", nullable = false)
+    private Authority reserver;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipment_gym_id", nullable = false)
@@ -44,7 +44,7 @@ public class Reservation extends BaseTimeEntity {
 
 
     @Builder
-    public Reservation(User reserver,
+    public Reservation(Authority reserver,
                        EquipmentGym equipmentGym,
                        LocalDateTime startAt,
                        LocalDateTime endAt,

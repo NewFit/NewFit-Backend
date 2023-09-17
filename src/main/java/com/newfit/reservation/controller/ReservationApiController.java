@@ -24,18 +24,17 @@ public class ReservationApiController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse reserve(@RequestParam(value = "equipment_id") Long equipmentId,
                                        @Valid @RequestBody ReservationRequest request) {
-        Long userId = 5L;
-        return reservationService.reserve(userId, equipmentId, request);
+        Long authorityId = 3L;
+        return reservationService.reserve(authorityId, equipmentId, request);
     }
 
     @GetMapping
-    public ReservationListResponse listReservation(@RequestParam(value = "gym_id") Long gymId) {
-        Long userId = 5L;
-        return reservationService.listReservation(userId, gymId);
+    public ReservationListResponse listReservation() {
+        Long authorityId = 3L;
+        return reservationService.listReservation(authorityId);
     }
 
     @PatchMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ReservationResponse updateReservation(@RequestParam("reservation_id") Long reservationId,
                                                  @RequestBody ReservationUpdateRequest request){
         return reservationService.update(reservationId, request);
