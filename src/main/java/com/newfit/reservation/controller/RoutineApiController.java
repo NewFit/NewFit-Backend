@@ -38,13 +38,13 @@ public class RoutineApiController {
         // TODO: remove this authorityId and apply security
         Long authorityId = 1L;
 
-        Authority findAuthority = authorityService.findById(authorityId);
+        Authority authority = authorityService.findById(authorityId);
 
-        Routine routine = routineService.registerRoutine(findAuthority, requestDto.getRoutineName());
+        Routine routine = routineService.registerRoutine(authority, requestDto.getRoutineName());
 
-        Gym findGym = gymService.findById(gymId);
+        Gym gym = gymService.findById(gymId);
 
-        equipmentRoutineService.registerEquipmentRoutine(findGym, routine,
+        equipmentRoutineService.registerEquipmentRoutine(gym, routine,
                 requestDto.getRoutineEquipments());
 
         return ResponseEntity
@@ -56,15 +56,15 @@ public class RoutineApiController {
     Routine을 업데이트하는 기능을 담당합니다. 루틴 이름이 변경되었다면 먼저 RoutineService에게 로직 실행을 위임합니다.
     그렇지 않다면 바로 EquipmentRoutineService에게 로직 실행을 위임합니다.
      */
-    @PatchMapping("/{id}")
+    @PatchMapping("/{routineId}")
     public ResponseEntity<Void> updateRoutine(@Valid @RequestBody UpdateRoutineRequest requestDto,
-                                              @PathVariable("id") Long routineId) {
+                                              @PathVariable("routineId") Long routineId) {
         if (requestDto.getRoutineName() != null) {
             routineService.updateRoutine(routineId, requestDto.getRoutineName());
         }
 
-        Routine findRoutine = routineService.findById(routineId);
-        equipmentRoutineService.updateEquipmentRoutinesInRoutine(findRoutine, requestDto);
+        Routine routine = routineService.findById(routineId);
+        equipmentRoutineService.updateEquipmentRoutinesInRoutine(routine, requestDto);
 
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
@@ -75,12 +75,12 @@ public class RoutineApiController {
     특정 User의 Authority가 생성한 모든 Routine 객체를 조회합니다.
      */
     @GetMapping("")
-    public ResponseEntity<RoutineListResponse> getAllRoutinesByAuthority() {
+    public ResponseEntity<RoutineListResponse> findAllRoutinesByAuthority() {
         // TODO: remove this authorityId and apply security
         Long authorityId = 1L;
-        Authority findAuthority = authorityService.findById(authorityId);
+        Authority authority = authorityService.findById(authorityId);
 
-        RoutineListResponse response = routineService.getAllRoutinesByAuthority(findAuthority);
+        RoutineListResponse response = routineService.findAllRoutinesByAuthority(authority);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -101,9 +101,9 @@ public class RoutineApiController {
     /*
     특정 Routine에 대한 세부사항을 반환하는 메소드입니다.
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<RoutineDetailResponse> getRoutineDetail(@PathVariable("id") Long id) {
-        RoutineDetailResponse routineDetail = routineService.getRoutineDetail(id);
+    @GetMapping("/{routineId}")
+    public ResponseEntity<RoutineDetailResponse> findRoutineDetail(@PathVariable("routineId") Long id) {
+        RoutineDetailResponse routineDetail = routineService.findRoutineDetail(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(routineDetail);

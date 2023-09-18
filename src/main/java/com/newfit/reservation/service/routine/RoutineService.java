@@ -58,7 +58,7 @@ public class RoutineService {
     }
 
     // 특정 User의 Authority가 생성한 모든 Routine을 조회하고 Dto로 변환하여 반환합니다.
-    public RoutineListResponse getAllRoutinesByAuthority(Authority authority) {
+    public RoutineListResponse findAllRoutinesByAuthority(Authority authority) {
         List<Routine> findRoutines = routineRepository.findAllByAuthority(authority);
 
         List<RoutineResponse> routines = findRoutines.stream()
@@ -87,7 +87,7 @@ public class RoutineService {
     조회한 Equipment들을 RoutineDetailEquipmentResponse Dto로 변환하고 
     Routine 정보와 함께 RoutineDetailResponse를 구성하여 반환합니다.
      */
-    public RoutineDetailResponse getRoutineDetail(Long routineId) {
+    public RoutineDetailResponse findRoutineDetail(Long routineId) {
         Routine findRoutine = routineRepository.findById(routineId)
                 .orElseThrow(IllegalArgumentException::new);
 
