@@ -28,6 +28,22 @@ public class ReservationService {
     private final AuthorityRepository authorityRepository;
     private final EquipmentGymRepository equipmentGymRepository;
 
+    /**
+     * 대상 기구의 예약 현황에 요청 시간이 중복되면 false 를 반환함
+     *
+     * @param equipmentGym 대상 특정 기구
+     * @param start        시작 시간
+     * @param end          종료 시간
+     */
+    private boolean validateReservationOverlap(EquipmentGym equipmentGym, LocalDateTime start, LocalDateTime end) {
+        return reservationRepository.findAllByEquipmentGym(equipmentGym)
+                .stream()
+                .filter(reservation ->
+                        reservation.overlapped(start, end)
+                )
+                .findAny()
+                .isEmpty();
+    }
 
     public ReservationResponse reserve(Long authorityId,
                                        Long equipmentId,
@@ -39,10 +55,11 @@ public class ReservationService {
         // 사용 가능한 기구 하나를 가져옴
         EquipmentGym usedEquipment = equipmentGymRepository.findAvailableByEquipmentId(equipmentId)
                 .stream()
-                .findFirst()
+                .filter(equipmentGym ->
+                        validateReservationOverlap(equipmentGym, request.getStartAt(), request.getEndAt()))
+                .findAny()
                 .orElseThrow(() -> new NoSuchElementException("There is no available equipment"));
 
-        usedEquipment.use();
 
         Reservation reservation = Reservation.builder()
                 .reserver(reserver)
@@ -58,14 +75,14 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public ReservationListResponse listReservation(Long authorityId) {
-        String gymName = authorityRepository.findOne(authorityId)
-                .orElseThrow(IllegalArgumentException::new)
-                .getGym()
-                .getName();
+    public ReservationListResponse listReservation(Long equipmentGymId) {
+        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        String gymName = equipmentGym.getGym().getName();
 
         List<ReservationDetailResponse> reservationDetailResponseList =
-                reservationRepository.findAllByAuthorityId(authorityId)
+                reservationRepository.findAllByEquipmentGym(equipmentGym)
                         .stream()
                         .map(ReservationDetailResponse::new)
                         .toList();
@@ -77,6 +94,16 @@ public class ReservationService {
     }
 
     public ReservationResponse update(Long reservationId, ReservationUpdateRequest request) {
+        Reservation targetReservation = reservationRepository.findById(reservationId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        reservationRepository.findAllByEquipmentGym(targetReservation.getEquipmentGym())
+                .stream()
+                .filter(reservation ->
+                        validateReservationOverlap(reservation.getEquipmentGym(), request.getStartAt(), request.getEndAt()))
+                .findAny()
+                .orElseThrow(()-> new IllegalArgumentException("Request is overlapped"));
+
         reservationRepository.findById(reservationId)
                 .orElseThrow()
                 .update(request);
