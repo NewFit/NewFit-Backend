@@ -31,9 +31,9 @@ public class ReservationApiController {
     }
 
     @GetMapping
-    public ReservationListResponse listReservation() {
-        Long authorityId = 3L;
-        return reservationService.listReservation(authorityId);
+    public ReservationListResponse listReservation(@RequestParam("equipment_gym_id") Long equipmentGymId) {
+
+        return reservationService.listReservation(equipmentGymId);
     }
 
     @PatchMapping
