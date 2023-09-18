@@ -60,36 +60,30 @@ public class EquipmentRoutineService {
     }
 
     /*
-    특정 Routine에 묶인 EquipmentRoutine 객체를 업데이트하는 메소드입니다. 수행되는 작업은 3가지입니다.
-    1. 기존에 있던 EquipmentRoutine 객체를 삭제합니다.
-    2. 기존에 있던 EquipmentRoutine 객체를 수정합니다.
-    3. 새로운 EquipmentRoutine 객체를 생성하여 Routine 객체에 연관시킵니다.
+    특정 Routine에 묶인 EquipmentRoutine 객체를 업데이트하는 메소드입니다.
+    1. 기존 EquipmentRoutine 객체를 삭제
+    2. 기존 EquipmentRoutine 객체를 수정
+    3. 새로운 EquipmentRoutine 객체를 등록
      */
     public void updateEquipmentRoutinesInRoutine(Routine routine, UpdateRoutineRequest requestDto) {
 
-        // 먼저 넘겨 받은 Routine 객체에 묶여있는 모든 EquipmentRoutine 객체를 조회합니다.
+        // Routine의 모든 EquipmentRoutine 객체를 조회합니다.
         List<EquipmentRoutine> allByRoutine = equipmentRoutineRepository.findAllByRoutine(routine);
-        // 현재 Routine에 묶여있는 EquipmentRoutine 객체들의 sequence 값들을 추출합니다.
+        // 기존 sequence List
         List<Short> currentSequences = extractCurrentSequences(allByRoutine);
-        // Rotine에 새로 등록할 EquipmentRoutine의 sequence 값들을 추출합니다.
+
+        // patch 로직 실행 후의 sequence를 생성하기 위한 등록, 삭제, 수정할 sequence 정보
         List<Short> addSequences = extractAddSequences(requestDto);
-        // Rotine에서 제거할 EquipmentRoutine의 sequence 값들을 추출합니다.
         List<Short> removeSequences = extractRemoveSequences(requestDto, routine);
-        // Rotine에 수정할 EquipmentRoutine의 sequence 값들을 추출합니다.
         Map<Short, Short> sequenceMap = generateSequenceMap(requestDto, routine);
 
-        // 위에서 추출한 sequence 값들을 토대로 resultSequence를 생성합니다.
-        List<Short> resultSequences = getResultSequences(currentSequences,removeSequences,addSequences,sequenceMap);
-        // valid한 sequence 값들로 이루어져 있는지 체크합니다.
+        // patch 로직 실행 후의 sequence를 생성 후 validition check
+        List<Short> resultSequences = getResultSequences(currentSequences, removeSequences, addSequences, sequenceMap);
         checkSequence(resultSequences);
 
-        // 사용자가 Rotine에서 제거한 기구가 있다면 메소드 내부 로직이 실행됩니다.
+        // patch 로직 실행 => 삭제, 수정, 새로운 기구 등록 순
         removeEquipmentRoutineInRoutine(requestDto, allByRoutine);
-
-        // 만약 사용자가 Routine에서 수정한 사항이 있다면 메소드 내부 로직이 실행됩니다.
         modifyEquipmentRoutineInRoutine(requestDto, allByRoutine);
-
-        // 만약 사용자가 Routine에 새로운 기구를 등록했다면 메소드 내부 로직이 실행됩니다.
         addEquipRoutineInRoutine(routine, requestDto);
     }
 
@@ -121,11 +115,11 @@ public class EquipmentRoutineService {
                 // 수정 사항을 반영할 EquipmentRoutine 객체를 allByRoutine에서 추출합니다.
                 EquipmentRoutine equipmentRoutine = extractUpdateTarget(updateEquipment, allByRoutine);
 
-                // 만약 순서를 수정했다면 실행됩니다.
+                // 순서를 수정 시 실행.
                 if (updateEquipment.getSequence() != null) {
                     equipmentRoutine.updateSequence(updateEquipment.getSequence());
                 }
-                // 만약 운동시간을 수정했다면 실행됩니다.
+                // 운동시간을 수정 시 실행.
                 if (updateEquipment.getDuration() != null) {
                     equipmentRoutine.updateDuration(Duration.ofMinutes(updateEquipment.getDuration()));
                 }
@@ -136,10 +130,10 @@ public class EquipmentRoutineService {
     private void removeEquipmentRoutineInRoutine(UpdateRoutineRequest requestDto, List<EquipmentRoutine> allByRoutine) {
         if (!requestDto.getRemoveEquipments().isEmpty()) {
 
-            // allByRoutine에서 제거 대상이 되는 EquipmentRoutine 객체들을 추출합니다.
+            // allByRoutine에서 제거 대상인 EquipmentRoutine List
             List<EquipmentRoutine> removeTargets = extractRemoveTargets(requestDto, allByRoutine);
 
-            // 추출한 EquipmentRoutine 객체들을 모두 삭제합니다.
+            // 추출한 EquipmentRoutine 객체들을 모두 삭제
             equipmentRoutineRepository.deleteAll(removeTargets);
         }
     }
@@ -154,12 +148,12 @@ public class EquipmentRoutineService {
     }
 
     private List<EquipmentRoutine> extractRemoveTargets(UpdateRoutineRequest requestDto, List<EquipmentRoutine> allByRoutine) {
-        // 사용자가 Routine에서 제거한 Equipment들의 id를 Dto로부터 리스트 형태로 추출합니다.
+        // 사용자가 Routine에서 제거한 Equipment들의 id List
         List<Long> equipmentIdList = requestDto.getRemoveEquipments().stream()
                 .map(RemoveEquipmentRequest::getEquipmentId)
                 .collect(Collectors.toList());
 
-        // allByRoutine을 순회하며 equipmentIdList에 들어있는 값과 대응되는 EquipmentRoutine 객체들을 추출합니다.
+        // allByRoutine을 순회하며 equipmentIdList에 들어있는 값과 대응되는 EquipmentRoutine List
         return allByRoutine.stream()
                 .filter(equipmentRoutine -> equipmentIdList.contains(equipmentRoutine.getEquipment().getId()))
                 .collect(Collectors.toList());
@@ -221,9 +215,9 @@ public class EquipmentRoutineService {
         Collections.sort(sequences);
 
         /*
-        range 메소드는 exclusive upper bound 사용하므로 모든 원소를 순회하려면 sequences.size()가 들어가는 것이 맞습니다.
-        하지만 allMatch 메소드 내용을 보면 (현재 원소 + 1) 값이 다음 원소의 값과 같은지를 비교하므로 sequences 리스트의
-        가장 마지막 원소는 포함되면 안됩니다. 그래서 sequences.size() - 1을 넣었습니다.
+        range 메소드는 exclusive upper bound 사용하므로 모든 원소를 순회하려면 sequences.size()가 들어가야함.
+        하지만 allMatch 메소드를 사용하므로 sequences 리스트의 가장 마지막 원소는 포함되면 안 됨.
+        따라서 sequences.size() - 1을 넣었음.
          */
         boolean result = (sequences.get(0) == 0)
                 && (IntStream.range(0, sequences.size() - 1)

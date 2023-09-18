@@ -28,8 +28,8 @@ public class RoutineApiController {
     private final GymService gymService;
 
     /* 
-    Routine을 새로 등록하는 기능을 담당합니다. Dto의 데이터를 이용해 먼저 Routine 객체를 등록하고
-    해당 Routine 객체를 이용하여 EquipmentRoutine 객체를 등록합니다.
+    Routine을 새로 등록
+    Routine 객체 등록 후 EquipmentRoutine들 등록
      */
     @PostMapping("")
     public ResponseEntity<Void> registerRoutine(@Valid @RequestBody RegisterRoutineRequest requestDto) {
@@ -48,8 +48,9 @@ public class RoutineApiController {
     }
 
     /*
-    Routine을 업데이트하는 기능을 담당합니다. 루틴 이름이 변경되었다면 먼저 RoutineService에게 로직 실행을 위임합니다.
-    그렇지 않다면 바로 EquipmentRoutineService에게 로직 실행을 위임합니다.
+    Routine을 업데이트
+    루틴 이름이 변경 =>  먼저 RoutineService로 로직 실행
+    EquipmentRoutineService로 로직 실행
      */
     @PatchMapping("/{routineId}")
     public ResponseEntity<Void> updateRoutine(@Valid @RequestBody UpdateRoutineRequest requestDto,
@@ -67,7 +68,7 @@ public class RoutineApiController {
     }
 
     /*
-    특정 User의 Authority가 생성한 모든 Routine 객체를 조회합니다.
+    Authority가 생성한 모든 Routine 조회
      */
     @GetMapping("")
     public ResponseEntity<RoutineListResponse> findAllRoutinesByAuthority() {
@@ -83,7 +84,7 @@ public class RoutineApiController {
     }
 
     /*
-    특정 Routine을 삭제하는 메소드입니다.
+    특정 Routine을 삭제
      */
     @DeleteMapping("")
     public ResponseEntity<Void> deleteRoutine(@Valid @RequestBody DeleteRoutineRequest requestDto) {
@@ -94,7 +95,7 @@ public class RoutineApiController {
     }
 
     /*
-    특정 Routine에 대한 세부사항을 반환하는 메소드입니다.
+    특정 Routine에 대한 세부사항을 반환하는 메소드
      */
     @GetMapping("/{routineId}")
     public ResponseEntity<RoutineDetailResponse> findRoutineDetail(@PathVariable("routineId") Long id) {

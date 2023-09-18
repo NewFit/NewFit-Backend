@@ -11,12 +11,12 @@ import java.util.Optional;
 @Repository
 public interface EquipmentRoutineRepository extends JpaRepository<EquipmentRoutine, Long> {
 
-    // 특정 Routine에 묶여있는 모든 EquipmentRoutine 객체를 삭제하는 메소드입니다.
+    // 특정 Routine에 묶여있는 모든 EquipmentRoutine 객체를 삭제하
     void deleteAllByRoutine(Routine routine);
 
-    // 특정 Routine에 묶여있는 모든 EquipmentRoutine 객체를 조회하는 메소드입니다.
+    // 특정 Routine에 묶여있는 모든 EquipmentRoutine 객체를 조회
     List<EquipmentRoutine> findAllByRoutine(Routine routine);
 
-    // EquipmentId와 Routine으로 단일 EquipmentRoutine 객체를 조회합니다.
+    // EquipmentId와 Routine으로 단일 EquipmentRoutine 객체를 조회
     Optional<EquipmentRoutine> findByEquipmentIdAndRoutine(Long equipmentId, Routine routine);
 }
