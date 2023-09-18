@@ -109,6 +109,7 @@ public class AuthorityService {
     }
 
     public Authority findById(Long authorityId) {
-        return authorityRepository.findOne(authorityId).orElseThrow(IllegalArgumentException::new);
+        return authorityRepository.findOne(authorityId)
+                .orElseThrow(IllegalArgumentException::new);
     }
 }

@@ -14,5 +14,5 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
     Optional<Equipment> findByGymAndNameAndPurpose(Gym gym, String name, Purpose purpose);
 
     // Equipment의 id와 Gym 객체로 Equipment 객체를 조회합니다.
-    Optional<Equipment> findByIdAndGym(Long id, Gym gym);
+    Optional<Equipment> findByIdAndGym(Long equipmentId, Gym gym);
 }
