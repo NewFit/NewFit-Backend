@@ -1,7 +1,6 @@
 package com.newfit.reservation.controller;
 
 import com.newfit.reservation.domain.Authority;
-import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.routine.Routine;
 import com.newfit.reservation.dto.request.DeleteRoutineRequest;
 import com.newfit.reservation.dto.request.RegisterRoutineRequest;
@@ -33,8 +32,7 @@ public class RoutineApiController {
     해당 Routine 객체를 이용하여 EquipmentRoutine 객체를 등록합니다.
      */
     @PostMapping("")
-    public ResponseEntity<Void> registerRoutine(@Valid @RequestBody RegisterRoutineRequest requestDto,
-                                                @RequestParam("gym_id") Long gymId) {
+    public ResponseEntity<Void> registerRoutine(@Valid @RequestBody RegisterRoutineRequest requestDto) {
         // TODO: remove this authorityId and apply security
         Long authorityId = 1L;
 
@@ -42,10 +40,7 @@ public class RoutineApiController {
 
         Routine routine = routineService.registerRoutine(authority, requestDto.getRoutineName());
 
-        Gym gym = gymService.findById(gymId);
-
-        equipmentRoutineService.registerEquipmentRoutine(gym, routine,
-                requestDto.getRoutineEquipments());
+        equipmentRoutineService.registerEquipmentRoutine(routine, requestDto.getRoutineEquipments());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
