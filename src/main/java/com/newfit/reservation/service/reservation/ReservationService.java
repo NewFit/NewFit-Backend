@@ -102,9 +102,7 @@ public class ReservationService {
             throw new IllegalArgumentException("Request is overlapped");
         }
 
-        reservationRepository.findById(reservationId)
-                .orElseThrow()
-                .update(request);
+        targetReservation.update(request);
 
         return new ReservationResponse(reservationId);
     }
