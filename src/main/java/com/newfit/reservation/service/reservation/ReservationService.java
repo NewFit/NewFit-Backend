@@ -97,12 +97,10 @@ public class ReservationService {
         Reservation targetReservation = reservationRepository.findById(reservationId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        reservationRepository.findAllByEquipmentGym(targetReservation.getEquipmentGym())
-                .stream()
-                .filter(reservation ->
-                        validateReservationOverlap(reservation.getEquipmentGym(), request.getStartAt(), request.getEndAt()))
-                .findAny()
-                .orElseThrow(()-> new IllegalArgumentException("Request is overlapped"));
+
+        if (!validateReservationOverlap(targetReservation.getEquipmentGym(), request.getStartAt(), request.getEndAt())) {
+            throw new IllegalArgumentException("Request is overlapped");
+        }
 
         reservationRepository.findById(reservationId)
                 .orElseThrow()
