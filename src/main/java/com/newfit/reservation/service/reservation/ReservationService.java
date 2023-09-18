@@ -64,12 +64,15 @@ public class ReservationService {
                 .getGym()
                 .getName();
 
-        return ReservationListResponse.builder()
-                .gymName(gymName)
-                .reservationResponseList(reservationRepository.findAllByAuthorityId(authorityId)
+        List<ReservationDetailResponse> reservationDetailResponseList =
+                reservationRepository.findAllByAuthorityId(authorityId)
                         .stream()
                         .map(ReservationDetailResponse::new)
-                        .collect(Collectors.toList()))
+                        .toList();
+
+        return ReservationListResponse.builder()
+                .gymName(gymName)
+                .reservationResponseList(reservationDetailResponseList)
                 .build();
     }
 
