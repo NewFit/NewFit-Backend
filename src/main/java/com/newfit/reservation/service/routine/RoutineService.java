@@ -2,11 +2,9 @@ package com.newfit.reservation.service.routine;
 
 
 import com.newfit.reservation.domain.Authority;
-import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.domain.routine.EquipmentRoutine;
 import com.newfit.reservation.domain.routine.Routine;
-import com.newfit.reservation.dto.request.RoutineEquipmentRequest;
 import com.newfit.reservation.dto.response.RoutineDetailEquipmentResponse;
 import com.newfit.reservation.dto.response.RoutineDetailResponse;
 import com.newfit.reservation.dto.response.RoutineListResponse;
@@ -18,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,23 +49,12 @@ public class RoutineService {
     }
 
     /*
-    실질적으로 Routine을 업데이트하는 메소드입니다. 우선 해당 Routine에 묶여있는 EquipmentRoutine 객체를 모두 삭제하고
-    Dto를 통해 넘겨받은 데이터를 바탕으로 EquipmentRoutine 객체를 새로 생성하여 등록합니다. 실질적으론 삭제 후 재등록 과정입니다.
+    Routine의 이름을 업데이트하는 메소드입니다.
      */
-    public void updateRoutine(Gym gym, Routine routine, List<RoutineEquipmentRequest> routineRequests) {
-        equipmentRoutineRepository.deleteAllByRoutine(routine);
-
-        for (RoutineEquipmentRequest routineRequest : routineRequests) {
-            Equipment equipment = equipmentRepository.findByIdAndGym(routineRequest.getEquipmentId(), gym)
-                    .orElseThrow(IllegalArgumentException::new);
-
-            equipmentRoutineRepository.save(
-                    EquipmentRoutine.builder()
-                            .equipment(equipment)
-                            .routine(routine)
-                            .duration(Duration.ofMinutes(routineRequest.getDuration()))
-                            .build());
-        }
+    public void updateRoutine(Long routineId, String routineName) {
+        Routine findRoutine = routineRepository.findById(routineId)
+                .orElseThrow(IllegalArgumentException::new);
+        findRoutine.updateName(routineName);
     }
 
     // 특정 User의 Authority가 생성한 모든 Routine을 조회하고 Dto로 변환하여 반환합니다.

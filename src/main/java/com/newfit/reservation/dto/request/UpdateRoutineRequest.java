@@ -2,7 +2,9 @@ package com.newfit.reservation.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import jakarta.validation.constraints.NotBlank;
+import com.newfit.reservation.dto.request.routine.AddEquipmentRequest;
+import com.newfit.reservation.dto.request.routine.RemoveEquipmentRequest;
+import com.newfit.reservation.dto.request.routine.UpdateEquipmentRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,15 +17,17 @@ import java.util.List;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UpdateRoutineRequest {
 
-    @NotNull
-    private Long routineId;
+    private String routineName;
 
     @NotNull
-    private Long gymId;
-
-    @NotBlank
-    private String name;
+    private int addEquipmentsCount;
 
     @NotNull
-    private List<RoutineEquipmentRequest> routineEquipments;
+    private int updateEquipmentsCount;
+
+    @NotNull
+    private int removeEquipmentsCount;
+    private List<AddEquipmentRequest> addEquipments;
+    private List<UpdateEquipmentRequest> updateEquipments;
+    private List<RemoveEquipmentRequest> removeEquipments;
 }

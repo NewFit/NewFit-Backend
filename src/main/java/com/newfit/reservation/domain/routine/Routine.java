@@ -28,6 +28,10 @@ public class Routine extends BaseTimeEntity {
 
     private Long count = 0L;
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
     @Builder
     private Routine(Authority authority, String name) {
         this.authority = authority;

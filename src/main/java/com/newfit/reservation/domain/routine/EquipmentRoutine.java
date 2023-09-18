@@ -40,4 +40,12 @@ public class EquipmentRoutine {
         this.duration = duration;
         this.sequence = sequence;
     }
+
+    public void updateSequence(Short sequence) {
+        this.sequence = sequence;
+    }
+
+    public void updateDuration(Duration duration) {
+        this.duration = duration;
+    }
 }

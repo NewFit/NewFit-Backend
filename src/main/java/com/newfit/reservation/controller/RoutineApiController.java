@@ -53,14 +53,18 @@ public class RoutineApiController {
     }
 
     /*
-    Routine을 업데이트하는 기능을 담당합니다. RoutineService에게 로직 실행을 위임합니다.
+    Routine을 업데이트하는 기능을 담당합니다. 루틴 이름이 변경되었다면 먼저 RoutineService에게 로직 실행을 위임합니다.
+    그렇지 않다면 바로 EquipmentRoutineService에게 로직 실행을 위임합니다.
      */
-    @PatchMapping("")
-    public ResponseEntity<Void> updateRoutine(@Valid @RequestBody UpdateRoutineRequest requestDto) {
-        Routine findRoutine = routineService.findById(requestDto.getRoutineId());
-        Gym findGym = gymService.findById(requestDto.getGymId());
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateRoutine(@Valid @RequestBody UpdateRoutineRequest requestDto,
+                                              @PathVariable("id") Long routineId) {
+        if (requestDto.getRoutineName() != null) {
+            routineService.updateRoutine(routineId, requestDto.getRoutineName());
+        }
 
-        routineService.updateRoutine(findGym, findRoutine, requestDto.getRoutineEquipments());
+        Routine findRoutine = routineService.findById(routineId);
+        equipmentRoutineService.updateEquipmentRoutinesInRoutine(findRoutine, requestDto);
 
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
