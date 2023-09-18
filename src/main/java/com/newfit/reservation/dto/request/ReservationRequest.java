@@ -20,5 +20,6 @@ public class ReservationRequest {
     @NotNull
     private LocalDateTime endAt;
 
+    @NotNull
     private Long repetitionNumber;
 }
