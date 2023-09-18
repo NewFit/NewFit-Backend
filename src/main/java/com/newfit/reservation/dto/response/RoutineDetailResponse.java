@@ -14,14 +14,14 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoutineDetailResponse {
 
-    private Long id;
+    private Long routineId;
     private String routineName;
     private int equipmentsCount;
     private List<RoutineDetailEquipmentResponse> equipments;
 
     @Builder
-    private RoutineDetailResponse(Long id, String routineName, List<RoutineDetailEquipmentResponse> equipments) {
-        this.id = id;
+    private RoutineDetailResponse(Long routineId, String routineName, List<RoutineDetailEquipmentResponse> equipments) {
+        this.routineId = routineId;
         this.routineName = routineName;
         this.equipmentsCount = equipments.size();
         this.equipments = equipments;

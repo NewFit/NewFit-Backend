@@ -2,6 +2,7 @@ package com.newfit.reservation.dto.request.routine;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,6 +15,9 @@ public class UpdateEquipmentRequest {   // 사용자가 기존 루틴에서 수�
 
     @NotNull
     private Long equipmentId;
-    private Short sequence;
+
+    @Max(value = 30)
     private Long duration;
+
+    private Short sequence;
 }

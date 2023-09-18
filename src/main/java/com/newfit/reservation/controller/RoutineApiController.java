@@ -92,7 +92,7 @@ public class RoutineApiController {
      */
     @DeleteMapping("")
     public ResponseEntity<Void> deleteRoutine(@Valid @RequestBody DeleteRoutineRequest requestDto) {
-        routineService.deleteRoutine(requestDto.getId());
+        routineService.deleteRoutine(requestDto.getRoutineId());
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();

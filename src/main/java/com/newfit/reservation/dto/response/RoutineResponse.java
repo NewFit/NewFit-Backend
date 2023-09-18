@@ -1,13 +1,16 @@
 package com.newfit.reservation.dto.response;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.newfit.reservation.domain.routine.Routine;
 import lombok.*;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoutineResponse {
 
-    private final Long id;
+    private final Long routineId;
     private final String name;
 
     /*
