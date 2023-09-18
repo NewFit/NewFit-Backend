@@ -38,12 +38,12 @@ public class ReservationApiController {
 
     @PatchMapping
     public ReservationResponse updateReservation(@RequestParam("reservation_id") Long reservationId,
-                                                 @RequestBody ReservationUpdateRequest request){
+                                                 @Valid @RequestBody ReservationUpdateRequest request) {
         return reservationService.update(reservationId, request);
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteReservation(@RequestParam("reservation_id") Long reservationId){
+    public ResponseEntity<Void> deleteReservation(@RequestParam("reservation_id") Long reservationId) {
         reservationService.delete(reservationId);
         return ResponseEntity.noContent().build();
     }
