@@ -145,6 +145,7 @@ public class ReservationService {
                 break;
             } catch (NoSuchElementException exception) {
                 startAt = startAt.plusMinutes(1);
+                endAt = endAt.plusMinutes(1);
                 attempt += 1;
             }
         }
