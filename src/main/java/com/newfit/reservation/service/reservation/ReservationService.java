@@ -138,14 +138,14 @@ public class ReservationService {
                 .orElseThrow(IllegalArgumentException::new);
         EquipmentGym equipmentGym = null;
 
-        int i = 0;
-        while(i != 5) {
+        int attempt = 0;
+        while(attempt != 5) {
             try {
                 equipmentGym = getOneAvailable(equipmentId, startAt, endAt);
                 break;
             } catch (NoSuchElementException exception) {
                 startAt = startAt.plusMinutes(1);
-                i += 1;
+                attempt += 1;
             }
         }
         if (equipmentGym == null) { // 찾지 못한 경우
