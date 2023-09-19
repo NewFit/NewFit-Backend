@@ -2,8 +2,10 @@ package com.newfit.reservation.controller;
 
 import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
+import com.newfit.reservation.dto.request.routine.RoutineReservationRequest;
 import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.dto.response.ReservationResponse;
+import com.newfit.reservation.dto.response.RoutineReservationListResponse;
 import com.newfit.reservation.service.reservation.ReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +48,15 @@ public class ReservationApiController {
     public ResponseEntity<Void> deleteReservation(@RequestParam("reservation_id") Long reservationId) {
         reservationService.delete(reservationId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/routines/{routineId}")
+    public ResponseEntity<RoutineReservationListResponse> reserveByRoutine(@PathVariable Long routineId, @Valid @RequestBody RoutineReservationRequest request) {
+        Long authorityId = 1L;
+        RoutineReservationListResponse response = new RoutineReservationListResponse(reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt()));
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 }
