@@ -3,11 +3,9 @@ package com.newfit.reservation.dto.response;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
-import com.newfit.reservation.domain.reservation.Reservation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter

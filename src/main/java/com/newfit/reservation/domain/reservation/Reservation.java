@@ -1,10 +1,12 @@
 package com.newfit.reservation.domain.reservation;
 
+import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
-import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
+import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,8 +22,8 @@ public class Reservation extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reserver_id", nullable = false)
-    private User reserver;
+    @JoinColumn(name = "authority_id", nullable = false)
+    private Authority reserver;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipment_gym_id", nullable = false)
@@ -40,4 +42,34 @@ public class Reservation extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+
+    @Builder
+    public Reservation(Authority reserver,
+                       EquipmentGym equipmentGym,
+                       LocalDateTime startAt,
+                       LocalDateTime endAt,
+                       Long repetitionNumber) {
+        this.reserver = reserver;
+        this.equipmentGym = equipmentGym;
+        this.start_at = startAt;
+        this.end_at = endAt;
+        this.repetition_number = repetitionNumber;
+        this.status = Status.WAITING;
+    }
+
+
+    public void update(ReservationUpdateRequest request) {
+        this.start_at = request.getStartAt();
+        this.end_at = request.getEndAt();
+    }
+
+    public boolean overlapped(LocalDateTime start, LocalDateTime end) {
+        boolean startBeforeEnd = this.start_at.isBefore(this.end_at)
+                && start.isBefore(end);
+
+        boolean isBefore = this.end_at.isBefore(start);
+        boolean isAfter = this.start_at.isAfter(end);
+
+        return !(startBeforeEnd && (isBefore || isAfter));
+    }
 }
