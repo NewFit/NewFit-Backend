@@ -10,7 +10,6 @@ import com.newfit.reservation.dto.request.routine.RemoveEquipmentRequest;
 import com.newfit.reservation.dto.request.routine.UpdateEquipmentRequest;
 import com.newfit.reservation.repository.equipment.EquipmentRepository;
 import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
-import com.newfit.reservation.repository.routine.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,6 @@ public class EquipmentRoutineService {
 
     private final EquipmentRoutineRepository equipmentRoutineRepository;
     private final EquipmentRepository equipmentRepository;
-    private final RoutineRepository routineRepository;
 
     /*
     Controller로부터 Routine, RoutineEquipmentRequest의 리스트를 넘겨받아
@@ -227,12 +225,4 @@ public class EquipmentRoutineService {
 
         if(!result) throw new IllegalArgumentException("잘못된 sequence 값입니다.");
     }
-
-    //
-    public List<EquipmentRoutine> findAllByRoutineId(Long routineId) {
-        Routine routine = routineRepository.findById(routineId)
-                .orElseThrow(IllegalArgumentException::new);
-        return equipmentRoutineRepository.findAllByRoutineOrderBySequence(routine);
-    }
-
 }
