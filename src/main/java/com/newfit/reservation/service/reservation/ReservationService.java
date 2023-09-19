@@ -53,13 +53,7 @@ public class ReservationService {
                 .orElseThrow(IllegalArgumentException::new);
 
         // 사용 가능한 기구 하나를 가져옴
-        EquipmentGym usedEquipment = equipmentGymRepository.findAvailableByEquipmentId(equipmentId)
-                .stream()
-                .filter(equipmentGym ->
-                        validateReservationOverlap(equipmentGym, request.getStartAt(), request.getEndAt()))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("There is no available equipment"));
-
+        EquipmentGym usedEquipment = getOneAvailable(equipmentId, request.getStartAt(), request.getEndAt());
 
         Reservation reservation = Reservation.builder()
                 .reserver(reserver)
@@ -72,6 +66,15 @@ public class ReservationService {
         Reservation result = reservationRepository.save(reservation);
 
         return new ReservationResponse(result.getId());
+    }
+
+    private EquipmentGym getOneAvailable(Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
+        return equipmentGymRepository.findAvailableByEquipmentId(equipmentId)
+                .stream()
+                .filter(equipmentGym ->
+                        validateReservationOverlap(equipmentGym, startAt, endAt))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("There is no available equipment"));
     }
 
     @Transactional(readOnly = true)
