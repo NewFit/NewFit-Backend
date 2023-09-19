@@ -4,6 +4,7 @@ package com.newfit.reservation.domain.routine;
 import com.newfit.reservation.domain.equipment.Equipment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,22 @@ public class EquipmentRoutine {
     @Column(nullable = false)
     private Duration duration;
 
+    @Column(nullable = false)
+    private Short sequence;
+
+    @Builder
+    private EquipmentRoutine(Equipment equipment, Routine routine, Duration duration, Short sequence) {
+        this.equipment = equipment;
+        this.routine = routine;
+        this.duration = duration;
+        this.sequence = sequence;
+    }
+
+    public void updateSequence(Short sequence) {
+        this.sequence = sequence;
+    }
+
+    public void updateDuration(Duration duration) {
+        this.duration = duration;
+    }
 }
