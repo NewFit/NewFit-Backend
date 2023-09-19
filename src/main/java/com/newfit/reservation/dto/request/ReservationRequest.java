@@ -2,7 +2,8 @@ package com.newfit.reservation.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,12 +15,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReservationRequest {
 
-    @NotNull
+    @Future
     private LocalDateTime startAt;
 
-    @NotNull
+    @Future
     private LocalDateTime endAt;
 
-    @NotNull
+    @Min(1)
     private Long repetitionNumber;
 }
