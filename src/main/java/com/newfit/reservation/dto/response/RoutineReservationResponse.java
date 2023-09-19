@@ -10,11 +10,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoutineReservationResponse {
-    private Long equipmentGymId;
-    private LocalDateTime startAt;
-
-    public RoutineReservationResponse(Long equipmentGymId, LocalDateTime startAt) {
-        this.equipmentGymId = equipmentGymId;
-        this.startAt = startAt;
-    }
+    private final Long equipmentGymId;
+    private final LocalDateTime startAt;
 }
