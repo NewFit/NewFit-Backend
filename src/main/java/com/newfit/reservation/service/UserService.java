@@ -14,7 +14,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User findOneById(Long userId) {
-        return userRepository.findOne(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(IllegalArgumentException::new);
     }
 }

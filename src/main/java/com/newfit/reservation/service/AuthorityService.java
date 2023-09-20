@@ -27,7 +27,7 @@ public class AuthorityService {
 
     public Long register(Long userId, Long gymId) {
 
-        User user = userRepository.findOne(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(IllegalArgumentException::new);
         Gym gym = gymRepository.findById(gymId)
                 .orElseThrow(IllegalArgumentException::new);
