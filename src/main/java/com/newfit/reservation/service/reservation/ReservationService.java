@@ -215,15 +215,15 @@ public class ReservationService {
         openHour < closeHour 이면 (openHour < 예약의 시작 시간) && (예약 종료 시간 < closeHour) 인지만 확인
         openHour > closeHour 이면 예약의 시작과 종료 시간 둘 다 헬스장 운영 시간 내에 속하는지 확인
          */
-        boolean result = isAfterOpenHour(startAt, gymOpenHour, gymCloseHour, businessTime) &&
-                isBeforeCloseHour(endAt, gymOpenHour, gymCloseHour, businessTime);
+        boolean result = checkAfterOpenHour(startAt, gymOpenHour, gymCloseHour, businessTime) &&
+                checkBeforeCloseHour(endAt, gymOpenHour, gymCloseHour, businessTime);
 
         if(!result)
             throw new IllegalArgumentException("헬스장 운영 시간을 준수하지 않는 예약 요청입니다.");
     }
 
-    private boolean isBeforeCloseHour(LocalDateTime endAt, int gymOpenHour, int gymCloseHour,
-                                             BusinessTime businessTime) {
+    private boolean checkBeforeCloseHour(LocalDateTime endAt, int gymOpenHour, int gymCloseHour,
+                                         BusinessTime businessTime) {
         int reservationEndHour = endAt.getHour();
         int reservationEndMinute = endAt.getMinute();
 
@@ -244,8 +244,8 @@ public class ReservationService {
             return (gymOpenHour < reservationEndHour) || (reservationEndHour < gymCloseHour);
     }
 
-    private boolean isAfterOpenHour(LocalDateTime startAt, int gymOpenHour, int gymCloseHour,
-                                           BusinessTime businessTime) {
+    private boolean checkAfterOpenHour(LocalDateTime startAt, int gymOpenHour, int gymCloseHour,
+                                       BusinessTime businessTime) {
         int reservationStartHour = startAt.getHour();
         int reservationStartMinute = startAt.getMinute();
 
