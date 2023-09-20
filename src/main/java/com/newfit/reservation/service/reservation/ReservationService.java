@@ -222,7 +222,7 @@ public class ReservationService {
             throw new IllegalArgumentException("헬스장 운영 시간을 준수하지 않는 예약 요청입니다.");
     }
 
-    private static boolean isBeforeCloseHour(LocalDateTime endAt, int gymOpenHour, int gymCloseHour,
+    private boolean isBeforeCloseHour(LocalDateTime endAt, int gymOpenHour, int gymCloseHour,
                                              BusinessTime businessTime) {
         int reservationEndHour = endAt.getHour();
         int reservationEndMinute = endAt.getMinute();
@@ -244,7 +244,7 @@ public class ReservationService {
             return (gymOpenHour < reservationEndHour) || (reservationEndHour < gymCloseHour);
     }
 
-    private static boolean isAfterOpenHour(LocalDateTime startAt, int gymOpenHour, int gymCloseHour,
+    private boolean isAfterOpenHour(LocalDateTime startAt, int gymOpenHour, int gymCloseHour,
                                            BusinessTime businessTime) {
         int reservationStartHour = startAt.getHour();
         int reservationStartMinute = startAt.getMinute();
