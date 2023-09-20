@@ -142,26 +142,23 @@ public class ReservationService {
         while(attempt != 5) {
             try {
                 equipmentGym = getOneAvailable(equipmentId, startAt, endAt);
-                break;
+                Reservation reservation = Reservation.builder()
+                        .reserver(reserver)
+                        .equipmentGym(equipmentGym)
+                        .startAt(startAt)
+                        .endAt(endAt)
+                        .repetitionNumber(0L)
+                        .build();
+                reservationRepository.save(reservation);
+                return new RoutineReservationResponse(equipmentGym.getId(), true, startAt);
             } catch (NoSuchElementException exception) {
                 startAt = startAt.plusMinutes(1);
                 endAt = endAt.plusMinutes(1);
                 attempt += 1;
             }
         }
-        if (equipmentGym == null) { // 찾지 못한 경우
-            return null;
-        }
-
-        Reservation reservation = Reservation.builder()
-                .reserver(reserver)
-                .equipmentGym(equipmentGym)
-                .startAt(startAt)
-                .endAt(endAt)
-                .repetitionNumber(0L)
-                .build();
-        reservationRepository.save(reservation);
-        return new RoutineReservationResponse(equipmentGym.getId(), startAt);
+        // 찾지 못한 경우
+        return new RoutineReservationResponse(null, false, null);
     }
 
     // 루틴을 예약
@@ -174,11 +171,10 @@ public class ReservationService {
             LocalDateTime endAt = startAt.plusMinutes(equipmentRoutine.getDuration().toMinutes());
 
             RoutineReservationResponse result = reserveOneInRoutine(authorityId, equipmentId, startAt, endAt);
-            if (result == null) {
-                continue;
+            if (result.isSuccess()) {
+                startAt = result.getStartAt().plusMinutes(equipmentRoutine.getDuration().toMinutes());
+                reservedList.add(result);
             }
-            startAt = result.getStartAt().plusMinutes(equipmentRoutine.getDuration().toMinutes());
-            reservedList.add(result);
         }
 
         return reservedList;

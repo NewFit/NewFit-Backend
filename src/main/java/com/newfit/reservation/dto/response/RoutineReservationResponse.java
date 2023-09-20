@@ -11,5 +11,10 @@ import java.time.LocalDateTime;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoutineReservationResponse {
     private final Long equipmentGymId;
+    private final Boolean success;
     private final LocalDateTime startAt;
+
+    public Boolean isSuccess() {
+        return this.success;
+    }
 }
