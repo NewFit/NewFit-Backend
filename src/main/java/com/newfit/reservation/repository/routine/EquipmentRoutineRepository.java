@@ -19,4 +19,7 @@ public interface EquipmentRoutineRepository extends JpaRepository<EquipmentRouti
 
     // EquipmentId와 Routine으로 단일 EquipmentRoutine 객체를 조회
     Optional<EquipmentRoutine> findByEquipmentIdAndRoutine(Long equipmentId, Routine routine);
+
+    // sequence로 정렬된 Routine의 모든 EquipmentRoutine 객체를 조회
+    List<EquipmentRoutine> findAllByRoutineIdOrderBySequence(Long routineId);
 }

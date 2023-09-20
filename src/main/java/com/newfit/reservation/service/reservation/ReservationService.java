@@ -4,17 +4,20 @@ package com.newfit.reservation.service.reservation;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.reservation.Reservation;
+import com.newfit.reservation.domain.routine.EquipmentRoutine;
 import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.dto.response.*;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
 import com.newfit.reservation.repository.reservation.ReservationRepository;
+import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -27,6 +30,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final AuthorityRepository authorityRepository;
     private final EquipmentGymRepository equipmentGymRepository;
+    private final EquipmentRoutineRepository equipmentRoutineRepository;
 
     /**
      * 대상 기구의 예약 현황에 요청 시간이 중복되면 false 를 반환함
@@ -53,13 +57,7 @@ public class ReservationService {
                 .orElseThrow(IllegalArgumentException::new);
 
         // 사용 가능한 기구 하나를 가져옴
-        EquipmentGym usedEquipment = equipmentGymRepository.findAvailableByEquipmentId(equipmentId)
-                .stream()
-                .filter(equipmentGym ->
-                        validateReservationOverlap(equipmentGym, request.getStartAt(), request.getEndAt()))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("There is no available equipment"));
-
+        EquipmentGym usedEquipment = getOneAvailable(equipmentId, request.getStartAt(), request.getEndAt());
 
         Reservation reservation = Reservation.builder()
                 .reserver(reserver)
@@ -72,6 +70,15 @@ public class ReservationService {
         Reservation result = reservationRepository.save(reservation);
 
         return new ReservationResponse(result.getId());
+    }
+
+    private EquipmentGym getOneAvailable(Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
+        return equipmentGymRepository.findAvailableByEquipmentId(equipmentId)
+                .stream()
+                .filter(equipmentGym ->
+                        validateReservationOverlap(equipmentGym, startAt, endAt))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("There is no available equipment"));
     }
 
     @Transactional(readOnly = true)
@@ -123,5 +130,53 @@ public class ReservationService {
                 .collect(Collectors.toList());
 
         return new EquipmentInfoResponse(equipmentGym, occupiedTimes);
+    }
+
+    // 루틴의 특정 기구를 예약
+    private RoutineReservationResponse reserveOneInRoutine(Long authorityId, Long equipmentId, LocalDateTime startAt, LocalDateTime endAt){
+        Authority reserver = authorityRepository.findOne(authorityId)
+                .orElseThrow(IllegalArgumentException::new);
+        EquipmentGym equipmentGym = null;
+
+        int attempt = 0;
+        while(attempt != 5) {
+            try {
+                equipmentGym = getOneAvailable(equipmentId, startAt, endAt);
+                Reservation reservation = Reservation.builder()
+                        .reserver(reserver)
+                        .equipmentGym(equipmentGym)
+                        .startAt(startAt)
+                        .endAt(endAt)
+                        .repetitionNumber(0L)
+                        .build();
+                reservationRepository.save(reservation);
+                return new RoutineReservationResponse(equipmentGym.getId(), true, startAt);
+            } catch (NoSuchElementException exception) {
+                startAt = startAt.plusMinutes(1);
+                endAt = endAt.plusMinutes(1);
+                attempt += 1;
+            }
+        }
+        // 찾지 못한 경우
+        return new RoutineReservationResponse(null, false, null);
+    }
+
+    // 루틴을 예약
+    public List<RoutineReservationResponse> reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
+        List<RoutineReservationResponse> reservedList = new ArrayList<>();
+        List<EquipmentRoutine> allInRoutine = equipmentRoutineRepository.findAllByRoutineIdOrderBySequence(routineId);
+
+        for (EquipmentRoutine equipmentRoutine : allInRoutine) { //각 기구에 대해 예약 시도. 성공시 startAt에 duration 더하기.
+            Long equipmentId = equipmentRoutine.getEquipment().getId();
+            LocalDateTime endAt = startAt.plusMinutes(equipmentRoutine.getDuration().toMinutes());
+
+            RoutineReservationResponse result = reserveOneInRoutine(authorityId, equipmentId, startAt, endAt);
+            if (result.isSuccess()) {
+                startAt = result.getStartAt().plusMinutes(equipmentRoutine.getDuration().toMinutes());
+                reservedList.add(result);
+            }
+        }
+
+        return reservedList;
     }
 }
