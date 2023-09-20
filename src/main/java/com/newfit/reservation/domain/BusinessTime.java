@@ -8,6 +8,7 @@ import java.time.LocalTime;
 @Embeddable
 public class BusinessTime {
 
+    // 24시간 운영이면 openAt과 closeAt을 모두 00:00으로 설정
     @Column(nullable = false)
     private LocalTime openAt;
 
