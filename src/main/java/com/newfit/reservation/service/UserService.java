@@ -54,6 +54,12 @@ public class UserService {
                 .build();
     }
 
+    public UserSimpleResponse drop(Long userId) {
+        userRepository.deleteById(userId);
+        return UserSimpleResponse.builder()
+                .userId(userId)
+                .build();
+    }
 
     public User findOneById(Long userId) {
         return userRepository.findById(userId)
