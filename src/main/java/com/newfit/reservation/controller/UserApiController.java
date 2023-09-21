@@ -1,15 +1,13 @@
 package com.newfit.reservation.controller;
 
 
-import com.newfit.reservation.dto.request.routine.UserUpdateRequest;
+import com.newfit.reservation.dto.request.UserUpdateRequest;
+import com.newfit.reservation.dto.response.UserDetailResponse;
 import com.newfit.reservation.dto.response.UserSimpleResponse;
 import com.newfit.reservation.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +19,18 @@ public class UserApiController {
     @PatchMapping
     public UserSimpleResponse modify(@Valid @RequestBody UserUpdateRequest request){
 
+        // TODO: remove this userId and apply security
         Long userId = 4L;
 
         return userService.modify(userId, request);
+    }
+
+    @GetMapping
+    public UserDetailResponse userDetail(){
+
+        // TODO: remove this userId and apply security
+        Long userId = 4L;
+
+        return userService.userDetail(userId);
     }
 }
