@@ -17,7 +17,7 @@ public class UserApiController {
     private final UserService userService;
 
     @PatchMapping
-    public UserSimpleResponse modify(@Valid @RequestBody UserUpdateRequest request){
+    public UserSimpleResponse modify(@Valid @RequestBody UserUpdateRequest request) {
 
         // TODO: remove this userId and apply security
         Long userId = 4L;
@@ -26,11 +26,19 @@ public class UserApiController {
     }
 
     @GetMapping
-    public UserDetailResponse userDetail(){
+    public UserDetailResponse userDetail() {
 
         // TODO: remove this userId and apply security
         Long userId = 4L;
 
         return userService.userDetail(userId);
+    }
+
+    @DeleteMapping
+    public UserSimpleResponse drop() {
+        // TODO: remove this userId and apply security
+        Long userId = 4L;
+
+        return userService.drop(userId);
     }
 }
