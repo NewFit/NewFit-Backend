@@ -1,4 +1,4 @@
-package com.newfit.reservation.dto.request.routine;
+package com.newfit.reservation.dto.request;
 
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
