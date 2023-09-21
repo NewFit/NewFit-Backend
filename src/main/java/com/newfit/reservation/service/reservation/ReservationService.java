@@ -229,7 +229,7 @@ public class ReservationService {
 
         // 헬스장 종료 '시'와 예약의 종료 '시'가 같다면 '분' 비교
         if (reservationEndHour == gymCloseHour)
-            return reservationEndMinute < businessTime.getCloseAt().getMinute();
+            return reservationEndMinute <= businessTime.getCloseAt().getMinute();
         // 헬스장 오픈 '시'와 예약의 종료 '시'가 같다면 '분' 비교
         if (reservationEndHour == gymOpenHour)
             return businessTime.getOpenAt().getMinute() < reservationEndMinute;
@@ -251,7 +251,7 @@ public class ReservationService {
 
         // 헬스장 오픈 '시'와 예약의 시작 '시'가 같다면 '분' 비교
         if (reservationStartHour == gymOpenHour)
-            return businessTime.getOpenAt().getMinute() < reservationStartMinute;
+            return businessTime.getOpenAt().getMinute() <= reservationStartMinute;
         // 헬스장 종료 '시'와 예약의 시작 '시'가 같다면 '분' 비교
         if (reservationStartHour == gymCloseHour)
             return reservationStartMinute < businessTime.getCloseAt().getMinute();
