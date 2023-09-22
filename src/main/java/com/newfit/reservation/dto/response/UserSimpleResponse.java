@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserSimpleResponse {
-    private Long id;
+    private Long userId;
 
     @Builder
     protected UserSimpleResponse(Long userId){
-        this.id = userId;
+        this.userId = userId;
     }
 }
