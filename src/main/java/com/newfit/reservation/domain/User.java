@@ -21,7 +21,8 @@ import java.util.List;
 public class User extends BaseTimeEntity {
 
     // User 테이블 PK 입니다.
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // 실제 사용자의 이름을 나타냅니다.
@@ -80,18 +81,34 @@ public class User extends BaseTimeEntity {
     /* =========== update method  =========== */
 
     public void updateEmail(String email) {
+
         this.email = email;
+
     }
 
     public void updateTel(String tel) {
+
         this.tel = tel;
+
     }
 
     public void updateNickname(String nickname) {
+
         this.nickname = nickname;
+
     }
 
     public void updateFilePath(String filePath) {
+
         this.filePath = filePath;
+
+    }
+
+    public Long getTermCredit(LocalDateTime term) {
+        return this.authorityList
+                .stream()
+                .map(authority -> authority.getTermCredit(term))
+                .mapToLong(Long::longValue)
+                .sum();
     }
 }
