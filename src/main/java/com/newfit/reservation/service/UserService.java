@@ -22,10 +22,17 @@ public class UserService {
     public UserSimpleResponse modify(Long userId, UserUpdateRequest request) {
         User updateUser = findOneById(userId);
 
-        updateUser.updateEmail(request.getEmail());
-        updateUser.updateNickname(request.getNickname());
-        updateUser.updateTel(request.getTel());
-        updateUser.updateFilePath(request.getUserProfileImage());
+        if (request.getEmail() != null)
+            updateUser.updateEmail(request.getEmail());
+
+        if (request.getNickname() != null)
+            updateUser.updateNickname(request.getNickname());
+
+        if (request.getTel() != null)
+            updateUser.updateTel(request.getTel());
+
+        if (request.getUserProfileImage() != null)
+            updateUser.updateFilePath(request.getUserProfileImage());
 
 
         return UserSimpleResponse.builder()
