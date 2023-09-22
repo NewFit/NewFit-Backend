@@ -22,4 +22,7 @@ public class Gym extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String address;
+
+    @Embedded
+    private BusinessTime businessTime;
 }
