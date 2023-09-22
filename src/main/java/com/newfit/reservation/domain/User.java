@@ -103,4 +103,11 @@ public class User extends BaseTimeEntity {
         }
     }
 
+    public Long getTermCredit(LocalDateTime term) {
+        return this.authorityList
+                .stream()
+                .map(authority -> authority.getTermCredit(term))
+                .mapToLong(Long::longValue)
+                .sum();
+    }
 }

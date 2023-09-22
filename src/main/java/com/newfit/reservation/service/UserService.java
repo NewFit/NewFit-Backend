@@ -1,8 +1,6 @@
 package com.newfit.reservation.service;
 
 
-import com.newfit.reservation.domain.Authority;
-import com.newfit.reservation.domain.Credit;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.dto.request.UserUpdateRequest;
 import com.newfit.reservation.dto.response.UserDetailResponse;
@@ -27,7 +25,7 @@ public class UserService {
         updateUser.updateEmail(request.getEmail());
         updateUser.updateNickname(request.getNickname());
         updateUser.updateTel(request.getTel());
-        updateUser.updateFilePath(request.getImage());
+        updateUser.updateFilePath(request.getUserProfileImage());
 
 
         return UserSimpleResponse.builder()
@@ -39,11 +37,7 @@ public class UserService {
 
         User user = findOneById(userId);
 
-        Long monthCredit = user.getAuthorityList()
-                .stream()
-                .map(this::getThisMonthCredit)
-                .mapToLong(Long::longValue)
-                .sum();
+        Long monthCredit = user.getTermCredit(LocalDateTime.now());
 
 
         return UserDetailResponse.builder()
@@ -66,16 +60,4 @@ public class UserService {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    private Long getThisMonthCredit(Authority authority) {
-        LocalDateTime now = LocalDateTime.now();
-        return authority.getCreditList()
-                .stream()
-                .filter(credit ->
-                        credit.getYear().equals((short) now.getYear())
-                                && credit.getMonth().equals((short) now.getMonthValue())
-                )
-                .findAny()
-                .map(Credit::getAmount)
-                .orElse(0L);
-    }
 }
