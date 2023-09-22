@@ -29,9 +29,9 @@ public class UserApiController {
     public UserDetailResponse userDetail() {
 
         // TODO: remove this userId and apply security
-        Long userId = 4L;
+        Long authorityId = 4L;
 
-        return userService.userDetail(userId);
+        return userService.userDetail(authorityId);
     }
 
     @DeleteMapping
