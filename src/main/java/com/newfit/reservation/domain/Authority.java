@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,5 +69,16 @@ public class Authority extends BaseTimeEntity {
         this.gym = gym;
         this.accepted = false;
         this.role = Role.USER;
+    }
+
+    public Long getTermCredit(LocalDateTime term) {
+        return this.creditList
+                .stream()
+                .filter(credit -> credit.getYear().equals((short) term.getYear())
+                        && credit.getMonth().equals((short) term.getMonthValue())
+                )
+                .findAny()
+                .map(Credit::getAmount)
+                .orElse(0L);
     }
 }
