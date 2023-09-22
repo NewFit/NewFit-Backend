@@ -2,6 +2,8 @@ package com.newfit.reservation.service.reservation;
 
 
 import com.newfit.reservation.domain.Authority;
+import com.newfit.reservation.domain.BusinessTime;
+import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.reservation.Reservation;
 import com.newfit.reservation.domain.routine.EquipmentRoutine;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -55,6 +58,8 @@ public class ReservationService {
 
         Authority reserver = authorityRepository.findOne(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
+
+        checkBusinessHour(request.getStartAt(), request.getEndAt(), reserver);
 
         // 사용 가능한 기구 하나를 가져옴
         EquipmentGym usedEquipment = getOneAvailable(equipmentId, request.getStartAt(), request.getEndAt());
@@ -104,6 +109,7 @@ public class ReservationService {
         Reservation targetReservation = reservationRepository.findById(reservationId)
                 .orElseThrow(IllegalArgumentException::new);
 
+        checkBusinessHour(request.getStartAt(), request.getEndAt(), targetReservation.getReserver());
 
         if (!validateReservationOverlap(targetReservation.getEquipmentGym(), request.getStartAt(), request.getEndAt())) {
             throw new IllegalArgumentException("Request is overlapped");
@@ -178,5 +184,85 @@ public class ReservationService {
         }
 
         return reservedList;
+    }
+
+    private void checkBusinessHour(LocalDateTime startAt, LocalDateTime endAt, Authority reserver) {
+
+        /*
+         예약의 시작 시간이 종료 시간보다 선행되는지 체크
+         exception이 발생 안하면 예약 시작 시간이 종료 시간보다 선행됨을 보장
+         */
+        if (startAt.isAfter(endAt))
+            throw new IllegalArgumentException("잘못된 예약 요청입니다.");
+
+        Gym gym = reserver.getGym();
+        BusinessTime businessTime = gym.getBusinessTime();
+
+        // 헬스장이 24시간 운영이면 true 리턴
+        if (businessTime.isAllDay())
+            return;
+
+        // 헬스장 오픈 시각(ex. 6 : 30)
+        LocalTime gymOpenAt = businessTime.getOpenAt();
+        // 헬스장 종료 시각(ex. 23 : 45)
+        LocalTime gymCloseAt = businessTime.getCloseAt();
+
+        // 헬스장 오픈 및 종료 시각에서 '시' 정보만 추출
+        int gymOpenHour = gymOpenAt.getHour();
+        int gymCloseHour = gymCloseAt.getHour();
+
+        /*
+        openHour < closeHour 이면 (openHour < 예약의 시작 시간) && (예약 종료 시간 < closeHour) 인지만 확인
+        openHour > closeHour 이면 예약의 시작과 종료 시간 둘 다 헬스장 운영 시간 내에 속하는지 확인
+         */
+        boolean result = checkStartAtInBusinessHour(startAt, gymOpenHour, gymCloseHour, businessTime) &&
+                checkEndAtInBusinessHour(endAt, gymOpenHour, gymCloseHour, businessTime);
+
+        if(!result)
+            throw new IllegalArgumentException("헬스장 운영 시간을 준수하지 않는 예약 요청입니다.");
+    }
+
+    private boolean checkEndAtInBusinessHour(LocalDateTime endAt, int gymOpenHour, int gymCloseHour,
+                                             BusinessTime businessTime) {
+        int reservationEndHour = endAt.getHour();
+        int reservationEndMinute = endAt.getMinute();
+
+        // 헬스장 종료 '시'와 예약의 종료 '시'가 같다면 '분' 비교
+        if (reservationEndHour == gymCloseHour)
+            return reservationEndMinute <= businessTime.getCloseAt().getMinute();
+        // 헬스장 오픈 '시'와 예약의 종료 '시'가 같다면 '분' 비교
+        if (reservationEndHour == gymOpenHour)
+            return businessTime.getOpenAt().getMinute() < reservationEndMinute;
+
+        /*
+        openHour < closeHour (ex. 6AM ~ 23PM)이면 예약 종료 시간이 closeHour보다 앞서는지만 확인
+        openHour > closeHour (ex. 4AM ~ 1AM)이면 예약 종료 시간이 헬스장 운영시간 안에 속하는지 확인
+         */
+        if (gymOpenHour < gymCloseHour)
+            return reservationEndHour < gymCloseHour;
+        else
+            return (gymOpenHour < reservationEndHour) || (reservationEndHour < gymCloseHour);
+    }
+
+    private boolean checkStartAtInBusinessHour(LocalDateTime startAt, int gymOpenHour, int gymCloseHour,
+                                               BusinessTime businessTime) {
+        int reservationStartHour = startAt.getHour();
+        int reservationStartMinute = startAt.getMinute();
+
+        // 헬스장 오픈 '시'와 예약의 시작 '시'가 같다면 '분' 비교
+        if (reservationStartHour == gymOpenHour)
+            return businessTime.getOpenAt().getMinute() <= reservationStartMinute;
+        // 헬스장 종료 '시'와 예약의 시작 '시'가 같다면 '분' 비교
+        if (reservationStartHour == gymCloseHour)
+            return reservationStartMinute < businessTime.getCloseAt().getMinute();
+
+        /*
+        openHour < closeHour (ex. 6AM ~ 23PM)이면 예약 시작 시간이 openHour보다 더 늦은지만 확인
+        openHour > closeHour (ex. 4AM ~ 1AM)이면 예약 시작 시간이 헬스장 운영시간 안에 속하는지 확인
+         */
+        if (gymOpenHour < gymCloseHour)
+            return gymOpenHour < reservationStartHour;
+        else
+            return (gymOpenHour < reservationStartHour) || (reservationStartHour < gymCloseHour);
     }
 }
