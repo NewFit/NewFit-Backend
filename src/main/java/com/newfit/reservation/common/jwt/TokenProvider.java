@@ -78,7 +78,7 @@ public class TokenProvider {
 
     public Authentication getAuthentication(String token, HttpServletRequest request) {
         Claims claims = getClaims(token);
-        Authority authority = authorityRepository.findOne(Long.parseLong(request.getHeader("authority")))
+        Authority authority = authorityRepository.findOne(Long.parseLong(request.getHeader("authorityId")))
                 .orElseThrow(IllegalArgumentException::new);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(authority.getRole().getDescription()));
 
