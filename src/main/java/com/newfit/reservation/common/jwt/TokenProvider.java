@@ -85,7 +85,15 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
     }
 
-    public List<Long> getAuthorityIdList(String token) {
+    // 등록된 Gym이 없는 회원의 Authentication을 반환
+    public Authentication getAnonymousAuthentication(String token) {
+        Claims claims = getClaims(token);
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.GUEST.getDescription()));
+
+        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
+    }
+
+    public List<Integer> getAuthorityIdList(String token) {
         Claims claims = getClaims(token);
         return claims.get("authorityIdList", List.class);
     }
