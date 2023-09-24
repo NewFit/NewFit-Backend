@@ -26,9 +26,13 @@ public class EquipmentGymService {
     /*
     입력받은 개수(count)만큼 등록
      */
-    public void registerEquipmentInGym(Equipment equipment, Gym gym, Integer count) {
+    public void registerEquipmentInGym(Equipment equipment, Gym gym, Integer count, List<String> equipmentGymNames) {
+        if(equipmentGymNames.size() < count)
+            throw new IllegalArgumentException("EquipmentGym의 이름 개수가 부족합니다.");
+
         IntStream.range(0, count)
-                .forEach(repeat -> equipmentGymRepository.save(EquipmentGym.createEquipmentGym(equipment, gym)));
+                .forEach(repeat -> equipmentGymRepository
+                        .save(EquipmentGym.createEquipmentGym(equipment, gym, equipmentGymNames.get(repeat))));
     }
 
     /*
