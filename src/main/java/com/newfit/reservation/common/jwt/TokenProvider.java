@@ -1,6 +1,7 @@
 package com.newfit.reservation.common.jwt;
 
 import com.newfit.reservation.domain.Authority;
+import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.repository.AuthorityRepository;
 import io.jsonwebtoken.Claims;
