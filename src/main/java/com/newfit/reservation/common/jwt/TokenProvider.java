@@ -67,8 +67,8 @@ public class TokenProvider {
     }
 
     private void checkAuthorityIdList(String token, HttpServletRequest request) {
-        List<Long> authorityIdList = getAuthorityIdList(token);
-        Long authorityId = authorityRepository.findOne(Long.parseLong(request.getHeader("authorityId"))).orElseThrow(IllegalArgumentException::new).getId();
+        List<Integer> authorityIdList = getAuthorityIdList(token);
+        Integer authorityId = authorityRepository.findOne(Long.parseLong(request.getHeader("authorityId"))).orElseThrow(IllegalArgumentException::new).getId().intValue();
         authorityIdList
                 .stream()
                 .filter(authority -> authority.equals(authorityId))
