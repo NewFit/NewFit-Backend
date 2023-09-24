@@ -29,17 +29,22 @@ public class EquipmentGym extends BaseTimeEntity {
     @Column(nullable = false)
     private Condition condition;
 
+    @Column(nullable = false)
+    private String name;
+
     @Builder
-    public EquipmentGym(Equipment equipment, Gym gym) {
+    public EquipmentGym(Equipment equipment, Gym gym, String name) {
         this.equipment = equipment;
         this.gym = gym;
         this.condition = Condition.AVAILABLE;
+        this.name = name;
     }
 
-    public static EquipmentGym createEquipmentGym(Equipment equipment, Gym gym) {
+    public static EquipmentGym createEquipmentGym(Equipment equipment, Gym gym, String name) {
         return EquipmentGym.builder()
                 .equipment(equipment)
                 .gym(gym)
+                .name(name)
                 .build();
     }
 
