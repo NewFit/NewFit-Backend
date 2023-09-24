@@ -8,22 +8,17 @@ import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  /* Entity 클래스는 기본생성자가 필수로 있어야 합니다. 다만, Entity 객체를
                                                       직접 생성자로 생성할 일은 없을듯 하여 protected 로 설정했습니다.*/
 @Table(name = "users")  // default 이름인 user 는 sql 예약어와 겹쳐서 users 로 테이블 이름 변경했습니다.
-public class User extends BaseTimeEntity implements UserDetails {
+public class User extends BaseTimeEntity {
 
     // User 테이블 PK 입니다.
     @Id
@@ -115,38 +110,5 @@ public class User extends BaseTimeEntity implements UserDetails {
                 .map(authority -> authority.getTermCredit(term))
                 .mapToLong(Long::longValue)
                 .sum();
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorityList
-                .stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getRole().toString()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return lastLoginAt.isAfter(LocalDateTime.now().minusYears(1));
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return lastLoginAt.isAfter(LocalDateTime.now().minusYears(1));
     }
 }
