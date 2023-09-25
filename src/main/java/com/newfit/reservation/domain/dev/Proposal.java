@@ -29,6 +29,21 @@ public class Proposal {
     @Column(nullable = false)
     private String content;
 
+    @Builder
+    private Proposal(User user, String name, String content) {
+        this.user = user;
+        this.name = name;
+        this.content = content;
+    }
+
+    public static Proposal createProposal(User user, String name, String content) {
+        return Proposal.builder()
+                .user(user)
+                .name(name)
+                .content(content)
+                .build();
+    }
+
     // 연관관계 편의 메소드입니다.
     public void setUserRelation(User user) {
         this.user = user;

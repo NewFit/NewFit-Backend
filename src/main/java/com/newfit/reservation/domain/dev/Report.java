@@ -29,6 +29,21 @@ public class Report {
     @Column(nullable = false)
     private String content;
 
+    @Builder
+    private Report(User user, String subject, String content) {
+        this.user = user;
+        this.subject = subject;
+        this.content = content;
+    }
+
+    public static Report createReport(User user, String subject, String content) {
+        return Report.builder()
+                .user(user)
+                .subject(subject)
+                .content(content)
+                .build();
+    }
+
     // 연관관계 편의 메소드입니다.
     public void setUserRelation(User user) {
         this.user = user;
