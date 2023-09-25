@@ -22,7 +22,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = getAccessToken(request);
-
+        if(request.getRequestURI().equals("/login") || accessToken == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         if(requiresValidityCheck(request) && tokenProvider.validToken(accessToken, request)) {
             Authentication authentication = tokenProvider.getAuthentication(accessToken, request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -43,6 +46,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean requiresValidityCheck(HttpServletRequest request) {
         if (request.getRequestURI().equals("/api/v1/authority") && request.getMethod().equals(HttpMethod.POST.toString())) {
+            return false;
+        }
+        if (request.getRequestURI().equals("/api/v1/gyms") && request.getMethod().equals(HttpMethod.GET.toString())) {
             return false;
         }
         return true;
