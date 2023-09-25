@@ -58,9 +58,13 @@ public class Reservation extends BaseTimeEntity {
     }
 
 
-    public void update(ReservationUpdateRequest request) {
+    public void updateTime(ReservationUpdateRequest request) {
         this.start_at = request.getStartAt();
         this.end_at = request.getEndAt();
+    }
+
+    public void updateRepetitionNumber(Long repetitionNumber) {
+        this.repetition_number = repetitionNumber;
     }
 
     public boolean overlapped(LocalDateTime start, LocalDateTime end) {
@@ -71,5 +75,23 @@ public class Reservation extends BaseTimeEntity {
         boolean isAfter = this.start_at.isAfter(end);
 
         return !(startBeforeEnd && (isBefore || isAfter));
+    }
+
+    public static Reservation reserveAnother(Reservation existingReservation,
+                                             EquipmentGym targetEquipmentGym,
+                                             ReservationUpdateRequest request) {
+        Authority reserver = existingReservation.getReserver();
+        LocalDateTime startAt = request.getStartAt();
+        LocalDateTime endAt = request.getEndAt();
+        Long repetitionNumber = request.getRepetitionNumber() != null?
+                request.getRepetitionNumber() : existingReservation.getRepetition_number();
+
+        return Reservation.builder()
+                .reserver(reserver)
+                .equipmentGym(targetEquipmentGym)
+                .startAt(startAt)
+                .endAt(endAt)
+                .repetitionNumber(repetitionNumber)
+                .build();
     }
 }
