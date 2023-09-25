@@ -17,6 +17,4 @@ public interface EquipmentGymRepository extends JpaRepository<EquipmentGym, Long
 
     @Query("select e from EquipmentGym e where e.equipment.id = :equipmentId and e.condition='AVAILABLE'")
     List<EquipmentGym> findAvailableByEquipmentId(@Param("equipmentId") Long equipmentId);
-
-    List<EquipmentGym> findAllByEquipment(Equipment equipment);
 }
