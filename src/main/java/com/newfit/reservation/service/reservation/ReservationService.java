@@ -56,6 +56,8 @@ public class ReservationService {
                                        Long equipmentId,
                                        ReservationRequest request) {
 
+        validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
+
         Authority reserver = authorityRepository.findOne(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
 
@@ -115,6 +117,7 @@ public class ReservationService {
         }
 
         // 예약 시간 변경
+        validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
         checkBusinessHour(request.getStartAt(), request.getEndAt(), targetReservation.getReserver());
 
         // 같은 기구 예약 변경
@@ -151,13 +154,13 @@ public class ReservationService {
     }
 
     // 루틴의 특정 기구를 예약
-    private RoutineReservationResponse reserveOneInRoutine(Long authorityId, Long equipmentId, LocalDateTime startAt, LocalDateTime endAt){
+    private RoutineReservationResponse reserveOneInRoutine(Long authorityId, Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
         Authority reserver = authorityRepository.findOne(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
         EquipmentGym equipmentGym = null;
 
         int attempt = 0;
-        while(attempt != 5) {
+        while (attempt != 5) {
             try {
                 equipmentGym = getOneAvailable(equipmentId, startAt, endAt);
                 Reservation reservation = Reservation.builder()
@@ -230,7 +233,7 @@ public class ReservationService {
         boolean result = checkStartAtInBusinessHour(startAt, gymOpenHour, gymCloseHour, businessTime) &&
                 checkEndAtInBusinessHour(endAt, gymOpenHour, gymCloseHour, businessTime);
 
-        if(!result)
+        if (!result)
             throw new IllegalArgumentException("헬스장 운영 시간을 준수하지 않는 예약 요청입니다.");
     }
 
@@ -276,5 +279,21 @@ public class ReservationService {
             return gymOpenHour < reservationStartHour;
         else
             return (gymOpenHour < reservationStartHour) || (reservationStartHour < gymCloseHour);
+    }
+
+    private void validateReservationIn2Hours(LocalDateTime startAt, LocalDateTime endAt) {
+
+        final long MAX_HOUR_TERM = 2L;
+        final long MAX_MINUTE = 30L;
+
+        LocalDateTime twoHourLater = LocalDateTime.now().plusHours(MAX_HOUR_TERM);
+
+        if (startAt.isAfter(twoHourLater)) {
+            throw new IllegalArgumentException("예약 시작 시간을 확인해주세요.");
+        }
+
+        if (endAt.isAfter(twoHourLater.plusMinutes(MAX_MINUTE))) {
+            throw new IllegalArgumentException("예약 종료 시간을 확인해주세요.");
+        }
     }
 }
