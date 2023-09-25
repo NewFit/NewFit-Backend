@@ -75,7 +75,7 @@ public class EquipmentGymService {
         List<EquipmentGym> allByGymAndPurpose = allByGym
                 .stream()
                 .filter(equipmentGym -> equipmentGym.getEquipment().getPurpose().equals(purpose))
-                .collect(Collectors.toList());
+                .toList();
 
         List<EquipmentResponse> equipmentResponses = allByGymAndPurpose.stream()
                 .map(EquipmentResponse::new)
@@ -91,7 +91,7 @@ public class EquipmentGymService {
         List<EquipmentGym> allByGymAndEquipment = allByGym
                 .stream()
                 .filter(equipmentGym -> equipmentGym.getEquipment().equals(equipment))
-                .collect(Collectors.toList());
+                .toList();
 
         List<EquipmentResponse> equipmentResponses = allByGymAndEquipment.stream()
                 .map(EquipmentResponse::new)
