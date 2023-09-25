@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OAuthHistory {
+public class OAuthHistory { // OAuth2 인증을 통해 얻어온 사용자 정보를 담는 클래스
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,6 +17,7 @@ public class OAuthHistory {
     @Column(nullable = false)
     private Provider provider;
 
+    // Google의 경우 sub값, Kakao의 경우 id값을 담는 필드
     @Column(nullable = false)
     private String attributeName;
 
