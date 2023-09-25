@@ -83,7 +83,7 @@ public class Reservation extends BaseTimeEntity {
         Authority reserver = existingReservation.getReserver();
         LocalDateTime startAt = request.getStartAt();
         LocalDateTime endAt = request.getEndAt();
-        Long repetitionNumber = request.getRepetitionNumber() != null?
+        Long repetitionNumber = request.getRepetitionNumber() != null ?
                 request.getRepetitionNumber() : existingReservation.getRepetition_number();
 
         return Reservation.builder()
