@@ -109,6 +109,12 @@ public class ReservationService {
         Reservation targetReservation = reservationRepository.findById(reservationId)
                 .orElseThrow(IllegalArgumentException::new);
 
+        // 예약 세트 횟수 변경
+        if (request.getRepetitionNumber() != null) {
+            targetReservation.updateRepetitionNumber(request.getRepetitionNumber());
+        }
+
+        // 예약 시간 변경
         checkBusinessHour(request.getStartAt(), request.getEndAt(), targetReservation.getReserver());
 
         // 같은 기구 예약 변경
