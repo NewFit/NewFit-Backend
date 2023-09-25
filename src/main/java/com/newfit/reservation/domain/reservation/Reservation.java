@@ -3,6 +3,7 @@ package com.newfit.reservation.domain.reservation;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
+import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -44,7 +45,7 @@ public class Reservation extends BaseTimeEntity {
 
 
     @Builder
-    public Reservation(Authority reserver,
+    private Reservation(Authority reserver,
                        EquipmentGym equipmentGym,
                        LocalDateTime startAt,
                        LocalDateTime endAt,
@@ -92,6 +93,18 @@ public class Reservation extends BaseTimeEntity {
                 .startAt(startAt)
                 .endAt(endAt)
                 .repetitionNumber(repetitionNumber)
+                .build();
+    }
+
+    public static Reservation create(Authority reserver,
+                                     EquipmentGym equipmentGym,
+                                     ReservationRequest request) {
+        return Reservation.builder()
+                .reserver(reserver)
+                .equipmentGym(equipmentGym)
+                .startAt(request.getStartAt())
+                .endAt(request.getEndAt())
+                .repetitionNumber(request.getRepetitionNumber())
                 .build();
     }
 }

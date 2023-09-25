@@ -50,17 +50,9 @@ public class ReservationService {
         // 사용 가능한 기구 하나를 가져옴
         EquipmentGym usedEquipment = getOneAvailable(equipmentId, request.getStartAt(), request.getEndAt());
 
-        Reservation reservation = Reservation.builder()
-                .reserver(reserver)
-                .equipmentGym(usedEquipment)
-                .startAt(request.getStartAt())
-                .endAt(request.getEndAt())
-                .repetitionNumber(request.getRepetitionNumber())
-                .build();
+        Reservation reservation = Reservation.create(reserver, usedEquipment, request);
 
-        Reservation result = reservationRepository.save(reservation);
-
-        return new ReservationResponse(result.getId());
+        return new ReservationResponse(reservation.getId());
     }
 
 
