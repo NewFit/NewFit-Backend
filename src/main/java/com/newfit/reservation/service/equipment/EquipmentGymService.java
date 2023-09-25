@@ -46,8 +46,7 @@ public class EquipmentGymService {
                 .map(EquipmentResponse::new)
                 .collect(Collectors.toList());
 
-        EquipmentGymListResponse response = new EquipmentGymListResponse(gym.getName(), allByGym.size(), equipmentResponses);
-        return response;
+        return new EquipmentGymListResponse(gym.getName(), allByGym.size(), equipmentResponses);
     }
 
     /*
@@ -81,8 +80,7 @@ public class EquipmentGymService {
         List<EquipmentResponse> equipmentResponses = allByGymAndPurpose.stream()
                 .map(EquipmentResponse::new)
                 .collect(Collectors.toList());
-        EquipmentGymListResponse response = new EquipmentGymListResponse(gym.getName(), allByGymAndPurpose.size(), equipmentResponses);
-        return response;
+        return new EquipmentGymListResponse(gym.getName(), allByGymAndPurpose.size(), equipmentResponses);
     }
 
     /*
@@ -99,8 +97,7 @@ public class EquipmentGymService {
                 .map(EquipmentResponse::new)
                 .collect(Collectors.toList());
 
-        EquipmentGymListResponse response = new EquipmentGymListResponse(gym.getName(), allByGymAndEquipment.size(), equipmentResponses);
-        return response;
+        return new EquipmentGymListResponse(gym.getName(), allByGymAndEquipment.size(), equipmentResponses);
     }
 
     /*
