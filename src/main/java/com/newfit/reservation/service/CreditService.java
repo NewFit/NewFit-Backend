@@ -7,6 +7,8 @@ import com.newfit.reservation.dto.response.UserRankInfoListResponse;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -27,7 +29,8 @@ public class CreditService {
                 .orElseThrow(IllegalArgumentException::new);
         List<UserRankInfo> rankingList = new ArrayList<>();
 
-        List<Credit> creditList = creditRepository.findAllByGymAndYearAndMonth(authority.getGym(), (short) now.getYear(), (short) now.getMonthValue()).stream().toList();
+        Pageable topTen = PageRequest.of(0,10);
+        List<Credit> creditList = creditRepository.findAllByGymAndYearAndMonth(authority.getGym(), (short) now.getYear(), (short) now.getMonthValue(), topTen).stream().toList();
         creditList.forEach((credit -> rankingList.add(new UserRankInfo(credit, getRank(rankingList, credit)))));
         return new UserRankInfoListResponse(authority.getGym().getName(), rankingList);
     }
