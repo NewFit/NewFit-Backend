@@ -1,6 +1,7 @@
 package com.newfit.reservation.common.jwt;
 
 import com.newfit.reservation.domain.Authority;
+import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.repository.AuthorityRepository;
 import io.jsonwebtoken.Claims;
@@ -67,8 +68,8 @@ public class TokenProvider {
     }
 
     private void checkAuthorityIdList(String token, HttpServletRequest request) {
-        List<Long> authorityIdList = getAuthorityIdList(token);
-        Long authorityId = authorityRepository.findOne(Long.parseLong(request.getHeader("authorityId"))).orElseThrow(IllegalArgumentException::new).getId();
+        List<Integer> authorityIdList = getAuthorityIdList(token);
+        Integer authorityId = authorityRepository.findOne(Long.parseLong(request.getHeader("authorityId"))).orElseThrow(IllegalArgumentException::new).getId().intValue();
         authorityIdList
                 .stream()
                 .filter(authority -> authority.equals(authorityId))
@@ -85,7 +86,15 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
     }
 
-    public List<Long> getAuthorityIdList(String token) {
+    // 등록된 Gym이 없는 회원의 Authentication을 반환
+    public Authentication getAnonymousAuthentication(String token) {
+        Claims claims = getClaims(token);
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.GUEST.getDescription()));
+
+        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
+    }
+
+    public List<Integer> getAuthorityIdList(String token) {
         Claims claims = getClaims(token);
         return claims.get("authorityIdList", List.class);
     }
