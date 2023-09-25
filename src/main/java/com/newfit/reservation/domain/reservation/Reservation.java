@@ -78,7 +78,7 @@ public class Reservation extends BaseTimeEntity {
     }
 
     public static Reservation reserveAnother(Reservation existingReservation,
-                                             EquipmentGym targetEquipmentGym,
+                                             EquipmentGym anotherEquipmentGym,
                                              ReservationUpdateRequest request) {
         Authority reserver = existingReservation.getReserver();
         LocalDateTime startAt = request.getStartAt();
@@ -88,7 +88,7 @@ public class Reservation extends BaseTimeEntity {
 
         return Reservation.builder()
                 .reserver(reserver)
-                .equipmentGym(targetEquipmentGym)
+                .equipmentGym(anotherEquipmentGym)
                 .startAt(startAt)
                 .endAt(endAt)
                 .repetitionNumber(repetitionNumber)
