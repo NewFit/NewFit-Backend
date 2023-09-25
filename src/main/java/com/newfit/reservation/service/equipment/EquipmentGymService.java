@@ -54,7 +54,8 @@ public class EquipmentGymService {
     EquipmentGym의 Condition을 수정
      */
     public void updateCondition(Long equipmentGymId, Condition condition) {
-        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).get();
+        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId)
+                .orElseThrow(IllegalArgumentException::new);
         equipmentGym.updateCondition(condition);
     }
 
@@ -62,7 +63,8 @@ public class EquipmentGymService {
     equipmentGym 삭제
      */
     public void deleteEquipmentGym(Long equipmentGymId) {
-        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).get();
+        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId)
+                .orElseThrow(IllegalArgumentException::new);
         equipmentGymRepository.delete(equipmentGym);
     }
 
