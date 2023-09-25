@@ -21,7 +21,8 @@ public class EquipmentService {
      */
     public Equipment registerEquipment(Gym gym, String name, Purpose purpose) {
         if (doesExists(gym, name, purpose)) {
-            return equipmentRepository.findByGymAndNameAndPurpose(gym, name, purpose).get();
+            return equipmentRepository.findByGymAndNameAndPurpose(gym, name, purpose)
+                    .orElseThrow(IllegalArgumentException::new);
         }
         return equipmentRepository.save(Equipment.createEquipment(gym, name, purpose));
     }
