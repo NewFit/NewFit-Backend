@@ -42,6 +42,8 @@ public class Reservation extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "start_tag_at")
+    private LocalDateTime startTagAt;
 
     @Builder
     public Reservation(Authority reserver,
@@ -55,6 +57,7 @@ public class Reservation extends BaseTimeEntity {
         this.end_at = endAt;
         this.repetition_number = repetitionNumber;
         this.status = Status.WAITING;
+        this.startTagAt = null;
     }
 
 
