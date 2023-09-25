@@ -283,10 +283,12 @@ public class ReservationService {
     }
 
     private boolean isStartTagInTime(Reservation reservation) {
-        return reservation.getStartTagAt().isBefore(reservation.getStart_at().plusMinutes(5)) || reservation.getStartTagAt().isEqual(reservation.getStart_at().plusMinutes(5));
+        return (reservation.getStartTagAt().isBefore(reservation.getStart_at().plusMinutes(5)) && reservation.getStartTagAt().isAfter(reservation.getStart_at()))
+                || reservation.getStartTagAt().isEqual(reservation.getStart_at().plusMinutes(5));
     }
 
     private boolean isEndTagInTime(Reservation reservation, LocalDateTime endTagAt) {
-        return endTagAt.isBefore(reservation.getEnd_at().plusMinutes(5)) || endTagAt.isEqual(reservation.getEnd_at().plusMinutes(5));
+        return (endTagAt.isBefore(reservation.getEnd_at().plusMinutes(5)) && endTagAt.isAfter(reservation.getEnd_at()))
+                || endTagAt.isEqual(reservation.getEnd_at().plusMinutes(5));
     }
 }
