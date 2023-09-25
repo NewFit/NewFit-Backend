@@ -2,6 +2,7 @@ package com.newfit.reservation.repository.equipment;
 
 
 import com.newfit.reservation.domain.Gym;
+import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,6 @@ public interface EquipmentGymRepository extends JpaRepository<EquipmentGym, Long
 
     @Query("select e from EquipmentGym e where e.equipment.id = :equipmentId and e.condition='AVAILABLE'")
     List<EquipmentGym> findAvailableByEquipmentId(@Param("equipmentId") Long equipmentId);
+
+    List<EquipmentGym> findAllByEquipment(Equipment equipment);
 }
