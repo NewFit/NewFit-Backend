@@ -1,19 +1,20 @@
 package com.newfit.reservation.dto.request;
 
-import com.newfit.reservation.domain.dev.Proposal;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateProposalRequest {
 
+    @NotBlank
+    @Length(max = 30)
     private String name;
-    private String content;
 
-    // Dto -> Entity 변환 메소드입니다.
-    public static Proposal proposalDto2Entity(CreateProposalRequest proposalRequestDto) {
-        return Proposal.builder()
-                .name(proposalRequestDto.getName())
-                .content(proposalRequestDto.getContent())
-                .build();
-    }
+    @NotBlank
+    @Length(max = 300)
+    private String content;
 }

@@ -1,19 +1,20 @@
 package com.newfit.reservation.dto.request;
 
-import com.newfit.reservation.domain.dev.Report;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateReportRequest {
 
+    @NotBlank
+    @Length(max = 30)
     private String subject;
-    private String content;
 
-    // Dto -> Entity 변환 메소드입니다.
-    public static Report reportDto2Entity(CreateReportRequest reportRequestDto) {
-        return Report.builder()
-                .subject(reportRequestDto.getSubject())
-                .content(reportRequestDto.getContent())
-                .build();
-    }
+    @NotBlank
+    @Length(max = 300)
+    private String content;
 }
