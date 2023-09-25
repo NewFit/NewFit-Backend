@@ -1,17 +1,20 @@
 package com.newfit.reservation.dto.request;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateReportRequest {
 
-    @NotNull
-    @Length(min = 1, max = 30)
+    @NotBlank
+    @Length(max = 30)
     private String subject;
 
-    @NotNull
-    @Length(min = 1, max = 300)
+    @NotBlank
+    @Length(max = 300)
     private String content;
 }
