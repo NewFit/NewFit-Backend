@@ -89,17 +89,19 @@ public class ReservationService {
         validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
         checkBusinessHour(request.getStartAt(), request.getEndAt(), targetReservation.getReserver());
 
-        // 같은 기구 예약 변경
-        if (validateReservationOverlap(targetReservation.getEquipmentGym(), request.getStartAt(), request.getEndAt())) {
-            targetReservation.updateTime(request);
-        } else {
-            // 다른 기구로 예약 변경
-            Long targetEquipmentId = targetReservation.getEquipmentGym().getEquipment().getId();
-            EquipmentGym anotherEquipment = getOneAvailable(targetEquipmentId, request.getStartAt(), request.getEndAt());
+        if (request.getStartAt() != null)
+            targetReservation.updateStartTime(request.getStartAt());
 
-            Reservation updateReservation = Reservation.reserveAnother(targetReservation, anotherEquipment, request);
-            reservationRepository.save(updateReservation);
-            reservationRepository.delete(targetReservation);
+        if (request.getEndAt() != null)
+            targetReservation.updateEndTime(request.getEndAt());
+
+
+        // 다른 기구로 예약 변경
+        if (!validateReservationOverlap(targetReservation.getEquipmentGym(), request.getStartAt(), request.getEndAt())) {
+            Long targetEquipmentId = targetReservation.getEquipmentGym().getEquipment().getId();
+            EquipmentGym anotherEquipmentGym =
+                    getOneAvailable(targetEquipmentId, request.getStartAt(), request.getEndAt());
+            targetReservation.updateEquipmentGym(anotherEquipmentGym);
         }
         return new ReservationResponse(reservationId);
     }
