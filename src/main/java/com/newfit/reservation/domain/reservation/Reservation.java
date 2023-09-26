@@ -59,9 +59,17 @@ public class Reservation extends BaseTimeEntity {
     }
 
 
-    public void updateTime(ReservationUpdateRequest request) {
-        this.start_at = request.getStartAt();
-        this.end_at = request.getEndAt();
+    public void updateEquipmentGym(EquipmentGym equipmentGym) {
+        this.equipmentGym = equipmentGym;
+    }
+
+
+    public void updateStartTime(LocalDateTime startAt) {
+        this.start_at = startAt;
+    }
+
+    public void updateEndTime(LocalDateTime endAt) {
+        this.end_at = endAt;
     }
 
     public void updateRepetitionNumber(Long repetitionNumber) {
@@ -78,23 +86,6 @@ public class Reservation extends BaseTimeEntity {
         return !(startBeforeEnd && (isBefore || isAfter));
     }
 
-    public static Reservation reserveAnother(Reservation existingReservation,
-                                             EquipmentGym anotherEquipmentGym,
-                                             ReservationUpdateRequest request) {
-        Authority reserver = existingReservation.getReserver();
-        LocalDateTime startAt = request.getStartAt();
-        LocalDateTime endAt = request.getEndAt();
-        Long repetitionNumber = request.getRepetitionNumber() != null ?
-                request.getRepetitionNumber() : existingReservation.getRepetition_number();
-
-        return Reservation.builder()
-                .reserver(reserver)
-                .equipmentGym(anotherEquipmentGym)
-                .startAt(startAt)
-                .endAt(endAt)
-                .repetitionNumber(repetitionNumber)
-                .build();
-    }
 
     public static Reservation create(Authority reserver,
                                      EquipmentGym equipmentGym,
