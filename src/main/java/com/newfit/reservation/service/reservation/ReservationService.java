@@ -51,6 +51,7 @@ public class ReservationService {
         EquipmentGym usedEquipment = getOneAvailable(equipmentId, request.getStartAt(), request.getEndAt());
 
         Reservation reservation = Reservation.create(reserver, usedEquipment, request);
+        reservationRepository.save(reservation);
 
         return new ReservationResponse(reservation.getId());
     }
