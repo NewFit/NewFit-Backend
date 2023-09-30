@@ -17,6 +17,5 @@ public class UserRankInfoListResponse {
         this.gymName = gymName;
         this.rankingsCount = (long) rankings.size();
         this.rankings = rankings;
-
     }
 }
