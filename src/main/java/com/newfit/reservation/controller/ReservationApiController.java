@@ -26,9 +26,9 @@ public class ReservationApiController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse reserve(@RequestParam(value = "equipment_id") Long equipmentId,
+    public ReservationResponse reserve(@RequestHeader("authority-id") Long authorityId,
+                                       @RequestParam(value = "equipment_id") Long equipmentId,
                                        @Valid @RequestBody ReservationRequest request) {
-        Long authorityId = 3L;
         return reservationService.reserve(authorityId, equipmentId, request);
     }
 
