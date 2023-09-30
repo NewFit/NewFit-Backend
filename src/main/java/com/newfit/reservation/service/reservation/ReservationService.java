@@ -3,6 +3,7 @@ package com.newfit.reservation.service.reservation;
 
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.BusinessTime;
+import com.newfit.reservation.domain.Credit;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.reservation.Reservation;
@@ -11,6 +12,7 @@ import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.dto.response.*;
 import com.newfit.reservation.repository.AuthorityRepository;
+import com.newfit.reservation.repository.CreditRepository;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
 import com.newfit.reservation.repository.reservation.ReservationRepository;
 import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
@@ -34,6 +36,7 @@ public class ReservationService {
     private final AuthorityRepository authorityRepository;
     private final EquipmentGymRepository equipmentGymRepository;
     private final EquipmentRoutineRepository equipmentRoutineRepository;
+    private final CreditRepository creditRepository;
 
 
     public ReservationResponse reserve(Long authorityId,
@@ -260,6 +263,30 @@ public class ReservationService {
         else
             return (gymOpenHour < reservationStartHour) || (reservationStartHour < gymCloseHour);
     }
+
+    private void addCredit(Reservation reservation, Authority authority, LocalDateTime endTagAt) {
+        LocalDateTime now = LocalDateTime.now();
+        if(checkConditions(reservation, endTagAt)) {
+            Credit credit = creditRepository.findByAuthorityAndYearAndMonth(authority, (short) now.getYear(), (short) now.getMonthValue())
+                    .orElseThrow(IllegalArgumentException::new);
+            credit.addAmount();
+        }
+    }
+
+    private boolean checkConditions(Reservation reservation, LocalDateTime endTagAt) {
+        return isStartTagInTime(reservation) && isEndTagInTime(reservation, endTagAt);
+    }
+
+    private boolean isStartTagInTime(Reservation reservation) {
+        return (reservation.getStartTagAt().isBefore(reservation.getStart_at().plusMinutes(5)) && reservation.getStartTagAt().isAfter(reservation.getStart_at()))
+                || reservation.getStartTagAt().isEqual(reservation.getStart_at().plusMinutes(5));
+    }
+
+    private boolean isEndTagInTime(Reservation reservation, LocalDateTime endTagAt) {
+        return (endTagAt.isBefore(reservation.getEnd_at().plusMinutes(5)) && endTagAt.isAfter(reservation.getEnd_at()))
+                || endTagAt.isEqual(reservation.getEnd_at().plusMinutes(5));
+    }
+}
 
     private void validateReservationIn2Hours(LocalDateTime startAt, LocalDateTime endAt) {
 
