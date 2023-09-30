@@ -1,10 +1,8 @@
 package com.newfit.reservation.domain;
 
 import jakarta.persistence.*;
-
 import lombok.*;
 import org.hibernate.validator.constraints.Range;
-
 import java.time.LocalDate;
 
 @Entity
@@ -64,5 +62,9 @@ public class Credit {
                 .month((short) now.getMonthValue())
                 .amount(INITIAL_VALUE)
                 .build();
+    }
+
+    public void addAmount() {
+        this.amount += 100L;
     }
 }

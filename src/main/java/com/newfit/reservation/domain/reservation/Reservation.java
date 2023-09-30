@@ -3,6 +3,7 @@ package com.newfit.reservation.domain.reservation;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
+import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -42,9 +43,11 @@ public class Reservation extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "start_tag_at")
+    private LocalDateTime startTagAt;
 
     @Builder
-    public Reservation(Authority reserver,
+    private Reservation(Authority reserver,
                        EquipmentGym equipmentGym,
                        LocalDateTime startAt,
                        LocalDateTime endAt,
@@ -55,12 +58,25 @@ public class Reservation extends BaseTimeEntity {
         this.end_at = endAt;
         this.repetition_number = repetitionNumber;
         this.status = Status.WAITING;
+        this.startTagAt = null;
     }
 
 
-    public void update(ReservationUpdateRequest request) {
-        this.start_at = request.getStartAt();
-        this.end_at = request.getEndAt();
+    public void updateEquipmentGym(EquipmentGym equipmentGym) {
+        this.equipmentGym = equipmentGym;
+    }
+
+
+    public void updateStartTime(LocalDateTime startAt) {
+        this.start_at = startAt;
+    }
+
+    public void updateEndTime(LocalDateTime endAt) {
+        this.end_at = endAt;
+    }
+
+    public void updateRepetitionNumber(Long repetitionNumber) {
+        this.repetition_number = repetitionNumber;
     }
 
     public boolean overlapped(LocalDateTime start, LocalDateTime end) {
@@ -71,5 +87,18 @@ public class Reservation extends BaseTimeEntity {
         boolean isAfter = this.start_at.isAfter(end);
 
         return !(startBeforeEnd && (isBefore || isAfter));
+    }
+
+
+    public static Reservation create(Authority reserver,
+                                     EquipmentGym equipmentGym,
+                                     ReservationRequest request) {
+        return Reservation.builder()
+                .reserver(reserver)
+                .equipmentGym(equipmentGym)
+                .startAt(request.getStartAt())
+                .endAt(request.getEndAt())
+                .repetitionNumber(request.getRepetitionNumber())
+                .build();
     }
 }

@@ -30,10 +30,12 @@ public class WebSecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
 
+    // 누구나 접근할 수 있는 URI 패턴을 정의
     private static final String[] PERMIT_ALL_PATTERNS = new String[] {
             "/login/**"
     };
 
+    // Spring Security가 무시하도록 할 요청을 정의
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()

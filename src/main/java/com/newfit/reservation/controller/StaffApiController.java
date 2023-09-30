@@ -41,7 +41,7 @@ public class StaffApiController {
 
         Equipment equipment = equipmentService.registerEquipment(gym, request.getName(), request.getPurpose());
 
-        equipmentGymService.registerEquipmentInGym(equipment, gym, request.getCount());
+        equipmentGymService.registerEquipmentInGym(equipment, gym, request.getCount(), request.getEquipmentGymNames());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

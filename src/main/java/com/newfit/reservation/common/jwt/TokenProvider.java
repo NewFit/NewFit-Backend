@@ -1,6 +1,7 @@
 package com.newfit.reservation.common.jwt;
 
 import com.newfit.reservation.domain.Authority;
+import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.repository.AuthorityRepository;
 import io.jsonwebtoken.Claims;
@@ -23,13 +24,15 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class TokenProvider {
+public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래스
     private final JwtProperties jwtProperties;
     private final AuthorityRepository authorityRepository;
 
     public String generateToken(User user, Duration duration) {
         Date now = new Date();
         Date expiryAt = new Date(now.getTime() + duration.toMillis());
+
+        // 회원가입을 미실시한 사용자를 위한 JWT 생성
         if (user == null) {
             return Jwts.builder()
                     .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
@@ -42,6 +45,7 @@ public class TokenProvider {
 
         List<Long> authorityIdList = user.getAuthorityList().stream().map(Authority::getId).collect(Collectors.toList());
 
+        // 회원가입을 실시한 사용자를 위한 JWT 생성
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
@@ -66,9 +70,13 @@ public class TokenProvider {
        }
     }
 
+    /*
+     request가 변조되지 않았는지 체크하는 메소드
+     JWT에 있는 authorityIdList속에 header에서 추출한 authorityId가 있는지 확인
+     */
     private void checkAuthorityIdList(String token, HttpServletRequest request) {
-        List<Long> authorityIdList = getAuthorityIdList(token);
-        Long authorityId = authorityRepository.findOne(Long.parseLong(request.getHeader("authorityId"))).orElseThrow(IllegalArgumentException::new).getId();
+        List<Integer> authorityIdList = getAuthorityIdList(token);
+        Integer authorityId = authorityRepository.findOne(Long.parseLong(request.getHeader("authorityId"))).orElseThrow(IllegalArgumentException::new).getId().intValue();
         authorityIdList
                 .stream()
                 .filter(authority -> authority.equals(authorityId))
@@ -78,14 +86,25 @@ public class TokenProvider {
 
     public Authentication getAuthentication(String token, HttpServletRequest request) {
         Claims claims = getClaims(token);
-        Authority authority = authorityRepository.findOne(Long.parseLong(request.getHeader("authority")))
+        Authority authority = authorityRepository.findOne(Long.parseLong(request.getHeader("authorityId")))
                 .orElseThrow(IllegalArgumentException::new);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(authority.getRole().getDescription()));
 
         return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
     }
 
-    public List<Long> getAuthorityIdList(String token) {
+    /*
+     Anonymous 회원을 위한 Authentication을 반환
+     Anonymous : 아직 자신의 헬스장을 등록하지 않은 사용자
+     */
+    public Authentication getAnonymousAuthentication(String token) {
+        Claims claims = getClaims(token);
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.GUEST.getDescription()));
+
+        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
+    }
+
+    public List<Integer> getAuthorityIdList(String token) {
         Claims claims = getClaims(token);
         return claims.get("authorityIdList", List.class);
     }
