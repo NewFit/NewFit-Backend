@@ -1,6 +1,7 @@
 package com.newfit.reservation.domain;
 
 import com.newfit.reservation.domain.common.BaseTimeEntity;
+import com.newfit.reservation.domain.common.FCMToken;
 import com.newfit.reservation.domain.dev.Proposal;
 import com.newfit.reservation.domain.dev.Report;
 import jakarta.persistence.*;
@@ -77,6 +78,8 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user")
     private List<Authority> authorityList = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user")
+    private FCMToken fcmToken;
 
     /* =========== update method  =========== */
 
