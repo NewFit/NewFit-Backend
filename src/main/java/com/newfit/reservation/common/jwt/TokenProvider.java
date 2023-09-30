@@ -31,7 +31,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
     public String generateToken(User user, Duration duration) {
         Date now = new Date();
         Date expiryAt = new Date(now.getTime() + duration.toMillis());
-        
+
         // 회원가입을 미실시한 사용자를 위한 JWT 생성
         if (user == null) {
             return Jwts.builder()

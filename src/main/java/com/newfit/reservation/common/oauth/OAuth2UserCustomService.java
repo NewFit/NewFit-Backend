@@ -25,7 +25,7 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         String nameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
         // OAuth2 인증을 통해 얻어온 사용자 정보로 OAuthHistory 객체 생성
-        OAuthHistory oAuthHistory = findOAuthHistory(provider, (String) attributes.get(nameAttributeName));
+        OAuthHistory oAuthHistory = findOAuthHistory(provider, String.valueOf(attributes.get(nameAttributeName)));
         return new CustomOAuth2User(null, attributes, nameAttributeName, oAuthHistory);
     }
 
