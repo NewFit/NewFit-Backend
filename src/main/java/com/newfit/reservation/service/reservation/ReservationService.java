@@ -286,7 +286,6 @@ public class ReservationService {
         return (endTagAt.isBefore(reservation.getEnd_at().plusMinutes(5)) && endTagAt.isAfter(reservation.getEnd_at()))
                 || endTagAt.isEqual(reservation.getEnd_at().plusMinutes(5));
     }
-}
 
     private void validateReservationIn2Hours(LocalDateTime startAt, LocalDateTime endAt) {
 
