@@ -2,6 +2,7 @@ package com.newfit.reservation.controller;
 
 import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
+import com.newfit.reservation.dto.request.StartReservationRequest;
 import com.newfit.reservation.dto.request.routine.RoutineReservationRequest;
 import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.dto.response.ReservationResponse;
@@ -58,5 +59,13 @@ public class ReservationApiController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PatchMapping("/start")
+    public ResponseEntity<Void> updateStartAt(@RequestHeader("authority-id") Long authorityId, @Valid @RequestBody StartReservationRequest request) {
+        reservationService.updateStartAt(authorityId, request.getEquipmentGymId(), request.getTagAt());
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }
