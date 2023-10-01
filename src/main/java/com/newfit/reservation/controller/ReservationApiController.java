@@ -62,8 +62,8 @@ public class ReservationApiController {
     }
 
     @PatchMapping("/start")
-    public ResponseEntity<Void> updateStartAt(@RequestHeader("authority-id") Long authorityId, @Valid @RequestBody StartReservationRequest request) {
-        reservationService.updateStartAt(authorityId, request.getEquipmentGymId(), request.getTagAt());
+    public ResponseEntity<Void> startOfUse(@RequestHeader("authority-id") Long authorityId, @Valid @RequestBody StartReservationRequest request) {
+        reservationService.startUse(authorityId, request.getEquipmentGymId(), request.getTagAt());
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
