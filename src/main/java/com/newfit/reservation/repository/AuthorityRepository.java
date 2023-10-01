@@ -58,4 +58,9 @@ public class AuthorityRepository {
                 .setParameter("role", role)
                 .getSingleResult();
     }
+
+    public List<Authority> findAll() {
+        return em.createQuery("select a from Authority a", Authority.class)
+                .getResultList();
+    }
 }
