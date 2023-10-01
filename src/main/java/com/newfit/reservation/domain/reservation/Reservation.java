@@ -78,6 +78,9 @@ public class Reservation extends BaseTimeEntity {
     }
 
     public void updateStartTagAt(LocalDateTime startTagAt) {
+        if (this.startTagAt != null) {
+            throw new IllegalArgumentException("can't update twice");
+        }
         this.startTagAt = startTagAt;
     }
 
