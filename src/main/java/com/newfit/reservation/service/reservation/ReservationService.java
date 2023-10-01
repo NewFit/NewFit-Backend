@@ -5,8 +5,10 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.BusinessTime;
 import com.newfit.reservation.domain.Credit;
 import com.newfit.reservation.domain.Gym;
+import com.newfit.reservation.domain.equipment.Condition;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.reservation.Reservation;
+import com.newfit.reservation.domain.reservation.Status;
 import com.newfit.reservation.domain.routine.EquipmentRoutine;
 import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
@@ -320,16 +322,22 @@ public class ReservationService {
                 .isEmpty();
     }
 
-    public void updateStartAt(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
+    public void startUse(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
         validateTagAt(tagAt);
-
-        Reservation reservation = findReservationByAuthorityAndEquipmentGym(authorityId, equipmentGymId);
-        reservation.updateStartTagAt(tagAt);
+        updateStartTagAtAndStatus(authorityId, equipmentGymId, tagAt);
     }
 
-    private Reservation findReservationByAuthorityAndEquipmentGym(Long authorityId, Long equipmentGymId) {
-        Authority authority = authorityRepository.findOne(authorityId).orElseThrow(IllegalArgumentException::new);
+    private void updateStartTagAtAndStatus(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
         EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).orElseThrow(IllegalArgumentException::new);
+        Reservation reservation = findReservationByAuthorityAndEquipmentGym(authorityId, equipmentGym);
+
+        reservation.updateStartTagAt(tagAt);
+        reservation.updateStatus(Status.PROCESSING);
+        equipmentGym.updateCondition(Condition.OCCUPIED);
+    }
+
+    private Reservation findReservationByAuthorityAndEquipmentGym(Long authorityId, EquipmentGym equipmentGym) {
+        Authority authority = authorityRepository.findOne(authorityId).orElseThrow(IllegalArgumentException::new);
         return reservationRepository.findByReserverAndEquipmentGym(authority, equipmentGym).orElseThrow(IllegalArgumentException::new);
     }
 
