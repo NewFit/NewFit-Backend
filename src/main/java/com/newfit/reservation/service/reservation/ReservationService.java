@@ -319,4 +319,23 @@ public class ReservationService {
                 .findAny()
                 .isEmpty();
     }
+
+    public void updateStartAt(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
+        validateTagAt(tagAt);
+
+        Reservation reservation = findReservationByAuthorityAndEquipmentGym(authorityId, equipmentGymId);
+        reservation.updateStartTagAt(tagAt);
+    }
+
+    private Reservation findReservationByAuthorityAndEquipmentGym(Long authorityId, Long equipmentGymId) {
+        Authority authority = authorityRepository.findOne(authorityId).orElseThrow(IllegalArgumentException::new);
+        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).orElseThrow(IllegalArgumentException::new);
+        return reservationRepository.findByReserverAndEquipmentGym(authority, equipmentGym).orElseThrow(IllegalArgumentException::new);
+    }
+
+    private void validateTagAt(LocalDateTime tagAt) {
+        if (tagAt.isBefore(now().minusMinutes(3))) {
+            throw new IllegalArgumentException("can't update past reservation's startTagAt");
+        }
+    }
 }
