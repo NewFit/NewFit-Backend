@@ -146,6 +146,11 @@ public class ReservationService {
         return reservedList;
     }
 
+    public Reservation findById(Long reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
     // 루틴의 특정 기구를 예약
     private RoutineReservationResponse reserveOneInRoutine(Long authorityId, Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
         Authority reserver = authorityRepository.findOne(authorityId)
