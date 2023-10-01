@@ -17,7 +17,7 @@ public class ScheduleService {
     // 매일 자정에 모든 Authority의 크레딧 획득 횟수를 초기화
     @Scheduled(cron = "0 0 0 * * ?")
     private void resetCreditAcquisitionCount() {
-        List<Authority> authorities = authorityRepository.findAll();
+        List<Authority> authorities = authorityRepository.findAllByCreditAcquisitionCountNotZero();
         authorities.forEach(Authority::resetAcquisitionCount);
     }
 }

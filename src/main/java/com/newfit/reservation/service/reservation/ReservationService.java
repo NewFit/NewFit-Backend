@@ -271,7 +271,7 @@ public class ReservationService {
             return (gymOpenHour < reservationStartHour) || (reservationStartHour < gymCloseHour);
     }
 
-    public ObtainCreditResponse addCredit(Reservation reservation, Authority authority, LocalDateTime endEquipmentUseAt) {
+    public ObtainCreditResponse checkConditionAndAddCredit(Reservation reservation, Authority authority, LocalDateTime endEquipmentUseAt) {
         LocalDateTime now = LocalDateTime.now();
         String message = null;
         Long increasedAmount = null;

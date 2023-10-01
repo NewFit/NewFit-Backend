@@ -8,6 +8,7 @@ import com.newfit.reservation.dto.response.UserRankInfoListResponse;
 import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.CreditService;
 import com.newfit.reservation.service.reservation.ReservationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +31,13 @@ public class CreditApiController {
     }
 
     @PostMapping
-    public ResponseEntity<ObtainCreditResponse> addCredit(@RequestHeader(name = "authority-id") Long authorityId,
-                                                             @RequestParam(name = "reservation_id") Long reservationId,
-                                                          @RequestBody ObtainCreditRequest requestDto) {
+    public ResponseEntity<ObtainCreditResponse> finishEquipmentUseAndObtainCredit(@RequestHeader(name = "authority-id") Long authorityId,
+                                                                                  @RequestParam(name = "reservation_id") Long reservationId,
+                                                                                  @Valid @RequestBody ObtainCreditRequest requestDto) {
         Reservation reservation = reservationService.findById(reservationId);
         Authority authority = authorityService.findById(authorityId);
 
-        ObtainCreditResponse response = reservationService.addCredit(reservation, authority,
+        ObtainCreditResponse response = reservationService.checkConditionAndAddCredit(reservation, authority,
                 requestDto.getEndEquipmentUseAt());
 
         return ResponseEntity

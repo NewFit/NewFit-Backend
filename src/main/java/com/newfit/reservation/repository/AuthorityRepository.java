@@ -59,8 +59,9 @@ public class AuthorityRepository {
                 .getSingleResult();
     }
 
-    public List<Authority> findAll() {
-        return em.createQuery("select a from Authority a", Authority.class)
+    public List<Authority> findAllByCreditAcquisitionCountNotZero() {
+        return em.createQuery("select a from Authority a where a.creditAcquisitionCount <> 0"
+                        , Authority.class)
                 .getResultList();
     }
 }
