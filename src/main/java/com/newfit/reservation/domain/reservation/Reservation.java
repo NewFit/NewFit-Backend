@@ -84,6 +84,10 @@ public class Reservation extends BaseTimeEntity {
         this.startTagAt = startTagAt;
     }
 
+    public void updateStatus(Status status) {
+        this.status = status;
+    }
+
     public boolean overlapped(LocalDateTime start, LocalDateTime end) {
         boolean startBeforeEnd = this.start_at.isBefore(this.end_at)
                 && start.isBefore(end);
