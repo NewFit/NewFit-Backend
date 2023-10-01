@@ -1,20 +1,25 @@
 package com.newfit.reservation.controller;
 
+import com.newfit.reservation.domain.Authority;
+import com.newfit.reservation.domain.reservation.Reservation;
+import com.newfit.reservation.dto.request.ObtainCreditRequest;
+import com.newfit.reservation.dto.response.ObtainCreditResponse;
 import com.newfit.reservation.dto.response.UserRankInfoListResponse;
+import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.CreditService;
+import com.newfit.reservation.service.reservation.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/credit")
 @RequiredArgsConstructor
 public class CreditApiController {
     private final CreditService creditService;
+    private final ReservationService reservationService;
+    private final AuthorityService authorityService;
 
     @GetMapping
     public ResponseEntity<UserRankInfoListResponse> getGymRanking(@RequestHeader(name = "authority-id") Long authorityId) {
@@ -22,5 +27,20 @@ public class CreditApiController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(gymRanking);
+    }
+
+    @PostMapping
+    public ResponseEntity<ObtainCreditResponse> addCredit(@RequestHeader(name = "authority-id") Long authorityId,
+                                                             @RequestParam(name = "reservation_id") Long reservationId,
+                                                          @RequestBody ObtainCreditRequest requestDto) {
+        Reservation reservation = reservationService.findById(reservationId);
+        Authority authority = authorityService.findById(authorityId);
+
+        ObtainCreditResponse response = reservationService.addCredit(reservation, authority,
+                requestDto.getEndEquipmentUseAt());
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 }
