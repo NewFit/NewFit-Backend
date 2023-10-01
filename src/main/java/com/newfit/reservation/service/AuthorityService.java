@@ -70,7 +70,7 @@ public class AuthorityService {
      */
     public UserAcceptResponse acceptUser(Long userId, Long gymId) {
         Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, Role.USER);
-        if(authority == null || authority.getAccepted())
+        if (authority == null || authority.getAccepted())
             throw new IllegalArgumentException();
 
         authority.acceptUser();
@@ -97,7 +97,7 @@ public class AuthorityService {
         for (Authority authority : authorities) {
             UserAndPendingResponse response = new UserAndPendingResponse(authority);
 
-            if(authority.getAccepted())
+            if (authority.getAccepted())
                 users.add(response);
             else
                 requests.add(response);
