@@ -37,6 +37,6 @@ public class AuthorityApiController {
     @GetMapping("/reservation/{authority-id}")
     public ReservationListResponse listReservation(@PathVariable("authority-id") Long authorityId) {
 
-        return authorityService.listReservation(authorityId);
+        return authorityService.listAuthorityReservation(authorityId);
     }
 }
