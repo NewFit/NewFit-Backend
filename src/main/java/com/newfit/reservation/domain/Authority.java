@@ -1,6 +1,7 @@
 package com.newfit.reservation.domain;
 
 import com.newfit.reservation.domain.common.BaseTimeEntity;
+import com.newfit.reservation.domain.reservation.Reservation;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -44,6 +45,9 @@ public class Authority extends BaseTimeEntity {
     // 양방향 연관관계를 나타냅니다.
     @OneToMany(mappedBy = "authority", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Credit> creditList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "reserver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservationList = new ArrayList<>();
 
     // accepted 필드값을 true로 업데이트하는 메소드입니다.
     public void acceptUser() {
