@@ -23,13 +23,12 @@ public class AuthorityApiController {
     }
 
     @GetMapping
-    public GymListResponse listRegistration(@RequestHeader(value = "authority-id") Long authoriyId) {
-        return authorityService.listRegistration(authoriyId);
+    public GymListResponse listRegistration(@RequestHeader(value = "authority-id") Long authorityId) {
+        return authorityService.listRegistration(authorityId);
     }
 
     @DeleteMapping
-    public void delete(@RequestHeader(value = "User-Id") Long userId,
-                       @Valid @RequestBody AuthorityRequest request) {
-        authorityService.delete(userId, request.getGymId());
+    public void delete(@RequestHeader(value = "authority-id") Long authorityId) {
+        authorityService.delete(authorityId);
     }
 }

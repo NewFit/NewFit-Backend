@@ -42,6 +42,12 @@ public class AuthorityRepository {
                 .executeUpdate();
     }
 
+    public void deleteById(Long authorityId) {
+        em.createQuery("DELETE FROM Authority a WHERE a.id = :authorityId")
+                .setParameter("authorityId", authorityId)
+                .executeUpdate();
+    }
+
     public List<Authority> findAuthoritiesByUserId(Long id) {
         return em.createQuery("SELECT a FROM Authority a WHERE a.user.id = :userId",
                         Authority.class)
