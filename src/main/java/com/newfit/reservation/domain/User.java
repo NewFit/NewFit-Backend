@@ -104,6 +104,12 @@ public class User extends BaseTimeEntity {
 
     }
 
+    public void updateBalance(Long balance) {
+
+        this.balance = balance;
+
+    }
+
     public Long getTermCredit(LocalDateTime term) {
         return this.authorityList
                 .stream()

@@ -58,4 +58,10 @@ public class AuthorityRepository {
                 .setParameter("role", role)
                 .getSingleResult();
     }
+
+    public List<Authority> findAllByCreditAcquisitionCountNotZero() {
+        return em.createQuery("select a from Authority a where a.creditAcquisitionCount <> 0"
+                        , Authority.class)
+                .getResultList();
+    }
 }
