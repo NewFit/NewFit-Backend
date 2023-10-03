@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,16 +41,19 @@ public class AuthorityService {
         return authorityRepository.save(authority);
     }
 
-    public void delete(Long userId, Long gymId) {
-        authorityRepository.deleteByUserIdAndGymId(userId, gymId);
+    public void delete(Long authorityId) {
+        authorityRepository.deleteById(authorityId);
     }
 
-    public GymListResponse listRegistration(Long id) {
+    public GymListResponse listRegistration(Long authorityId) {
+
+        Long userId = findById(authorityId).getUser().getId();
+
         return GymListResponse.builder()
-                .gyms(authorityRepository.findAuthoritiesByUserId(id)
+                .gyms(authorityRepository.findAuthoritiesByUserId(userId)
                         .stream()
                         .map(GymResponse::new)
-                        .collect(Collectors.toList())
+                        .toList()
                 )
                 .build();
     }
