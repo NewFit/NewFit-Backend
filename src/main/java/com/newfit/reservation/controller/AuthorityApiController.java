@@ -2,6 +2,7 @@ package com.newfit.reservation.controller;
 
 import com.newfit.reservation.dto.request.AuthorityRequest;
 import com.newfit.reservation.dto.response.GymListResponse;
+import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.service.AuthorityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,11 @@ public class AuthorityApiController {
     @DeleteMapping
     public void delete(@RequestHeader(value = "authority-id") Long authorityId) {
         authorityService.delete(authorityId);
+    }
+
+    @GetMapping("/reservation")
+    public ReservationListResponse listReservation(@RequestHeader("authority-id") Long authorityId) {
+
+        return authorityService.listAuthorityReservation(authorityId);
     }
 }
