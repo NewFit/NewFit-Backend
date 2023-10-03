@@ -5,8 +5,10 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.BusinessTime;
 import com.newfit.reservation.domain.Credit;
 import com.newfit.reservation.domain.Gym;
+import com.newfit.reservation.domain.equipment.Condition;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.reservation.Reservation;
+import com.newfit.reservation.domain.reservation.Status;
 import com.newfit.reservation.domain.routine.EquipmentRoutine;
 import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
@@ -19,13 +21,13 @@ import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import static java.time.LocalDateTime.*;
 
 @Service
 @RequiredArgsConstructor
@@ -114,7 +116,7 @@ public class ReservationService {
     }
 
     public EquipmentInfoResponse getAllOccupiedTimes(EquipmentGym equipmentGym) {
-        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime now = now();
 
         List<Reservation> reservations = reservationRepository.findAllByEquipmentGym(equipmentGym);
 
@@ -265,7 +267,7 @@ public class ReservationService {
     }
 
     private void addCredit(Reservation reservation, Authority authority, LocalDateTime endTagAt) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = now();
         if(checkConditions(reservation, endTagAt)) {
             Credit credit = creditRepository.findByAuthorityAndYearAndMonth(authority, (short) now.getYear(), (short) now.getMonthValue())
                     .orElseThrow(IllegalArgumentException::new);
@@ -292,7 +294,7 @@ public class ReservationService {
         final long MAX_HOUR_TERM = 2L;
         final long MAX_MINUTE = 30L;
 
-        LocalDateTime twoHourLater = LocalDateTime.now().plusHours(MAX_HOUR_TERM);
+        LocalDateTime twoHourLater = now().plusHours(MAX_HOUR_TERM);
 
         if (startAt.isAfter(twoHourLater)) {
             throw new IllegalArgumentException("예약 시작 시간을 확인해주세요.");
@@ -318,5 +320,30 @@ public class ReservationService {
                 )
                 .findAny()
                 .isEmpty();
+    }
+
+    public void startUse(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
+        validateTagAt(tagAt);
+        updateStartTagAtAndStatus(authorityId, equipmentGymId, tagAt);
+    }
+
+    private void updateStartTagAtAndStatus(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
+        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).orElseThrow(IllegalArgumentException::new);
+        Reservation reservation = findReservationByAuthorityAndEquipmentGym(authorityId, equipmentGym);
+
+        reservation.updateStartTagAt(tagAt);
+        reservation.updateStatus(Status.PROCESSING);
+        equipmentGym.updateCondition(Condition.OCCUPIED);
+    }
+
+    private Reservation findReservationByAuthorityAndEquipmentGym(Long authorityId, EquipmentGym equipmentGym) {
+        Authority authority = authorityRepository.findOne(authorityId).orElseThrow(IllegalArgumentException::new);
+        return reservationRepository.findByReserverAndEquipmentGym(authority, equipmentGym).orElseThrow(IllegalArgumentException::new);
+    }
+
+    private void validateTagAt(LocalDateTime tagAt) {
+        if (tagAt.isBefore(now().minusMinutes(3))) {
+            throw new IllegalArgumentException("can't update past reservation's startTagAt");
+        }
     }
 }
