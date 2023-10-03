@@ -44,12 +44,15 @@ public class AuthorityService {
         authorityRepository.deleteByUserIdAndGymId(userId, gymId);
     }
 
-    public GymListResponse listRegistration(Long id) {
+    public GymListResponse listRegistration(Long authorityId) {
+
+        Long userId = findById(authorityId).getUser().getId();
+
         return GymListResponse.builder()
-                .gyms(authorityRepository.findAuthoritiesByUserId(id)
+                .gyms(authorityRepository.findAuthoritiesByUserId(userId)
                         .stream()
                         .map(GymResponse::new)
-                        .collect(Collectors.toList())
+                        .toList()
                 )
                 .build();
     }
@@ -68,7 +71,7 @@ public class AuthorityService {
      */
     public UserAcceptResponse acceptUser(Long userId, Long gymId) {
         Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, Role.USER);
-        if(authority == null || authority.getAccepted())
+        if (authority == null || authority.getAccepted())
             throw new IllegalArgumentException();
 
         authority.acceptUser();
@@ -95,7 +98,7 @@ public class AuthorityService {
         for (Authority authority : authorities) {
             UserAndPendingResponse response = new UserAndPendingResponse(authority);
 
-            if(authority.getAccepted())
+            if (authority.getAccepted())
                 users.add(response);
             else
                 requests.add(response);

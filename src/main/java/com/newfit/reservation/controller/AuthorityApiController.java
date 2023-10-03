@@ -23,8 +23,8 @@ public class AuthorityApiController {
     }
 
     @GetMapping
-    public GymListResponse listRegistration(@RequestHeader(value = "User-Id") Long id) {
-        return authorityService.listRegistration(id);
+    public GymListResponse listRegistration(@RequestHeader(value = "authority-id") Long authoriyId) {
+        return authorityService.listRegistration(authoriyId);
     }
 
     @DeleteMapping
