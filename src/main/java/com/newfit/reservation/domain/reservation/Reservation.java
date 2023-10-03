@@ -4,13 +4,11 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.dto.request.ReservationRequest;
-import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -77,6 +75,13 @@ public class Reservation extends BaseTimeEntity {
 
     public void updateRepetitionNumber(Long repetitionNumber) {
         this.repetition_number = repetitionNumber;
+    }
+
+    public void updateStartTagAt(LocalDateTime startTagAt) {
+        if (this.startTagAt != null) {
+            throw new IllegalArgumentException("can't update twice");
+        }
+        this.startTagAt = startTagAt;
     }
 
     public void updateStatus(Status status) {
