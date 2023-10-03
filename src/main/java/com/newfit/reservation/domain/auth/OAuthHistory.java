@@ -61,4 +61,9 @@ public class OAuthHistory { // OAuth2 인증을 통해 얻어온 사용자 정�
     public User getUser() {
         return user;
     }
+
+    public void signUp(User user) {
+        this.signup = true;
+        this.user = user;
+    }
 }
