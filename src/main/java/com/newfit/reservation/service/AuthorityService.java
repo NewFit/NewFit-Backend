@@ -8,6 +8,7 @@ import com.newfit.reservation.dto.response.*;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.GymRepository;
 import com.newfit.reservation.repository.UserRepository;
+import com.newfit.reservation.repository.reservation.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class AuthorityService {
     private final AuthorityRepository authorityRepository;
     private final UserRepository userRepository;
     private final GymRepository gymRepository;
+    private final ReservationRepository reservationRepository;
 
     public Long register(Long userId, Long gymId) {
 
@@ -68,7 +70,7 @@ public class AuthorityService {
      */
     public UserAcceptResponse acceptUser(Long userId, Long gymId) {
         Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, Role.USER);
-        if(authority == null || authority.getAccepted())
+        if (authority == null || authority.getAccepted())
             throw new IllegalArgumentException();
 
         authority.acceptUser();
@@ -95,7 +97,7 @@ public class AuthorityService {
         for (Authority authority : authorities) {
             UserAndPendingResponse response = new UserAndPendingResponse(authority);
 
-            if(authority.getAccepted())
+            if (authority.getAccepted())
                 users.add(response);
             else
                 requests.add(response);
@@ -111,5 +113,22 @@ public class AuthorityService {
     public Authority findById(Long authorityId) {
         return authorityRepository.findOne(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public ReservationListResponse listAuthorityReservation(Long authorityId) {
+
+        String gymName = findById(authorityId).getGym().getName();
+
+        List<ReservationDetailResponse> reservationResponseList = reservationRepository
+                .findAllByAuthorityId(authorityId)
+                .stream()
+                .map(ReservationDetailResponse::new)
+                .toList();
+
+
+        return ReservationListResponse.builder()
+                .gymName(gymName)
+                .reservationResponseList(reservationResponseList)
+                .build();
     }
 }
