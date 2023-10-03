@@ -148,6 +148,11 @@ public class ReservationService {
         return reservedList;
     }
 
+    public Reservation findById(Long reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
     // 루틴의 특정 기구를 예약
     private RoutineReservationResponse reserveOneInRoutine(Long authorityId, Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
         Authority reserver = authorityRepository.findOne(authorityId)
@@ -266,13 +271,33 @@ public class ReservationService {
             return (gymOpenHour < reservationStartHour) || (reservationStartHour < gymCloseHour);
     }
 
-    private void addCredit(Reservation reservation, Authority authority, LocalDateTime endTagAt) {
-        LocalDateTime now = now();
-        if(checkConditions(reservation, endTagAt)) {
-            Credit credit = creditRepository.findByAuthorityAndYearAndMonth(authority, (short) now.getYear(), (short) now.getMonthValue())
-                    .orElseThrow(IllegalArgumentException::new);
-            credit.addAmount();
+    public ObtainCreditResponse checkConditionAndAddCredit(Reservation reservation, Authority authority, LocalDateTime endEquipmentUseAt) {
+        LocalDateTime now = LocalDateTime.now();
+        String message = null;
+        Long increasedAmount = null;
+
+        if (checkConditions(reservation, endEquipmentUseAt)) {
+            if (authority.getCreditAcquisitionCount() == 10) {
+                message = "일일 크레딧 획득량을 모두 채웠습니다.";
+                increasedAmount = 0L;
+            } else {
+                Credit credit = creditRepository.findByAuthorityAndYearAndMonth(authority, (short) now.getYear(), (short) now.getMonthValue())
+                        .orElseThrow(IllegalArgumentException::new);
+                credit.addAmount();
+                authority.incrementAcquisitionCount();
+                authority.getUser().updateBalance(100L);
+
+                message = "크레딧을 획득했습니다.";
+                increasedAmount = 100L;
+            }
+        } else {
+            message = "크레딧 획득 조건을 만족하지 못하여 크레딧을 획득하지 못했습니다.";
+            increasedAmount = 0L;
         }
+        reservation.updateStatus(Status.COMPLETED);
+        reservation.getEquipmentGym().updateCondition(Condition.AVAILABLE);
+
+        return new ObtainCreditResponse(authority.getUser().getBalance(), increasedAmount, message);
     }
 
     private boolean checkConditions(Reservation reservation, LocalDateTime endTagAt) {
