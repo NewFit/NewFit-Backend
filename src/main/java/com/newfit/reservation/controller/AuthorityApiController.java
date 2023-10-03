@@ -34,8 +34,8 @@ public class AuthorityApiController {
         authorityService.delete(userId, request.getGymId());
     }
 
-    @GetMapping("/reservation/{authority-id}")
-    public ReservationListResponse listReservation(@PathVariable("authority-id") Long authorityId) {
+    @GetMapping("/reservation")
+    public ReservationListResponse listReservation(@RequestHeader("authority-id") Long authorityId) {
 
         return authorityService.listAuthorityReservation(authorityId);
     }
