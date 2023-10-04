@@ -8,7 +8,6 @@ import com.newfit.reservation.domain.auth.OAuthHistory;
 import com.newfit.reservation.dto.request.UserSignUpRequest;
 import com.newfit.reservation.dto.request.UserUpdateRequest;
 import com.newfit.reservation.dto.response.UserDetailResponse;
-import com.newfit.reservation.dto.response.UserSimpleResponse;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import com.newfit.reservation.repository.UserRepository;
@@ -29,7 +28,7 @@ public class UserService {
     private final CreditRepository creditRepository;
     private final OAuthHistoryRepository oAuthHistoryRepository;
 
-    public UserSimpleResponse modify(Long userId, UserUpdateRequest request) {
+    public void modify(Long userId, UserUpdateRequest request) {
         User updateUser = findOneById(userId);
 
         if (request.getEmail() != null)
@@ -43,11 +42,6 @@ public class UserService {
 
         if (request.getUserProfileImage() != null)
             updateUser.updateFilePath(request.getUserProfileImage());
-
-
-        return UserSimpleResponse.builder()
-                .userId(userId)
-                .build();
     }
 
     public UserDetailResponse userDetail(Long authorityId) {
@@ -76,11 +70,8 @@ public class UserService {
                 .build();
     }
 
-    public UserSimpleResponse drop(Long userId) {
+    public void drop(Long userId) {
         userRepository.deleteById(userId);
-        return UserSimpleResponse.builder()
-                .userId(userId)
-                .build();
     }
 
     public User findOneById(Long userId) {
