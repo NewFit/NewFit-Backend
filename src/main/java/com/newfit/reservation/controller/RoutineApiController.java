@@ -63,7 +63,7 @@ public class RoutineApiController {
         equipmentRoutineService.updateEquipmentRoutinesInRoutine(routine, requestDto);
 
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .noContent()
                 .build();
     }
 
@@ -79,8 +79,7 @@ public class RoutineApiController {
         RoutineListResponse response = routineService.findAllRoutinesByAuthority(authority);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
+                .ok(response);
     }
 
     /*
@@ -90,7 +89,7 @@ public class RoutineApiController {
     public ResponseEntity<Void> deleteRoutine(@Valid @RequestBody DeleteRoutineRequest requestDto) {
         routineService.deleteRoutine(requestDto.getRoutineId());
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .noContent()
                 .build();
     }
 
@@ -101,7 +100,6 @@ public class RoutineApiController {
     public ResponseEntity<RoutineDetailResponse> findRoutineDetail(@PathVariable("routineId") Long id) {
         RoutineDetailResponse routineDetail = routineService.findRoutineDetail(id);
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(routineDetail);
+                .ok(routineDetail);
     }
 }

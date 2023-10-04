@@ -9,7 +9,6 @@ import com.newfit.reservation.service.CreditService;
 import com.newfit.reservation.service.reservation.ReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +24,7 @@ public class CreditApiController {
     public ResponseEntity<UserRankInfoListResponse> getGymRanking(@RequestHeader(name = "authority-id") Long authorityId) {
         UserRankInfoListResponse gymRanking = creditService.getRankInGym(authorityId);
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(gymRanking);
+                .ok(gymRanking);
     }
 
     @PatchMapping

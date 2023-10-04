@@ -29,8 +29,10 @@ public class AuthorityApiController {
     }
 
     @GetMapping
-    public GymListResponse listRegistration(@RequestHeader(value = "authority-id") Long authorityId) {
-        return authorityService.listRegistration(authorityId);
+    public ResponseEntity<GymListResponse> listRegistration(@RequestHeader(value = "authority-id") Long authorityId) {
+        GymListResponse gymListResponse = authorityService.listRegistration(authorityId);
+        return ResponseEntity
+                .ok(gymListResponse);
     }
 
     @DeleteMapping
@@ -44,8 +46,10 @@ public class AuthorityApiController {
     }
 
     @GetMapping("/reservation")
-    public ReservationListResponse listReservation(@RequestHeader("authority-id") Long authorityId) {
+    public ResponseEntity<ReservationListResponse> listReservation(@RequestHeader("authority-id") Long authorityId) {
 
-        return authorityService.listAuthorityReservation(authorityId);
+        ReservationListResponse reservationListResponse = authorityService.listAuthorityReservation(authorityId);
+        return ResponseEntity
+                .ok(reservationListResponse);
     }
 }

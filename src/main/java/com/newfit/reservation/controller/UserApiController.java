@@ -31,12 +31,14 @@ public class UserApiController {
     }
 
     @GetMapping
-    public UserDetailResponse userDetail() {
+    public ResponseEntity<UserDetailResponse> userDetail() {
 
         // TODO: remove this userId and apply security
         Long authorityId = 4L;
 
-        return userService.userDetail(authorityId);
+        UserDetailResponse userDetailResponse = userService.userDetail(authorityId);
+        return ResponseEntity
+                .ok(userDetailResponse);
     }
 
     @DeleteMapping

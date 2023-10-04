@@ -35,9 +35,11 @@ public class ReservationApiController {
     }
 
     @GetMapping
-    public ReservationListResponse listReservation(@RequestParam("equipment_gym_id") Long equipmentGymId) {
+    public ResponseEntity<ReservationListResponse> listReservation(@RequestParam("equipment_gym_id") Long equipmentGymId) {
 
-        return reservationService.listReservation(equipmentGymId);
+        ReservationListResponse reservationListResponse = reservationService.listReservation(equipmentGymId);
+        return ResponseEntity
+                .ok(reservationListResponse);
     }
 
     @PatchMapping
