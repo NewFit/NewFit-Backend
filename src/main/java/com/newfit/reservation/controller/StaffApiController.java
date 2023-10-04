@@ -14,7 +14,7 @@ import com.newfit.reservation.service.equipment.EquipmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import static org.springframework.http.HttpStatus.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +44,7 @@ public class StaffApiController {
         equipmentGymService.registerEquipmentInGym(equipment, gym, request.getCount(), request.getEquipmentGymNames());
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(CREATED)
                 .build();
     }
 
@@ -55,9 +55,8 @@ public class StaffApiController {
     public ResponseEntity<EquipmentGymListResponse> getAllEquipment(@RequestParam(name = "gym_id") Long gymId) {
         Gym gym = gymService.findById(gymId);
         EquipmentGymListResponse allInGym = equipmentGymService.findAllInGym(gym);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(allInGym);
+
+        return ResponseEntity.ok(allInGym);
     }
 
     /*
@@ -67,7 +66,7 @@ public class StaffApiController {
     public ResponseEntity<Void> updateEquipmentCondition(@PathVariable Long equipmentGymId, @Valid @RequestBody UpdateConditionRequest request) {
         equipmentGymService.updateCondition(equipmentGymId, request.getCondition());
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .noContent()
                 .build();
     }
 
@@ -79,7 +78,7 @@ public class StaffApiController {
     public ResponseEntity<Void> deleteEquipment(@Valid @RequestBody DeleteEquipmentRequest request) {
         equipmentService.deleteEquipment(request.getEquipmentId());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .noContent()
                 .build();
     }
 
@@ -90,7 +89,7 @@ public class StaffApiController {
     public ResponseEntity<Void> deleteEquipmentGym(@Valid @RequestBody DeleteEquipmentGymRequest request) {
         equipmentGymService.deleteEquipmentGym(request.getEquipmentGymId());
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .noContent()
                 .build();
     }
 
@@ -99,11 +98,11 @@ public class StaffApiController {
     AuthorityService에게 로직 실행을 위임한 뒤에 Dto를 넘겨받아 반환합니다.
      */
     @PostMapping("/authority")
-    public ResponseEntity<UserAcceptResponse> acceptUser(@Valid @RequestBody UserAcceptRequest requestDto) {
-        UserAcceptResponse userAcceptResponse = authorityService.acceptUser(requestDto.getUserId(), requestDto.getGymId());
+    public ResponseEntity<Void> acceptUser(@Valid @RequestBody UserAcceptRequest requestDto) {
+        authorityService.acceptUser(requestDto.getUserId(), requestDto.getGymId());
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userAcceptResponse);
+                .ok()
+                .build();
     }
 
     /*
@@ -113,8 +112,7 @@ public class StaffApiController {
     @GetMapping("/authority")
     public ResponseEntity<UserAndPendingListResponse> getUserAndAcceptRequestList(@RequestParam("gym_id") Long gymId) {
         UserAndPendingListResponse responseDto = authorityService.getUserAndAcceptRequestList(gymId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseDto);
+
+        return ResponseEntity.ok(responseDto);
     }
 }
