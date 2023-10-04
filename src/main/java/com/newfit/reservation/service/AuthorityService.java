@@ -26,7 +26,7 @@ public class AuthorityService {
     private final GymRepository gymRepository;
     private final ReservationRepository reservationRepository;
 
-    public Long register(Long userId, Long gymId) {
+    public void register(Long userId, Long gymId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(IllegalArgumentException::new);
@@ -38,7 +38,7 @@ public class AuthorityService {
                 .gym(gym)
                 .build();
 
-        return authorityRepository.save(authority);
+        authorityRepository.save(authority);
     }
 
     public void delete(Long authorityId) {
