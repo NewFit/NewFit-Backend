@@ -98,11 +98,11 @@ public class StaffApiController {
     AuthorityService에게 로직 실행을 위임한 뒤에 Dto를 넘겨받아 반환합니다.
      */
     @PostMapping("/authority")
-    public ResponseEntity<UserAcceptResponse> acceptUser(@Valid @RequestBody UserAcceptRequest requestDto) {
-        UserAcceptResponse userAcceptResponse = authorityService.acceptUser(requestDto.getUserId(), requestDto.getGymId());
+    public ResponseEntity<Void> acceptUser(@Valid @RequestBody UserAcceptRequest requestDto) {
+        authorityService.acceptUser(requestDto.getUserId(), requestDto.getGymId());
         return ResponseEntity
-                .status(CREATED)
-                .body(userAcceptResponse);
+                .ok()
+                .build();
     }
 
     /*
