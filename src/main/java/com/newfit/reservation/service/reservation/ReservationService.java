@@ -281,6 +281,8 @@ public class ReservationService {
                 credit.addAmount();
                 authority.incrementAcquisitionCount();
                 authority.getUser().updateBalance(100L);
+            } else {
+                throw new IllegalArgumentException("일일 크레딧 획득량을 모두 채웠습니다");
             }
         }
         reservation.updateStatus(Status.COMPLETED);
