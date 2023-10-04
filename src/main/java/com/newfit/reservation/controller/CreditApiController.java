@@ -3,14 +3,12 @@ package com.newfit.reservation.controller;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.reservation.Reservation;
 import com.newfit.reservation.dto.request.ObtainCreditRequest;
-import com.newfit.reservation.dto.response.ObtainCreditResponse;
 import com.newfit.reservation.dto.response.UserRankInfoListResponse;
 import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.CreditService;
 import com.newfit.reservation.service.reservation.ReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,22 +24,20 @@ public class CreditApiController {
     public ResponseEntity<UserRankInfoListResponse> getGymRanking(@RequestHeader(name = "authority-id") Long authorityId) {
         UserRankInfoListResponse gymRanking = creditService.getRankInGym(authorityId);
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(gymRanking);
+                .ok(gymRanking);
     }
 
-    @PostMapping
-    public ResponseEntity<ObtainCreditResponse> finishEquipmentUseAndObtainCredit(@RequestHeader(name = "authority-id") Long authorityId,
+    @PatchMapping
+    public ResponseEntity<Void> finishEquipmentUseAndObtainCredit(@RequestHeader(name = "authority-id") Long authorityId,
                                                                                   @RequestParam(name = "reservation_id") Long reservationId,
                                                                                   @Valid @RequestBody ObtainCreditRequest requestDto) {
         Reservation reservation = reservationService.findById(reservationId);
         Authority authority = authorityService.findById(authorityId);
 
-        ObtainCreditResponse response = reservationService.checkConditionAndAddCredit(reservation, authority,
-                requestDto.getEndEquipmentUseAt());
+        reservationService.checkConditionAndAddCredit(reservation, authority, requestDto.getEndEquipmentUseAt());
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+                .noContent()
+                .build();
     }
 }

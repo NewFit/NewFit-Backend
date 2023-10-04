@@ -5,15 +5,14 @@ import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.dto.request.StartReservationRequest;
 import com.newfit.reservation.dto.request.routine.RoutineReservationRequest;
 import com.newfit.reservation.dto.response.ReservationListResponse;
-import com.newfit.reservation.dto.response.ReservationResponse;
 import com.newfit.reservation.dto.response.RoutineReservationListResponse;
 import com.newfit.reservation.service.reservation.ReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import static org.springframework.http.HttpStatus.CREATED;
 
 
 @Slf4j
@@ -26,23 +25,30 @@ public class ReservationApiController {
 
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse reserve(@RequestHeader("authority-id") Long authorityId,
+    public ResponseEntity<Void> reserve(@RequestHeader("authority-id") Long authorityId,
                                        @RequestParam(value = "equipment_id") Long equipmentId,
                                        @Valid @RequestBody ReservationRequest request) {
-        return reservationService.reserve(authorityId, equipmentId, request);
+        reservationService.reserve(authorityId, equipmentId, request);
+        return ResponseEntity
+                .status(CREATED)
+                .build();
     }
 
     @GetMapping
-    public ReservationListResponse listReservation(@RequestParam("equipment_gym_id") Long equipmentGymId) {
+    public ResponseEntity<ReservationListResponse> listReservation(@RequestParam("equipment_gym_id") Long equipmentGymId) {
 
-        return reservationService.listReservation(equipmentGymId);
+        ReservationListResponse reservationListResponse = reservationService.listReservation(equipmentGymId);
+        return ResponseEntity
+                .ok(reservationListResponse);
     }
 
     @PatchMapping
-    public ReservationResponse updateReservation(@RequestParam("reservation_id") Long reservationId,
+    public ResponseEntity<Void> updateReservation(@RequestParam("reservation_id") Long reservationId,
                                                  @Valid @RequestBody ReservationUpdateRequest request) {
-        return reservationService.update(reservationId, request);
+        reservationService.update(reservationId, request);
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
     @DeleteMapping
@@ -57,7 +63,7 @@ public class ReservationApiController {
         RoutineReservationListResponse response = new RoutineReservationListResponse(reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt()));
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(CREATED)
                 .body(response);
     }
 
@@ -65,7 +71,7 @@ public class ReservationApiController {
     public ResponseEntity<Void> startOfUse(@RequestHeader("authority-id") Long authorityId, @Valid @RequestBody StartReservationRequest request) {
         reservationService.startUse(authorityId, request.getEquipmentGymId(), request.getTagAt());
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .noContent()
                 .build();
     }
 }
