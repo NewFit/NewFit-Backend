@@ -34,6 +34,7 @@ public class CreditApiController {
         Reservation reservation = reservationService.findById(reservationId);
         Authority authority = authorityService.findById(authorityId);
 
+        reservationService.updateStatusAndCondition(reservation);
         reservationService.checkConditionAndAddCredit(reservation, authority, requestDto.getEndEquipmentUseAt());
 
         return ResponseEntity
