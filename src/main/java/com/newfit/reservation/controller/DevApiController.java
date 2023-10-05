@@ -21,9 +21,9 @@ public class DevApiController {
     private final UserService userService;
 
     @PostMapping("/bug")
-    public ResponseEntity<Void> createBugReport(@RequestHeader(value = "user-id") Long userId, @RequestBody CreateReportRequest requestDto) {
+    public ResponseEntity<Void> createBugReport(@RequestHeader(value = "user-id") Long userId, @RequestBody CreateReportRequest request) {
         User user = userService.findOneById(userId);
-        reportService.saveReport(user, requestDto);
+        reportService.saveReport(user, request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -31,9 +31,9 @@ public class DevApiController {
     }
 
     @PostMapping("/feature")
-    public ResponseEntity<Void> createFeatureProposal(@RequestHeader(value = "user-id") Long userId, @RequestBody CreateProposalRequest requestDto) {
+    public ResponseEntity<Void> createFeatureProposal(@RequestHeader(value = "user-id") Long userId, @RequestBody CreateProposalRequest request) {
         User user = userService.findOneById(userId);
-        proposalService.saveProposal(user, requestDto);
+        proposalService.saveProposal(user, request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
