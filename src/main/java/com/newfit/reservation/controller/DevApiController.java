@@ -9,10 +9,7 @@ import com.newfit.reservation.service.dev.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,9 +21,7 @@ public class DevApiController {
     private final UserService userService;
 
     @PostMapping("/bug")
-    public ResponseEntity<Void> createBugReport(@RequestBody CreateReportRequest requestDto) {
-        // TODO: remove this userId and apply security
-        Long userId = 1L;
+    public ResponseEntity<Void> createBugReport(@RequestHeader(value = "user-id") Long userId, @RequestBody CreateReportRequest requestDto) {
         User user = userService.findOneById(userId);
         reportService.saveReport(user, requestDto);
 
@@ -36,9 +31,7 @@ public class DevApiController {
     }
 
     @PostMapping("/feature")
-    public ResponseEntity<Void> createFeatureProposal(@RequestBody CreateProposalRequest requestDto) {
-        // TODO: remove this userId and apply security
-        Long userId = 1L;
+    public ResponseEntity<Void> createFeatureProposal(@RequestHeader(value = "user-id") Long userId, @RequestBody CreateProposalRequest requestDto) {
         User user = userService.findOneById(userId);
         proposalService.saveProposal(user, requestDto);
 
