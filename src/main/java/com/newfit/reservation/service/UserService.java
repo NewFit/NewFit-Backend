@@ -54,6 +54,8 @@ public class UserService {
         User user = authority.getUser();
         List<Authority> authorities = user.getAuthorityList();
 
+        AuthorityGymResponse current = new AuthorityGymResponse(authority);
+
         // current Authority를 제외한 나머지 Authority들만 추출
         List<AuthorityGymResponse> authorityGyms = authorities.stream()
                 .filter(authorityIter -> !(authorityIter.getId().equals(authorityId)))
@@ -70,7 +72,7 @@ public class UserService {
                 .findAny()
                 .orElse(0L);
 
-        return UserDetailResponse.createUserDetailResponse(user, monthCredit, authority, authorityGyms);
+        return UserDetailResponse.createUserDetailResponse(user, monthCredit, current, authorityGyms);
     }
 
     public void drop(Long userId) {
