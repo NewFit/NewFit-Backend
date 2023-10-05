@@ -1,11 +1,15 @@
 package com.newfit.reservation.controller;
 
+import com.newfit.reservation.domain.Authority;
+import com.newfit.reservation.domain.reservation.Reservation;
+import com.newfit.reservation.dto.request.ObtainCreditRequest;
 import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.dto.request.StartReservationRequest;
 import com.newfit.reservation.dto.request.routine.RoutineReservationRequest;
 import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.dto.response.RoutineReservationListResponse;
+import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.reservation.ReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class ReservationApiController {
 
     private final ReservationService reservationService;
+    private final AuthorityService authorityService;
 
 
     @PostMapping
@@ -70,6 +75,21 @@ public class ReservationApiController {
     @PatchMapping("/start")
     public ResponseEntity<Void> startOfUse(@RequestHeader("authority-id") Long authorityId, @Valid @RequestBody StartReservationRequest request) {
         reservationService.startUse(authorityId, request.getEquipmentGymId(), request.getTagAt());
+        return ResponseEntity
+                .noContent()
+                .build();
+    }
+
+    @PatchMapping("/end")
+    public ResponseEntity<Void> endOfUseAndObtainCredit(@RequestHeader(name = "authority-id") Long authorityId,
+                                                                  @RequestParam(name = "reservation_id") Long reservationId,
+                                                                  @Valid @RequestBody ObtainCreditRequest requestDto) {
+        Reservation reservation = reservationService.findById(reservationId);
+        Authority authority = authorityService.findById(authorityId);
+
+        reservationService.updateStatusAndCondition(reservation);
+        reservationService.checkConditionAndAddCredit(reservation, authority, requestDto.getEndEquipmentUseAt());
+
         return ResponseEntity
                 .noContent()
                 .build();
