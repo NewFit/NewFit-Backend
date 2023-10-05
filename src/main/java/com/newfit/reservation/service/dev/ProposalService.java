@@ -19,9 +19,9 @@ public class ProposalService {        // ProposalRepository 에 단순 위임하
 
     private final ProposalRepository proposalRepository;
 
-    public Long saveProposal(User user, CreateProposalRequest requestDto) {
+    public Long saveProposal(User user, CreateProposalRequest request) {
 
-        Proposal proposal = Proposal.createProposal(user, requestDto.getName(), requestDto.getContent());
+        Proposal proposal = Proposal.createProposal(user, request.getName(), request.getContent());
         return proposalRepository.save(proposal);
     }
 
