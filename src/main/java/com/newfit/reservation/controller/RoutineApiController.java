@@ -32,10 +32,7 @@ public class RoutineApiController {
     Routine 객체 등록 후 EquipmentRoutine들 등록
      */
     @PostMapping("")
-    public ResponseEntity<Void> registerRoutine(@Valid @RequestBody RegisterRoutineRequest request) {
-        // TODO: remove this authorityId and apply security
-        Long authorityId = 1L;
-
+    public ResponseEntity<Void> registerRoutine(@RequestHeader(value = "authority-id") Long authorityId, @Valid @RequestBody RegisterRoutineRequest request) {
         Authority authority = authorityService.findById(authorityId);
 
         Routine routine = routineService.registerRoutine(authority, request.getRoutineName());
@@ -71,9 +68,7 @@ public class RoutineApiController {
     Authority가 생성한 모든 Routine 조회
      */
     @GetMapping("")
-    public ResponseEntity<RoutineListResponse> findAllRoutinesByAuthority() {
-        // TODO: remove this authorityId and apply security
-        Long authorityId = 1L;
+    public ResponseEntity<RoutineListResponse> findAllRoutinesByAuthority(@RequestHeader(value = "authority-id") Long authorityId) {
         Authority authority = authorityService.findById(authorityId);
 
         RoutineListResponse response = routineService.findAllRoutinesByAuthority(authority);

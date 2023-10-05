@@ -5,7 +5,6 @@ import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.dto.request.*;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
-import com.newfit.reservation.dto.response.UserAcceptResponse;
 import com.newfit.reservation.dto.response.UserAndPendingListResponse;
 import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.GymService;
@@ -34,13 +33,10 @@ public class StaffApiController {
     equipmentGym에 count만큼 등록
      */
     @PostMapping("/equipments")
-    public ResponseEntity<Void> registerEquipment(@RequestParam(name = "gym_id") Long gymId, @Valid @RequestBody RegisterEquipmentRequest request) {
-        // TODO: remove this userId and apply security
-        Long userId = 1L;
-        Gym gym = authorityService.getGym(userId, gymId, Role.MANAGER);
+    public ResponseEntity<Void> registerEquipment(@RequestHeader(value = "authority-id") Long authorityId, @RequestParam(name = "gym_id") Long gymId, @Valid @RequestBody RegisterEquipmentRequest request) {
 
+        Gym gym = authorityService.getGymByAuthorityId(authorityId);
         Equipment equipment = equipmentService.registerEquipment(gym, request.getName(), request.getPurpose());
-
         equipmentGymService.registerEquipmentInGym(equipment, gym, request.getCount(), request.getEquipmentGymNames());
 
         return ResponseEntity
