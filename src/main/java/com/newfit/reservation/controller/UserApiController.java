@@ -27,11 +27,7 @@ public class UserApiController {
     }
 
     @GetMapping
-    public ResponseEntity<UserDetailResponse> userDetail() {
-
-        // TODO: remove this userId and apply security
-        Long authorityId = 4L;
-
+    public ResponseEntity<UserDetailResponse> userDetail(@RequestHeader(value = "authority-id") Long authorityId) {
         UserDetailResponse userDetailResponse = userService.userDetail(authorityId);
         return ResponseEntity
                 .ok(userDetailResponse);
