@@ -101,7 +101,7 @@ public class StaffApiController {
     public ResponseEntity<Void> acceptUser(@Valid @RequestBody UserAcceptRequest requestDto) {
         authorityService.acceptUser(requestDto.getUserId(), requestDto.getGymId());
         return ResponseEntity
-                .ok()
+                .status(CREATED)
                 .build();
     }
 
