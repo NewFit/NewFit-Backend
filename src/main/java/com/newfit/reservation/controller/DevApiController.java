@@ -24,11 +24,11 @@ public class DevApiController {
     private final UserService userService;
 
     @PostMapping("/bug")
-    public ResponseEntity<Void> createBugReport(@RequestBody CreateReportRequest requestDto) {
+    public ResponseEntity<Void> createBugReport(@RequestBody CreateReportRequest request) {
         // TODO: remove this userId and apply security
         Long userId = 1L;
         User user = userService.findOneById(userId);
-        reportService.saveReport(user, requestDto);
+        reportService.saveReport(user, request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -36,11 +36,11 @@ public class DevApiController {
     }
 
     @PostMapping("/feature")
-    public ResponseEntity<Void> createFeatureProposal(@RequestBody CreateProposalRequest requestDto) {
+    public ResponseEntity<Void> createFeatureProposal(@RequestBody CreateProposalRequest request) {
         // TODO: remove this userId and apply security
         Long userId = 1L;
         User user = userService.findOneById(userId);
-        proposalService.saveProposal(user, requestDto);
+        proposalService.saveProposal(user, request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

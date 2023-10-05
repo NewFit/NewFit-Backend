@@ -65,7 +65,7 @@ public class EquipmentRoutineService {
     2. 기존 EquipmentRoutine 객체를 수정
     3. 새로운 EquipmentRoutine 객체를 등록
      */
-    public void updateEquipmentRoutinesInRoutine(Routine routine, UpdateRoutineRequest requestDto) {
+    public void updateEquipmentRoutinesInRoutine(Routine routine, UpdateRoutineRequest request) {
 
         // Routine의 모든 EquipmentRoutine 객체를 조회합니다.
         List<EquipmentRoutine> allByRoutine = equipmentRoutineRepository.findAllByRoutine(routine);
@@ -73,23 +73,23 @@ public class EquipmentRoutineService {
         List<Short> currentSequences = extractCurrentSequences(allByRoutine);
 
         // patch 로직 실행 후의 sequence를 생성하기 위한 등록, 삭제, 수정할 sequence 정보
-        List<Short> addSequences = extractAddSequences(requestDto);
-        List<Short> removeSequences = extractRemoveSequences(requestDto, routine);
-        Map<Short, Short> sequenceMap = generateSequenceMap(requestDto, routine);
+        List<Short> addSequences = extractAddSequences(request);
+        List<Short> removeSequences = extractRemoveSequences(request, routine);
+        Map<Short, Short> sequenceMap = generateSequenceMap(request, routine);
 
         // patch 로직 실행 후의 sequence를 생성 후 validition check
         List<Short> resultSequences = getResultSequences(currentSequences, removeSequences, addSequences, sequenceMap);
         checkSequence(resultSequences);
 
         // patch 로직 실행 => 삭제, 수정, 새로운 기구 등록 순
-        removeEquipmentRoutineInRoutine(requestDto, allByRoutine);
-        modifyEquipmentRoutineInRoutine(requestDto, allByRoutine);
-        addEquipRoutineInRoutine(routine, requestDto);
+        removeEquipmentRoutineInRoutine(request, allByRoutine);
+        modifyEquipmentRoutineInRoutine(request, allByRoutine);
+        addEquipRoutineInRoutine(routine, request);
     }
 
-    private void addEquipRoutineInRoutine(Routine routine, UpdateRoutineRequest requestDto) {
-        if (!requestDto.getAddEquipments().isEmpty()){
-            List<AddEquipmentRequest> addEquipments = requestDto.getAddEquipments();
+    private void addEquipRoutineInRoutine(Routine routine, UpdateRoutineRequest request) {
+        if (!request.getAddEquipments().isEmpty()){
+            List<AddEquipmentRequest> addEquipments = request.getAddEquipments();
 
             for (AddEquipmentRequest addEquipment : addEquipments) {
                 Equipment equipment = equipmentRepository.findById(addEquipment.getEquipmentId())
@@ -106,9 +106,9 @@ public class EquipmentRoutineService {
         }
     }
 
-    private void modifyEquipmentRoutineInRoutine(UpdateRoutineRequest requestDto, List<EquipmentRoutine> allByRoutine) {
-        if (!requestDto.getUpdateEquipments().isEmpty()) {
-            List<UpdateEquipmentRequest> updateEquipments = requestDto.getUpdateEquipments();
+    private void modifyEquipmentRoutineInRoutine(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
+        if (!request.getUpdateEquipments().isEmpty()) {
+            List<UpdateEquipmentRequest> updateEquipments = request.getUpdateEquipments();
 
             for (UpdateEquipmentRequest updateEquipment : updateEquipments) {
 
@@ -127,11 +127,11 @@ public class EquipmentRoutineService {
         }
     }
 
-    private void removeEquipmentRoutineInRoutine(UpdateRoutineRequest requestDto, List<EquipmentRoutine> allByRoutine) {
-        if (!requestDto.getRemoveEquipments().isEmpty()) {
+    private void removeEquipmentRoutineInRoutine(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
+        if (!request.getRemoveEquipments().isEmpty()) {
 
             // allByRoutine에서 제거 대상인 EquipmentRoutine List
-            List<EquipmentRoutine> removeTargets = extractRemoveTargets(requestDto, allByRoutine);
+            List<EquipmentRoutine> removeTargets = extractRemoveTargets(request, allByRoutine);
 
             // 추출한 EquipmentRoutine 객체들을 모두 삭제
             equipmentRoutineRepository.deleteAll(removeTargets);
@@ -147,9 +147,9 @@ public class EquipmentRoutineService {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    private List<EquipmentRoutine> extractRemoveTargets(UpdateRoutineRequest requestDto, List<EquipmentRoutine> allByRoutine) {
+    private List<EquipmentRoutine> extractRemoveTargets(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
         // 사용자가 Routine에서 제거한 Equipment들의 id List
-        List<Long> equipmentIdList = requestDto.getRemoveEquipments().stream()
+        List<Long> equipmentIdList = request.getRemoveEquipments().stream()
                 .map(RemoveEquipmentRequest::getEquipmentId)
                 .collect(Collectors.toList());
 
@@ -165,14 +165,14 @@ public class EquipmentRoutineService {
                 .collect(Collectors.toList());
     }
 
-    private List<Short> extractAddSequences(UpdateRoutineRequest requestDto) {
-        return requestDto.getAddEquipments().stream()
+    private List<Short> extractAddSequences(UpdateRoutineRequest request) {
+        return request.getAddEquipments().stream()
                 .map(AddEquipmentRequest::getSequence)
                 .collect(Collectors.toList());
     }
 
-    private List<Short> extractRemoveSequences(UpdateRoutineRequest requestDto, Routine routine) {
-        List<EquipmentRoutine> equipmentRoutines = requestDto.getRemoveEquipments().stream()
+    private List<Short> extractRemoveSequences(UpdateRoutineRequest request, Routine routine) {
+        List<EquipmentRoutine> equipmentRoutines = request.getRemoveEquipments().stream()
                 .map(r -> equipmentRoutineRepository.findByEquipmentIdAndRoutine(r.getEquipmentId(), routine)
                         .orElseThrow(IllegalArgumentException::new))
                 .collect(Collectors.toList());
@@ -182,9 +182,9 @@ public class EquipmentRoutineService {
                 .collect(Collectors.toList());
     }
 
-    private Map<Short, Short> generateSequenceMap(UpdateRoutineRequest requestDto, Routine routine) {
+    private Map<Short, Short> generateSequenceMap(UpdateRoutineRequest request, Routine routine) {
         Map<Short, Short> sequenceMap = new HashMap<>();
-        List<UpdateEquipmentRequest> updateEquipments = requestDto.getUpdateEquipments();
+        List<UpdateEquipmentRequest> updateEquipments = request.getUpdateEquipments();
 
         for (UpdateEquipmentRequest updateEquipmentRequest : updateEquipments) {
             EquipmentRoutine equipmentRoutine = equipmentRoutineRepository
