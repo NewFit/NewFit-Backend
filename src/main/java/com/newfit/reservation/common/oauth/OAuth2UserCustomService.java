@@ -9,8 +9,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +30,7 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     }
 
     private OAuthHistory findOAuthHistory(Provider provider, String attributeName) {
-        return oAuthHistoryRepository.findByProviderAndAttributeName(provider, attributeName)
-                .stream().findAny()
-                .orElse(createdOAuthHistory(provider, attributeName));
-    }
-
-    private OAuthHistory createdOAuthHistory(Provider provider, String attributeName) {
-        return oAuthHistoryRepository.save(OAuthHistory.createOAuthHistory(provider, attributeName));
+        Optional<OAuthHistory> oAuthHistory = oAuthHistoryRepository.findByProviderAndAttributeName(provider, attributeName);
+        return oAuthHistory.orElseGet(() -> oAuthHistoryRepository.save(OAuthHistory.createOAuthHistory(provider, attributeName)));
     }
 }

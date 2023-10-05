@@ -12,7 +12,6 @@ import com.newfit.reservation.service.equipment.EquipmentService;
 import com.newfit.reservation.service.reservation.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,8 +44,7 @@ public class EquipmentApiController {
         }
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(allInGym);
+                .ok(allInGym);
     }
 
     @GetMapping("/{equipmentGymId}")
@@ -55,7 +53,6 @@ public class EquipmentApiController {
         EquipmentInfoResponse allOccupiedTimes = reservationService.getAllOccupiedTimes(equipmentGym);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(allOccupiedTimes);
+                .ok(allOccupiedTimes);
     }
 }

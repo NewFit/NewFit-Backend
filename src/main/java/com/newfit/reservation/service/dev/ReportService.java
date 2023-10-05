@@ -19,9 +19,9 @@ public class ReportService {        // ReportRepository 에 단순 위임하는 
 
     private final ReportRepository reportRepository;
 
-    public Long saveReport(User user, CreateReportRequest requestDto) {
+    public Long saveReport(User user, CreateReportRequest request) {
 
-        Report report = Report.createReport(user, requestDto.getSubject(), requestDto.getContent());
+        Report report = Report.createReport(user, request.getSubject(), request.getContent());
         return reportRepository.save(report);
     }
 

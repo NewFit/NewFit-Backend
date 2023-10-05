@@ -3,9 +3,11 @@ package com.newfit.reservation.domain;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.dev.Proposal;
 import com.newfit.reservation.domain.dev.Report;
+import com.newfit.reservation.dto.request.UserSignUpRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -104,11 +106,36 @@ public class User extends BaseTimeEntity {
 
     }
 
+    public void updateBalance(Long balance) {
+
+        this.balance += balance;
+
+    }
+
     public Long getTermCredit(LocalDateTime term) {
         return this.authorityList
                 .stream()
                 .map(authority -> authority.getTermCredit(term))
                 .mapToLong(Long::longValue)
                 .sum();
+    }
+
+    @Builder
+    private User(UserSignUpRequest userInfo, Provider provider) {
+        this.username = userInfo.getUsername();
+        this.nickname = userInfo.getNickname();
+        this.email = userInfo.getEmail();
+        this.tel = userInfo.getTel();
+        this.provider = provider;
+        this.balance = 0L;
+        this.lastLoginAt = LocalDateTime.now();
+        this.filePath = "https://newfit-image.s3.ap-northeast-2.amazonaws.com/newfitIcon.png";
+    }
+
+    public static User userSignUp(UserSignUpRequest request, Provider provider) {
+        return User.builder()
+                .userInfo(request)
+                .provider(provider)
+                .build();
     }
 }

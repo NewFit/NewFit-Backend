@@ -1,11 +1,9 @@
 package com.newfit.reservation.controller;
 
 import com.newfit.reservation.domain.Gym;
-import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.dto.request.*;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
-import com.newfit.reservation.dto.response.UserAcceptResponse;
 import com.newfit.reservation.dto.response.UserAndPendingListResponse;
 import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.GymService;
@@ -14,7 +12,7 @@ import com.newfit.reservation.service.equipment.EquipmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import static org.springframework.http.HttpStatus.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,17 +32,14 @@ public class StaffApiController {
     equipmentGym에 count만큼 등록
      */
     @PostMapping("/equipments")
-    public ResponseEntity<Void> registerEquipment(@RequestParam(name = "gym_id") Long gymId, @Valid @RequestBody RegisterEquipmentRequest request) {
-        // TODO: remove this userId and apply security
-        Long userId = 1L;
-        Gym gym = authorityService.getGym(userId, gymId, Role.MANAGER);
+    public ResponseEntity<Void> registerEquipment(@RequestHeader(value = "authority-id") Long authorityId, @Valid @RequestBody RegisterEquipmentRequest request) {
 
+        Gym gym = authorityService.getGymByAuthorityId(authorityId);
         Equipment equipment = equipmentService.registerEquipment(gym, request.getName(), request.getPurpose());
-
         equipmentGymService.registerEquipmentInGym(equipment, gym, request.getCount(), request.getEquipmentGymNames());
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(CREATED)
                 .build();
     }
 
@@ -55,9 +50,8 @@ public class StaffApiController {
     public ResponseEntity<EquipmentGymListResponse> getAllEquipment(@RequestParam(name = "gym_id") Long gymId) {
         Gym gym = gymService.findById(gymId);
         EquipmentGymListResponse allInGym = equipmentGymService.findAllInGym(gym);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(allInGym);
+
+        return ResponseEntity.ok(allInGym);
     }
 
     /*
@@ -67,7 +61,7 @@ public class StaffApiController {
     public ResponseEntity<Void> updateEquipmentCondition(@PathVariable Long equipmentGymId, @Valid @RequestBody UpdateConditionRequest request) {
         equipmentGymService.updateCondition(equipmentGymId, request.getCondition());
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .noContent()
                 .build();
     }
 
@@ -79,7 +73,7 @@ public class StaffApiController {
     public ResponseEntity<Void> deleteEquipment(@Valid @RequestBody DeleteEquipmentRequest request) {
         equipmentService.deleteEquipment(request.getEquipmentId());
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .noContent()
                 .build();
     }
 
@@ -90,7 +84,7 @@ public class StaffApiController {
     public ResponseEntity<Void> deleteEquipmentGym(@Valid @RequestBody DeleteEquipmentGymRequest request) {
         equipmentGymService.deleteEquipmentGym(request.getEquipmentGymId());
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .noContent()
                 .build();
     }
 
@@ -99,11 +93,11 @@ public class StaffApiController {
     AuthorityService에게 로직 실행을 위임한 뒤에 Dto를 넘겨받아 반환합니다.
      */
     @PostMapping("/authority")
-    public ResponseEntity<UserAcceptResponse> acceptUser(@Valid @RequestBody UserAcceptRequest requestDto) {
-        UserAcceptResponse userAcceptResponse = authorityService.acceptUser(requestDto.getUserId(), requestDto.getGymId());
+    public ResponseEntity<Void> acceptUser(@Valid @RequestBody UserAcceptRequest request) {
+        authorityService.acceptUser(request.getUserId(), request.getGymId());
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userAcceptResponse);
+                .status(CREATED)
+                .build();
     }
 
     /*
@@ -113,8 +107,7 @@ public class StaffApiController {
     @GetMapping("/authority")
     public ResponseEntity<UserAndPendingListResponse> getUserAndAcceptRequestList(@RequestParam("gym_id") Long gymId) {
         UserAndPendingListResponse responseDto = authorityService.getUserAndAcceptRequestList(gymId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseDto);
+
+        return ResponseEntity.ok(responseDto);
     }
 }

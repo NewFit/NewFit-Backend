@@ -4,12 +4,14 @@ package com.newfit.reservation.service;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Credit;
 import com.newfit.reservation.domain.User;
+import com.newfit.reservation.domain.auth.OAuthHistory;
+import com.newfit.reservation.dto.request.UserSignUpRequest;
 import com.newfit.reservation.dto.request.UserUpdateRequest;
 import com.newfit.reservation.dto.response.UserDetailResponse;
-import com.newfit.reservation.dto.response.UserSimpleResponse;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import com.newfit.reservation.repository.UserRepository;
+import com.newfit.reservation.repository.auth.OAuthHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +26,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
     private final CreditRepository creditRepository;
+    private final OAuthHistoryRepository oAuthHistoryRepository;
 
-    public UserSimpleResponse modify(Long userId, UserUpdateRequest request) {
+    public void modify(Long userId, UserUpdateRequest request) {
         User updateUser = findOneById(userId);
 
         if (request.getEmail() != null)
@@ -39,11 +42,6 @@ public class UserService {
 
         if (request.getUserProfileImage() != null)
             updateUser.updateFilePath(request.getUserProfileImage());
-
-
-        return UserSimpleResponse.builder()
-                .userId(userId)
-                .build();
     }
 
     public UserDetailResponse userDetail(Long authorityId) {
@@ -72,11 +70,8 @@ public class UserService {
                 .build();
     }
 
-    public UserSimpleResponse drop(Long userId) {
+    public void drop(Long userId) {
         userRepository.deleteById(userId);
-        return UserSimpleResponse.builder()
-                .userId(userId)
-                .build();
     }
 
     public User findOneById(Long userId) {
@@ -84,4 +79,10 @@ public class UserService {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
+    public void signUp(Long oauthHistoryId, UserSignUpRequest request) {
+        OAuthHistory oAuthHistory = oAuthHistoryRepository.findById(oauthHistoryId).orElseThrow(IllegalArgumentException::new);
+        User user = User.userSignUp(request, oAuthHistory.getProvider());
+        userRepository.save(user);
+        oAuthHistory.signUp(user);
+    }
 }

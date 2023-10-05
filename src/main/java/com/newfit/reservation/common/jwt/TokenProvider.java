@@ -76,7 +76,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
      */
     private void checkAuthorityIdList(String token, HttpServletRequest request) {
         List<Integer> authorityIdList = getAuthorityIdList(token);
-        Integer authorityId = authorityRepository.findOne(Long.parseLong(request.getHeader("authorityId"))).orElseThrow(IllegalArgumentException::new).getId().intValue();
+        Integer authorityId = authorityRepository.findOne(Long.parseLong(request.getHeader("authority-id"))).orElseThrow(IllegalArgumentException::new).getId().intValue();
         authorityIdList
                 .stream()
                 .filter(authority -> authority.equals(authorityId))
@@ -86,7 +86,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
 
     public Authentication getAuthentication(String token, HttpServletRequest request) {
         Claims claims = getClaims(token);
-        Authority authority = authorityRepository.findOne(Long.parseLong(request.getHeader("authorityId")))
+        Authority authority = authorityRepository.findOne(Long.parseLong(request.getHeader("authority-id")))
                 .orElseThrow(IllegalArgumentException::new);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(authority.getRole().getDescription()));
 

@@ -8,7 +8,6 @@ import com.newfit.reservation.dto.request.UpdateRoutineRequest;
 import com.newfit.reservation.dto.response.RoutineDetailResponse;
 import com.newfit.reservation.dto.response.RoutineListResponse;
 import com.newfit.reservation.service.AuthorityService;
-import com.newfit.reservation.service.GymService;
 import com.newfit.reservation.service.routine.EquipmentRoutineService;
 import com.newfit.reservation.service.routine.RoutineService;
 import jakarta.validation.Valid;
@@ -25,22 +24,18 @@ public class RoutineApiController {
     private final RoutineService routineService;
     private final EquipmentRoutineService equipmentRoutineService;
     private final AuthorityService authorityService;
-    private final GymService gymService;
 
     /* 
     Routine을 새로 등록
     Routine 객체 등록 후 EquipmentRoutine들 등록
      */
     @PostMapping("")
-    public ResponseEntity<Void> registerRoutine(@Valid @RequestBody RegisterRoutineRequest requestDto) {
-        // TODO: remove this authorityId and apply security
-        Long authorityId = 1L;
-
+    public ResponseEntity<Void> registerRoutine(@RequestHeader(value = "authority-id") Long authorityId, @Valid @RequestBody RegisterRoutineRequest request) {
         Authority authority = authorityService.findById(authorityId);
 
-        Routine routine = routineService.registerRoutine(authority, requestDto.getRoutineName());
+        Routine routine = routineService.registerRoutine(authority, request.getRoutineName());
 
-        equipmentRoutineService.registerEquipmentRoutine(routine, requestDto.getRoutineEquipments());
+        equipmentRoutineService.registerEquipmentRoutine(routine, request.getRoutineEquipments());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -53,17 +48,17 @@ public class RoutineApiController {
     EquipmentRoutineService로 로직 실행
      */
     @PatchMapping("/{routineId}")
-    public ResponseEntity<Void> updateRoutine(@Valid @RequestBody UpdateRoutineRequest requestDto,
+    public ResponseEntity<Void> updateRoutine(@Valid @RequestBody UpdateRoutineRequest request,
                                               @PathVariable("routineId") Long routineId) {
-        if (requestDto.getRoutineName() != null) {
-            routineService.updateRoutine(routineId, requestDto.getRoutineName());
+        if (request.getRoutineName() != null) {
+            routineService.updateRoutine(routineId, request.getRoutineName());
         }
 
         Routine routine = routineService.findById(routineId);
-        equipmentRoutineService.updateEquipmentRoutinesInRoutine(routine, requestDto);
+        equipmentRoutineService.updateEquipmentRoutinesInRoutine(routine, request);
 
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .noContent()
                 .build();
     }
 
@@ -71,26 +66,23 @@ public class RoutineApiController {
     Authority가 생성한 모든 Routine 조회
      */
     @GetMapping("")
-    public ResponseEntity<RoutineListResponse> findAllRoutinesByAuthority() {
-        // TODO: remove this authorityId and apply security
-        Long authorityId = 1L;
+    public ResponseEntity<RoutineListResponse> findAllRoutinesByAuthority(@RequestHeader(value = "authority-id") Long authorityId) {
         Authority authority = authorityService.findById(authorityId);
 
         RoutineListResponse response = routineService.findAllRoutinesByAuthority(authority);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
+                .ok(response);
     }
 
     /*
     특정 Routine을 삭제
      */
     @DeleteMapping("")
-    public ResponseEntity<Void> deleteRoutine(@Valid @RequestBody DeleteRoutineRequest requestDto) {
-        routineService.deleteRoutine(requestDto.getRoutineId());
+    public ResponseEntity<Void> deleteRoutine(@Valid @RequestBody DeleteRoutineRequest request) {
+        routineService.deleteRoutine(request.getRoutineId());
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
+                .noContent()
                 .build();
     }
 
@@ -101,7 +93,6 @@ public class RoutineApiController {
     public ResponseEntity<RoutineDetailResponse> findRoutineDetail(@PathVariable("routineId") Long id) {
         RoutineDetailResponse routineDetail = routineService.findRoutineDetail(id);
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(routineDetail);
+                .ok(routineDetail);
     }
 }
