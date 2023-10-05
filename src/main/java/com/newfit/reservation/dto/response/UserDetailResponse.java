@@ -2,7 +2,6 @@ package com.newfit.reservation.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.User;
 import lombok.*;
 
@@ -17,8 +16,7 @@ public class UserDetailResponse {
     private String nickname;
     private Long totalCredit;
     private Long thisMonthCredit;
-    private Long currentAuthorityId;
-    private String currentGymName;
+    private AuthorityGymResponse current;
     private Integer authorityGymsCount;
     private List<AuthorityGymResponse> authorityGyms;
 
@@ -27,29 +25,27 @@ public class UserDetailResponse {
                                String nickname,
                                Long totalCredit,
                                Long monthCredit,
-                               Long currentAuthorityId,
-                               String currentGymName,
+                               AuthorityGymResponse current,
                                List<AuthorityGymResponse> authorityGyms) {
         this.profileFilePath = filePath;
         this.nickname = nickname;
         this.totalCredit = totalCredit;
         this.thisMonthCredit = monthCredit;
-        this.currentAuthorityId = currentAuthorityId;
-        this.currentGymName = currentGymName;
+        this.current = current;
         this.authorityGyms = authorityGyms;
         this.authorityGymsCount = authorityGyms.size();
     }
 
-    public static UserDetailResponse createUserDetailResponse(User user, Long monthCredit, Authority authority
-            , List<AuthorityGymResponse> authorityGyms) {
-
+    public static UserDetailResponse createUserDetailResponse(User user,
+                                                              Long monthCredit,
+                                                              AuthorityGymResponse current,
+                                                              List<AuthorityGymResponse> authorityGyms) {
         return UserDetailResponse.builder()
                 .filePath(user.getFilePath())
                 .nickname(user.getNickname())
                 .totalCredit(user.getBalance())
                 .monthCredit(monthCredit)
-                .currentAuthorityId(authority.getId())
-                .currentGymName(authority.getGym().getName())
+                .current(current)
                 .authorityGyms(authorityGyms)
                 .build();
     }
