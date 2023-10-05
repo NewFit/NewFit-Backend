@@ -19,11 +19,7 @@ public class UserApiController {
     private final UserService userService;
 
     @PatchMapping
-    public ResponseEntity<Void> modify(@Valid @RequestBody UserUpdateRequest request) {
-
-        // TODO: remove this userId and apply security
-        Long userId = 4L;
-
+    public ResponseEntity<Void> modify(@RequestHeader(value = "user-id") Long userId, @Valid @RequestBody UserUpdateRequest request) {
         userService.modify(userId, request);
         return ResponseEntity
                 .noContent()
@@ -31,21 +27,14 @@ public class UserApiController {
     }
 
     @GetMapping
-    public ResponseEntity<UserDetailResponse> userDetail() {
-
-        // TODO: remove this userId and apply security
-        Long authorityId = 4L;
-
+    public ResponseEntity<UserDetailResponse> userDetail(@RequestHeader(value = "authority-id") Long authorityId) {
         UserDetailResponse userDetailResponse = userService.userDetail(authorityId);
         return ResponseEntity
                 .ok(userDetailResponse);
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> drop() {
-        // TODO: remove this userId and apply security
-        Long userId = 4L;
-
+    public ResponseEntity<Void> drop(@RequestHeader(value = "user-id") Long userId) {
         userService.drop(userId);
         return ResponseEntity
                 .noContent()
