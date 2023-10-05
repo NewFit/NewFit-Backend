@@ -56,8 +56,8 @@ public class ReservationApiController {
                 .build();
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteReservation(@RequestParam("reservation_id") Long reservationId) {
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long reservationId) {
         reservationService.delete(reservationId);
         return ResponseEntity.noContent().build();
     }
