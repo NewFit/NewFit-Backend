@@ -58,12 +58,8 @@ public class AuthorityService {
                 .build();
     }
 
-    /*
-    userId로 조회
-    repository가 반환한 Authority의 Gym 반환
-     */
-    public Gym getGym(Long userId, Long gymId, Role role) {
-        return authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, role).getGym();
+    public Gym getGymByAuthorityId(Long authorityId) {
+        return authorityRepository.findOne(authorityId).get().getGym();
     }
 
     /*
