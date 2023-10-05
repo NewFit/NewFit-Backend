@@ -47,14 +47,12 @@ public class UserService {
     }
 
     public UserDetailResponse userDetail(Long authorityId) {
-
         Authority authority = authorityRepository.findOne(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
-
         User user = authority.getUser();
-        List<Authority> authorities = user.getAuthorityList();
-
         AuthorityGymResponse current = new AuthorityGymResponse(authority);
+
+        List<Authority> authorities = user.getAuthorityList();
 
         // current Authority를 제외한 나머지 Authority들만 추출
         List<AuthorityGymResponse> authorityGyms = authorities.stream()
