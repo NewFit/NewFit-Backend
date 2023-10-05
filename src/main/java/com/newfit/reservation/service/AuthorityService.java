@@ -58,28 +58,20 @@ public class AuthorityService {
                 .build();
     }
 
-    /*
-    userId로 조회
-    repository가 반환한 Authority의 Gym 반환
-     */
-    public Gym getGym(Long userId, Long gymId, Role role) {
-        return authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, role).getGym();
+    public Gym getGymByAuthorityId(Long authorityId) {
+        return authorityRepository.findOne(authorityId).get().getGym();
     }
 
     /*
     특정 userId와 gymId를 가지면서 accepted 컬럼이 false인 단일 Authority를 조회하여
     accepted 컬럼값을 true로 업데이트 합니다. 그 다음에 업데이트 결과를 반환할 Dto를 생성후 반환합니다.
      */
-    public UserAcceptResponse acceptUser(Long userId, Long gymId) {
+    public void acceptUser(Long userId, Long gymId) {
         Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, Role.USER);
         if (authority == null || authority.getAccepted())
             throw new IllegalArgumentException();
 
         authority.acceptUser();
-
-        return UserAcceptResponse.builder()
-                .username(authority.getUser().getUsername())
-                .build();
     }
 
     /*
