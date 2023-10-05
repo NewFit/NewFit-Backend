@@ -8,7 +8,6 @@ import com.newfit.reservation.dto.request.UpdateRoutineRequest;
 import com.newfit.reservation.dto.response.RoutineDetailResponse;
 import com.newfit.reservation.dto.response.RoutineListResponse;
 import com.newfit.reservation.service.AuthorityService;
-import com.newfit.reservation.service.GymService;
 import com.newfit.reservation.service.routine.EquipmentRoutineService;
 import com.newfit.reservation.service.routine.RoutineService;
 import jakarta.validation.Valid;
@@ -25,7 +24,6 @@ public class RoutineApiController {
     private final RoutineService routineService;
     private final EquipmentRoutineService equipmentRoutineService;
     private final AuthorityService authorityService;
-    private final GymService gymService;
 
     /* 
     Routine을 새로 등록
