@@ -280,10 +280,12 @@ public class ReservationService {
                         .orElseThrow(IllegalArgumentException::new);
                 credit.addAmount();
                 authority.incrementAcquisitionCount();
-                authority.getUser().updateBalance(100L);
+                authority.getUser().addBalance(100L);
             } else {
                 throw new IllegalArgumentException("일일 크레딧 획득량을 모두 채웠습니다");
             }
+        } else {
+            throw new IllegalArgumentException("정상적인 기구 사용이 아니므로 크레딧 획득에 실패했습니다.");
         }
         reservation.updateStatus(Status.COMPLETED);
         reservation.getEquipmentGym().updateCondition(Condition.AVAILABLE);
