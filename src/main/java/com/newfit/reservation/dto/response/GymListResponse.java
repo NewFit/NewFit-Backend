@@ -22,4 +22,9 @@ public class GymListResponse {
         this.gyms = gyms;
     }
 
+    public static GymListResponse createGymListResponse(List<GymResponse> gyms) {
+        return GymListResponse.builder()
+                .gyms(gyms)
+                .build();
+    }
 }
