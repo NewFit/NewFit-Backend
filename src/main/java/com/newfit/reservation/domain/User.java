@@ -76,7 +76,7 @@ public class User extends BaseTimeEntity {
     private List<Proposal> proposalList = new ArrayList<>();
 
     // 양방향 연관관계를 나타냅니다.
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Authority> authorityList = new ArrayList<>();
 
 
