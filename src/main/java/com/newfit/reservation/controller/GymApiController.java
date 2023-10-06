@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -15,11 +16,10 @@ public class GymApiController {
 
     private final GymService gymService;
 
-    // NewFit 서비스에 등록된 모든 헬스장을 반환합니다.
-    @GetMapping("")
-    public ResponseEntity<GymListResponse> getAllGyms() {
-        GymListResponse gymListResponse = gymService.getAllGyms();
+    @GetMapping
+    public ResponseEntity<GymListResponse> searchGyms(@RequestParam(value = "gym_name", required = false) String gymName) {
+        GymListResponse response = gymService.searchGyms(gymName);
         return ResponseEntity
-                .ok(gymListResponse);
+                .ok(response);
     }
 }
