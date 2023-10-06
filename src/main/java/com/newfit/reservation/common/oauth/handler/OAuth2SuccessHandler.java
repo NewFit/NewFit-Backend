@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.io.IOException;
 import java.time.Duration;
 
@@ -41,23 +39,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.setHeader("refresh-token", refreshToken);
             if (authority != null) {    // 등록된 gym이 있는 경우 자신의 헬스장 기구 전체 조회 api 호출
                 response.setHeader("authority-id", authority.getId().toString());
-                String redirectUri = getTargetUri(authority.getGym().getId());
-                response.sendRedirect(redirectUri);
+                response.setHeader("gym-id", authority.getGym().getId().toString());
             }
             else {  // 등록된 gym이 없는 경우 헬스장 전체 조회 api 호출
-                response.sendRedirect("/api/v1/gyms");
+                response.setHeader("user-id", oAuthHistory.getUser().getId().toString());
             }
         } else {    // 회원가입이 미실시된 경우
             String accessToken = tokenProvider.generateToken(oAuthHistory.getUser(), ACCESS_TOKEN_DURATION);
             response.setHeader("access-token", accessToken);
-            // TODO: 회원 가입 추가 정보 입력 페이지로 이동
-            response.sendRedirect("/test-jwt");
-        }
-    }
+            response.setHeader("oauth-history-id", oAuthHistory.getId().toString());
 
-    public String getTargetUri(Long gymId) {
-        return UriComponentsBuilder.fromUriString("/api/v1/equipments")
-                .queryParam("gym_id", gymId)
-                .build().toUriString();
+        }
     }
 }
