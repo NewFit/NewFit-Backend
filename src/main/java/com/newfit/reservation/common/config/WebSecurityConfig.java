@@ -52,7 +52,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                     .requestMatchers(Stream.of(PERMIT_ALL_PATTERNS).map(AntPathRequestMatcher::antMatcher).toArray(AntPathRequestMatcher[]::new)).permitAll()
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/staff/**")).hasRole("MANAGER")
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/manager/**")).hasRole("MANAGER")
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/api/**")).authenticated()
                     .anyRequest().permitAll())
                 .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
