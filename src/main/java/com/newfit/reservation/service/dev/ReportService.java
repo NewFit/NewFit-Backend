@@ -9,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -19,17 +16,8 @@ public class ReportService {        // ReportRepository 에 단순 위임하는 
 
     private final ReportRepository reportRepository;
 
-    public Long saveReport(User user, CreateReportRequest request) {
-
+    public void saveReport(User user, CreateReportRequest request) {
         Report report = Report.createReport(user, request.getSubject(), request.getContent());
-        return reportRepository.save(report);
-    }
-
-    public Optional<Report> findOneById(Long reportId) {
-        return reportRepository.findOne(reportId);
-    }
-
-    public List<Report> findAllReports() {
-        return reportRepository.findAll();
+        reportRepository.save(report);
     }
 }
