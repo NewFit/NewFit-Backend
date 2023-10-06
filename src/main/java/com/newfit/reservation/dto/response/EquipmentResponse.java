@@ -12,13 +12,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class EquipmentResponse {
-    private final Long id;
+    private final Long equipmentId;
+    private final Long equipmentGymId;
     private final String equipmentGymName;
     private final Purpose purpose;
     private final Condition condition;
 
     public EquipmentResponse(EquipmentGym equipmentGym) {
-        this.id = equipmentGym.getId();
+        this.equipmentId = equipmentGym.getEquipment().getId();
+        this.equipmentGymId = equipmentGym.getId();
         this.equipmentGymName = equipmentGym.getName();
         this.purpose = equipmentGym.getEquipment().getPurpose();
         this.condition = equipmentGym.getCondition();
