@@ -50,7 +50,7 @@ public class AuthorityService {
         Long userId = findById(authorityId).getUser().getId();
 
         return GymListResponse.builder()
-                .gyms(authorityRepository.findAuthoritiesByUserId(userId)
+                .gyms(authorityRepository.findAllAuthorityByUserId(userId)
                         .stream()
                         .map(GymResponse::new)
                         .toList()
@@ -59,7 +59,7 @@ public class AuthorityService {
     }
 
     public Gym getGymByAuthorityId(Long authorityId) {
-        return authorityRepository.findOne(authorityId).get().getGym();
+        return authorityRepository.findById(authorityId).get().getGym();
     }
 
     /*
@@ -83,7 +83,7 @@ public class AuthorityService {
         Gym gym = getGymByAuthorityId(authorityId);
         String gymName = gym.getName();
 
-        List<Authority> authorities = authorityRepository.findAuthoritiesByGym(gym.getId());
+        List<Authority> authorities = authorityRepository.findAllAuthorityByGym(gym);
 
         List<UserAndPendingResponse> requests = new ArrayList<>();
         List<UserAndPendingResponse> users = new ArrayList<>();
@@ -105,7 +105,7 @@ public class AuthorityService {
     }
 
     public Authority findById(Long authorityId) {
-        return authorityRepository.findOne(authorityId)
+        return authorityRepository.findById(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
     }
 
