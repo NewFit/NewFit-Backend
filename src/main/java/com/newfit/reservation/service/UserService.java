@@ -7,6 +7,7 @@ import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.auth.OAuthHistory;
 import com.newfit.reservation.dto.request.UserSignUpRequest;
 import com.newfit.reservation.dto.request.UserUpdateRequest;
+import com.newfit.reservation.dto.response.AuthorityGymResponse;
 import com.newfit.reservation.dto.response.UserDetailResponse;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -45,11 +47,18 @@ public class UserService {
     }
 
     public UserDetailResponse userDetail(Long authorityId) {
-
         Authority authority = authorityRepository.findOne(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
-
         User user = authority.getUser();
+        AuthorityGymResponse current = new AuthorityGymResponse(authority);
+
+        List<Authority> authorities = user.getAuthorityList();
+
+        // current Authority를 제외한 나머지 Authority들만 추출
+        List<AuthorityGymResponse> authorityGyms = authorities.stream()
+                .filter(authorityIter -> !(authorityIter.getId().equals(authorityId)))
+                .map(AuthorityGymResponse::new)
+                .toList();
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -61,13 +70,7 @@ public class UserService {
                 .findAny()
                 .orElse(0L);
 
-
-        return UserDetailResponse.builder()
-                .filePath(user.getFilePath())
-                .nickname(user.getNickname())
-                .totalCredit(user.getBalance())
-                .monthCredit(monthCredit)
-                .build();
+        return UserDetailResponse.createUserDetailResponse(user, monthCredit, current, authorityGyms);
     }
 
     public void drop(Long userId) {
