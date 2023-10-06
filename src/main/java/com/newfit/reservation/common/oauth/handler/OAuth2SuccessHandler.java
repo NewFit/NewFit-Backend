@@ -39,7 +39,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.setHeader("refresh-token", refreshToken);
             if (authority != null) {    // 등록된 gym이 있는 경우 자신의 헬스장 기구 전체 조회 api 호출
                 response.setHeader("authority-id", authority.getId().toString());
-                response.setHeader("gym-id", authority.getGym().getId().toString());
             }
             else {  // 등록된 gym이 없는 경우 헬스장 전체 조회 api 호출
                 response.setHeader("user-id", oAuthHistory.getUser().getId().toString());
