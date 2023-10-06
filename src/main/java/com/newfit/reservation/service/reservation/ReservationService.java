@@ -47,7 +47,7 @@ public class ReservationService {
 
         validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
 
-        Authority reserver = authorityRepository.findOne(authorityId)
+        Authority reserver = authorityRepository.findById(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
 
         checkBusinessHour(request.getStartAt(), request.getEndAt(), reserver);
@@ -155,7 +155,7 @@ public class ReservationService {
 
     // 루틴의 특정 기구를 예약
     private RoutineReservationResponse reserveOneInRoutine(Long authorityId, Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
-        Authority reserver = authorityRepository.findOne(authorityId)
+        Authority reserver = authorityRepository.findById(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
         EquipmentGym equipmentGym = null;
 
@@ -356,7 +356,7 @@ public class ReservationService {
     }
 
     private Reservation findReservationByAuthorityAndEquipmentGym(Long authorityId, EquipmentGym equipmentGym) {
-        Authority authority = authorityRepository.findOne(authorityId).orElseThrow(IllegalArgumentException::new);
+        Authority authority = authorityRepository.findById(authorityId).orElseThrow(IllegalArgumentException::new);
         return reservationRepository.findByReserverAndEquipmentGym(authority, equipmentGym).orElseThrow(IllegalArgumentException::new);
     }
 

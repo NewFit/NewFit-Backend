@@ -25,7 +25,7 @@ public class CreditService {
 
     public UserRankInfoListResponse getRankInGym(Long authorityId) {
         LocalDateTime now = LocalDateTime.now();
-        Authority authority = authorityRepository.findOne(authorityId)
+        Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
         List<UserRankInfo> rankingList = new ArrayList<>();
 

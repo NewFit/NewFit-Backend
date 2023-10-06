@@ -3,12 +3,9 @@ package com.newfit.reservation.repository.routine;
 import com.newfit.reservation.domain.routine.EquipmentRoutine;
 import com.newfit.reservation.domain.routine.Routine;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface EquipmentRoutineRepository extends JpaRepository<EquipmentRoutine, Long> {
 
     // Routine의 모든 EquipmentRoutine 객체를 삭제

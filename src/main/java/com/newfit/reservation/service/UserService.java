@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public UserDetailResponse userDetail(Long authorityId) {
-        Authority authority = authorityRepository.findOne(authorityId)
+        Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
         User user = authority.getUser();
         AuthorityGymResponse current = new AuthorityGymResponse(authority);
