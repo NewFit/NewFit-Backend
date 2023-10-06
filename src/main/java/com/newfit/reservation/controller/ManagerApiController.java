@@ -47,8 +47,8 @@ public class ManagerApiController {
     모든 Gym을 조회하여 반환
      */
     @GetMapping("/equipment-gym")
-    public ResponseEntity<EquipmentGymListResponse> getAllEquipment(@RequestParam(name = "gym_id") Long gymId) {
-        Gym gym = gymService.findById(gymId);
+    public ResponseEntity<EquipmentGymListResponse> getAllEquipment(@RequestHeader(name = "authority-id") Long authorityId) {
+        Gym gym = authorityService.getGymByAuthorityId(authorityId);
         EquipmentGymListResponse allInGym = equipmentGymService.findAllInGym(gym);
 
         return ResponseEntity.ok(allInGym);
