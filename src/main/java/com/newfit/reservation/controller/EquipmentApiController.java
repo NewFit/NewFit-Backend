@@ -6,7 +6,7 @@ import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.equipment.Purpose;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
 import com.newfit.reservation.dto.response.EquipmentInfoResponse;
-import com.newfit.reservation.service.GymService;
+import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.equipment.EquipmentGymService;
 import com.newfit.reservation.service.equipment.EquipmentService;
 import com.newfit.reservation.service.reservation.ReservationService;
@@ -21,25 +21,25 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class EquipmentApiController {
     private final EquipmentService equipmentService;
-    private final GymService gymService;
+    private final AuthorityService authorityService;
     private final EquipmentGymService equipmentGymService;
     private final ReservationService reservationService;
 
     @GetMapping("")
-    public ResponseEntity<EquipmentGymListResponse> getAllEquipment(@RequestParam(name = "gym_id") Long gymId,
+    public ResponseEntity<EquipmentGymListResponse> getAllEquipment(@RequestHeader(name = "authority-id") Long authorityId,
                                                                     @RequestParam(name = "purpose", required = false) Purpose purpose,
                                                                     @RequestParam(name = "equipment_id", required = false) Long equipmentId) {
-        Gym gym = gymService.findById(gymId);
+        Gym gym = authorityService.getGymByAuthorityId(authorityId);
         EquipmentGymListResponse allInGym;
 
-        if (purpose == null && equipmentId == null) { //gymId만 들어온 경우
+        if (purpose == null && equipmentId == null) {
             allInGym = equipmentGymService.findAllInGym(gym);
-        } else if (purpose != null && equipmentId == null) { //gymId와 purpose가 들어온 경우
+        } else if (purpose != null && equipmentId == null) {
             allInGym = equipmentGymService.findAllInGymByPurpose(gym, purpose);
-        } else if (purpose == null && equipmentId != null) { //gymId와 equipment가 들어온 경우
+        } else if (purpose == null && equipmentId != null) {
             Equipment equipment = equipmentService.findById(equipmentId);
             allInGym = equipmentGymService.findAllInGymByEquipment(gym, equipment);
-        } else { // 모두 들어온 경우
+        } else {
             return ResponseEntity.badRequest().build();
         }
 
