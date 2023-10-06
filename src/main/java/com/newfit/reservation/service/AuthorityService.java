@@ -79,11 +79,11 @@ public class AuthorityService {
     그 다음에 각 Authority 객체의 accepted 필드값에 따라서 users와 requests로 나누어 리스트를 분리합니다.
     마지막으로 Dto를 생성하여 반환합니다.
      */
-    public UserAndPendingListResponse getUserAndAcceptRequestList(Long gymId) {
-        Gym findGym = gymRepository.findById(gymId).orElseThrow(IllegalArgumentException::new);
-        String gymName = findGym.getName();
+    public UserAndPendingListResponse getUserAndAcceptRequestList(Long authorityId) {
+        Gym gym = getGymByAuthorityId(authorityId);
+        String gymName = gym.getName();
 
-        List<Authority> authorities = authorityRepository.findAuthoritiesByGym(gymId);
+        List<Authority> authorities = authorityRepository.findAuthoritiesByGym(gym.getId());
 
         List<UserAndPendingResponse> requests = new ArrayList<>();
         List<UserAndPendingResponse> users = new ArrayList<>();

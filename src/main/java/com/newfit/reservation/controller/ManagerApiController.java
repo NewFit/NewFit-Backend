@@ -105,8 +105,8 @@ public class ManagerApiController {
     마찬가지로 AuthorityService에게 로직 실행을 위임한 뒤에 Dto를 넘겨받아 반환합니다.
      */
     @GetMapping("/authority")
-    public ResponseEntity<UserAndPendingListResponse> getUserAndAcceptRequestList(@RequestParam("gym_id") Long gymId) {
-        UserAndPendingListResponse responseDto = authorityService.getUserAndAcceptRequestList(gymId);
+    public ResponseEntity<UserAndPendingListResponse> getUserAndAcceptRequestList(@RequestHeader("authority-id") Long authorityId) {
+        UserAndPendingListResponse responseDto = authorityService.getUserAndAcceptRequestList(authorityId);
 
         return ResponseEntity.ok(responseDto);
     }
