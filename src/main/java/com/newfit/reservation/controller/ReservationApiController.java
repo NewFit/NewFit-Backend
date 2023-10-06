@@ -83,12 +83,12 @@ public class ReservationApiController {
     @PatchMapping("/end")
     public ResponseEntity<Void> endOfUseAndObtainCredit(@RequestHeader(name = "authority-id") Long authorityId,
                                                                   @RequestParam(name = "reservation_id") Long reservationId,
-                                                                  @Valid @RequestBody ObtainCreditRequest requestDto) {
+                                                                  @Valid @RequestBody ObtainCreditRequest request) {
         Reservation reservation = reservationService.findById(reservationId);
         Authority authority = authorityService.findById(authorityId);
 
         reservationService.updateStatusAndCondition(reservation);
-        reservationService.checkConditionAndAddCredit(reservation, authority, requestDto.getEndEquipmentUseAt());
+        reservationService.checkConditionAndAddCredit(reservation, authority, request.getEndEquipmentUseAt());
 
         return ResponseEntity
                 .noContent()
