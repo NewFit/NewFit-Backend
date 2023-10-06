@@ -18,7 +18,7 @@ public class AuthorityApiController {
     private final AuthorityService authorityService;
 
     @PostMapping
-    public ResponseEntity<Void> register(@RequestHeader(value = "User-Id") Long userId,
+    public ResponseEntity<Void> register(@RequestHeader(value = "user-id") Long userId,
                                    @Valid @RequestBody AuthorityRequest request) {
 
         authorityService.register(userId, request.getGymId());
