@@ -6,7 +6,6 @@ import com.newfit.reservation.dto.response.GymResponse;
 import com.newfit.reservation.repository.GymRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,10 +16,6 @@ public class GymService {
 
     public Long save(Gym gym) {
         return gymRepository.save(gym).getId();
-    }
-
-    public Gym findById(Long gymId) {
-        return gymRepository.findById(gymId).orElseThrow(IllegalArgumentException::new);
     }
 
     /*
