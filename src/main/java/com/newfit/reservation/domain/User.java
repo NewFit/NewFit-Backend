@@ -106,7 +106,7 @@ public class User extends BaseTimeEntity {
 
     }
 
-    public void updateBalance(Long balance) {
+    public void addBalance(Long balance) {
 
         this.balance += balance;
 
