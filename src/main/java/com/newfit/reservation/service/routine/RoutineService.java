@@ -36,10 +36,7 @@ public class RoutineService {
         if(validateDuplicate(authority, routineName))
             throw new IllegalArgumentException();
 
-        return routineRepository.save(Routine.builder()
-                .authority(authority)
-                .name(routineName)
-                .build());
+        return routineRepository.save(Routine.createRoutine(authority, routineName));
     }
 
     // id를 통해 Routine 객체를 조회합니다.
