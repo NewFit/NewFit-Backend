@@ -18,7 +18,7 @@ public class ReservationDetailResponse extends ReservationResponse {
 
     public ReservationDetailResponse(Reservation reservation) {
         super(reservation.getId());
-        this.startAt = reservation.getStart_at();
-        this.endAt = reservation.getEnd_at();
+        this.startAt = reservation.getStartAt();
+        this.endAt = reservation.getEndAt();
     }
 }
