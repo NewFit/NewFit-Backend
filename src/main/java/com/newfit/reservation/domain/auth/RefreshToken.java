@@ -1,37 +1,30 @@
 package com.newfit.reservation.domain.auth;
 
 import com.newfit.reservation.domain.User;
-import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
-@Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@RedisHash(value = "refresh", timeToLive = 60*60*24*7)
 public class RefreshToken {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @JoinColumn(name = "user_id", nullable = false)
-    @OneToOne(fetch = FetchType.LAZY)
-    private User user;
-
-    @Column(nullable = false, name = "refresh_token")
-    private String refreshToken;
+    @Indexed
+    private String token;
 
     @Builder
-    private RefreshToken(User user, String refreshToken) {
-        this.user = user;
-        this.refreshToken = refreshToken;
+    private RefreshToken(Long id, String token) {
+        this.id = id;
+        this.token = token;
     }
 
-    public static RefreshToken createRefreshToken(User user, String refreshToken) {
+    public static RefreshToken createRefreshToken(User user, String token) {
         return RefreshToken.builder()
-                .user(user)
-                .refreshToken(refreshToken)
+                .id(user.getId())
+                .token(token)
                 .build();
     }
 }
