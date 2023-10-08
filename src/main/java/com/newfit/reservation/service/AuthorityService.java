@@ -44,8 +44,7 @@ public class AuthorityService {
 
         Long userId = findById(authorityId).getUser().getId();
         List<GymResponse> gyms = authorityRepository.findAllAuthorityByUserId(userId).stream()
-                .map(GymResponse::new)
-                .toList();
+                .map(GymResponse::new).toList();
         return GymListResponse.createResponse(gyms);
     }
 
@@ -103,8 +102,7 @@ public class AuthorityService {
         List<ReservationDetailResponse> reservationResponseList = reservationRepository
                 .findAllByAuthorityId(authorityId)
                 .stream()
-                .map(ReservationDetailResponse::new)
-                .toList();
+                .map(ReservationDetailResponse::new).toList();
 
 
         return ReservationListResponse.createResponse(gymName, reservationResponseList);

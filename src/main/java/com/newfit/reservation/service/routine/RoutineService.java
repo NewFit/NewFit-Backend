@@ -14,9 +14,7 @@ import com.newfit.reservation.repository.routine.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,8 +55,7 @@ public class RoutineService {
         List<Routine> findRoutines = routineRepository.findAllByAuthority(authority);
 
         List<RoutineResponse> routines = findRoutines.stream()
-                .map(RoutineResponse::new)
-                .collect(Collectors.toList());
+                .map(RoutineResponse::new).toList();
 
         return RoutineListResponse.createResponse(routines);
     }
@@ -87,12 +84,10 @@ public class RoutineService {
         List<EquipmentRoutine> findEquipmentRoutines = equipmentRoutineRepository.findAllByRoutine(findRoutine);
 
         List<Equipment> findEquipments = findEquipmentRoutines.stream()
-                .map(EquipmentRoutine::getEquipment)
-                .collect(Collectors.toList());
+                .map(EquipmentRoutine::getEquipment).toList();
 
         List<RoutineDetailEquipmentResponse> equipments = findEquipments.stream()
-                .map(RoutineDetailEquipmentResponse::new)
-                .collect(Collectors.toList());
+                .map(RoutineDetailEquipmentResponse::new).toList();
 
         return RoutineDetailResponse.createResponse(findRoutine.getId(), findRoutine.getName(), equipments);
     }

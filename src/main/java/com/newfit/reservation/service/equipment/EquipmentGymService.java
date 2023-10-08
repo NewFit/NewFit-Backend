@@ -11,9 +11,7 @@ import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -43,8 +41,7 @@ public class EquipmentGymService {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
 
         List<EquipmentResponse> equipmentResponses = allByGym.stream()
-                .map(EquipmentResponse::new)
-                .collect(Collectors.toList());
+                .map(EquipmentResponse::new).toList();
 
         return new EquipmentGymListResponse(gym.getName(), allByGym.size(), equipmentResponses);
     }
@@ -74,12 +71,11 @@ public class EquipmentGymService {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
         List<EquipmentGym> allByGymAndPurpose = allByGym
                 .stream()
-                .filter(equipmentGym -> equipmentGym.getEquipment().getPurpose().equals(purpose))
-                .toList();
+                .filter(equipmentGym -> equipmentGym.getEquipment().getPurpose().equals(purpose)).toList();
 
         List<EquipmentResponse> equipmentResponses = allByGymAndPurpose.stream()
-                .map(EquipmentResponse::new)
-                .collect(Collectors.toList());
+                .map(EquipmentResponse::new).toList();
+
         return new EquipmentGymListResponse(gym.getName(), allByGymAndPurpose.size(), equipmentResponses);
     }
 
@@ -88,14 +84,11 @@ public class EquipmentGymService {
      */
     public EquipmentGymListResponse findAllInGymByEquipment(Gym gym, Equipment equipment) {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
-        List<EquipmentGym> allByGymAndEquipment = allByGym
-                .stream()
-                .filter(equipmentGym -> equipmentGym.getEquipment().equals(equipment))
-                .toList();
+        List<EquipmentGym> allByGymAndEquipment = allByGym.stream()
+                .filter(equipmentGym -> equipmentGym.getEquipment().equals(equipment)).toList();
 
         List<EquipmentResponse> equipmentResponses = allByGymAndEquipment.stream()
-                .map(EquipmentResponse::new)
-                .collect(Collectors.toList());
+                .map(EquipmentResponse::new).toList();
 
         return new EquipmentGymListResponse(gym.getName(), allByGymAndEquipment.size(), equipmentResponses);
     }
