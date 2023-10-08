@@ -9,7 +9,6 @@ import com.newfit.reservation.dto.request.routine.AddEquipmentRequest;
 import com.newfit.reservation.dto.request.routine.RemoveEquipmentRequest;
 import com.newfit.reservation.dto.request.routine.UpdateEquipmentRequest;
 import com.newfit.reservation.exception.CustomException;
-import com.newfit.reservation.exception.ErrorCode;
 import com.newfit.reservation.repository.equipment.EquipmentRepository;
 import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,10 +47,10 @@ public class EquipmentRoutineService {
 
         for (RoutineEquipmentRequest routineRequest : routineRequests) {
             Equipment equipment = equipmentRepository.findById(routineRequest.getEquipmentId())
-                    .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND));
+                    .orElseThrow(() -> new CustomException(EQUIPMENT_NOT_FOUND));
 
             equipmentRoutineRepository.save(EquipmentRoutine.createEquipmentRoutine(equipment, routine,
-                            Duration.ofMinutes(routineRequest.getDuration()), routineRequest.getSequence()));
+                    Duration.ofMinutes(routineRequest.getDuration()), routineRequest.getSequence()));
         }
     }
 
@@ -87,10 +88,10 @@ public class EquipmentRoutineService {
 
             for (AddEquipmentRequest addEquipment : addEquipments) {
                 Equipment equipment = equipmentRepository.findById(addEquipment.getEquipmentId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND));
+                        .orElseThrow(() -> new CustomException(EQUIPMENT_NOT_FOUND));
 
                 equipmentRoutineRepository.save(EquipmentRoutine.createEquipmentRoutine(equipment, routine,
-                        Duration.ofMinutes(addEquipment.getDuration()),addEquipment.getSequence()));
+                        Duration.ofMinutes(addEquipment.getDuration()), addEquipment.getSequence()));
             }
         }
     }
@@ -137,7 +138,7 @@ public class EquipmentRoutineService {
                 .filter(equipmentRoutine -> equipmentRoutine.getEquipment().getId().equals(targetId))
                 .findFirst()
                 .orElseThrow(() ->
-                        new CustomException(ErrorCode.EQUIPMENT_ROUTINE_NOT_FOUND, "요청 기구 id=" + targetId.toString()));
+                        new CustomException(EQUIPMENT_ROUTINE_NOT_FOUND, "요청 기구 id=" + targetId.toString()));
     }
 
     private List<EquipmentRoutine> extractRemoveTargets(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
@@ -163,7 +164,7 @@ public class EquipmentRoutineService {
     private List<Short> extractRemoveSequences(UpdateRoutineRequest request, Routine routine) {
         List<EquipmentRoutine> equipmentRoutines = request.getRemoveEquipments().stream()
                 .map(r -> equipmentRoutineRepository.findByEquipmentIdAndRoutine(r.getEquipmentId(), routine)
-                    .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND, "요청 기구 id=" + r.getEquipmentId()))).toList();
+                        .orElseThrow(() -> new CustomException(EQUIPMENT_NOT_FOUND, "요청 기구 id=" + r.getEquipmentId()))).toList();
 
         return equipmentRoutines.stream()
                 .map(EquipmentRoutine::getSequence).toList();
@@ -176,7 +177,7 @@ public class EquipmentRoutineService {
         for (UpdateEquipmentRequest updateEquipmentRequest : updateEquipments) {
             EquipmentRoutine equipmentRoutine = equipmentRoutineRepository
                     .findByEquipmentIdAndRoutine(updateEquipmentRequest.getEquipmentId(), routine)
-                    .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_ROUTINE_NOT_FOUND));
+                    .orElseThrow(() -> new CustomException(EQUIPMENT_ROUTINE_NOT_FOUND));
 
             sequenceMap.put(equipmentRoutine.getSequence(), updateEquipmentRequest.getSequence());
         }
@@ -210,6 +211,6 @@ public class EquipmentRoutineService {
                 && (IntStream.range(0, sequences.size() - 1)
                 .allMatch(i -> sequences.get(i + 1) == sequences.get(i) + 1));
 
-        if (!result) throw new CustomException(ErrorCode.INVALID_SEQUENCE);
+        if (!result) throw new CustomException(INVALID_SEQUENCE);
     }
 }

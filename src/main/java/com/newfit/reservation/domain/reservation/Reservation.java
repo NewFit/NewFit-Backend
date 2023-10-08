@@ -4,7 +4,6 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.exception.CustomException;
-import com.newfit.reservation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
+import static com.newfit.reservation.exception.ErrorCode.ALREADY_TAGGED_RESERVATION;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -81,7 +81,7 @@ public class Reservation extends BaseTimeEntity {
 
     public void updateStartTagAt(LocalDateTime startTagAt) {
         if (this.startTagAt != null) {
-            throw new CustomException(ErrorCode.ALREADY_TAGGED_RESERVATION);
+            throw new CustomException(ALREADY_TAGGED_RESERVATION);
         }
         this.startTagAt = startTagAt;
     }

@@ -8,13 +8,14 @@ import com.newfit.reservation.domain.equipment.Purpose;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
 import com.newfit.reservation.dto.response.EquipmentResponse;
 import com.newfit.reservation.exception.CustomException;
-import com.newfit.reservation.exception.ErrorCode;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class EquipmentGymService {
      */
     public void registerEquipmentInGym(Equipment equipment, Gym gym, Integer count, List<String> equipmentGymNames) {
         if (equipmentGymNames.size() < count)
-            throw new CustomException(ErrorCode.INCOMPATIBLE_EQUIPMENT_NAME_COUNT);
+            throw new CustomException(INCOMPATIBLE_EQUIPMENT_NAME_COUNT);
 
         IntStream.range(0, count)
                 .forEach(repeat -> equipmentGymRepository
@@ -98,6 +99,6 @@ public class EquipmentGymService {
     public EquipmentGym findOneById(Long equipmentGymId) {
         return equipmentGymRepository
                 .findById(equipmentGymId)
-                .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_GYM_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
     }
 }

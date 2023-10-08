@@ -10,13 +10,14 @@ import com.newfit.reservation.dto.response.RoutineDetailResponse;
 import com.newfit.reservation.dto.response.RoutineListResponse;
 import com.newfit.reservation.dto.response.RoutineResponse;
 import com.newfit.reservation.exception.CustomException;
-import com.newfit.reservation.exception.ErrorCode;
 import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import com.newfit.reservation.repository.routine.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class RoutineService {
      */
     public Routine registerRoutine(Authority authority, String routineName) {
         if (validateDuplicate(authority, routineName))
-            throw new CustomException(ErrorCode.DUPLICATE_ROUTINE_NAME);
+            throw new CustomException(DUPLICATE_ROUTINE_NAME);
 
         return routineRepository.save(Routine.createRoutine(authority, routineName));
     }
@@ -40,7 +41,7 @@ public class RoutineService {
     // id를 통해 Routine 객체를 조회합니다.
     public Routine findById(Long routineId) {
         return routineRepository.findById(routineId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ROUTINE_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
     }
 
     /*

@@ -7,7 +7,6 @@ import com.newfit.reservation.domain.User;
 import com.newfit.reservation.dto.request.EntryRequest;
 import com.newfit.reservation.dto.response.*;
 import com.newfit.reservation.exception.CustomException;
-import com.newfit.reservation.exception.ErrorCode;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.GymRepository;
 import com.newfit.reservation.repository.UserRepository;
@@ -17,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,9 +32,9 @@ public class AuthorityService {
     public void register(Long userId, Long gymId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Gym gym = gymRepository.findById(gymId)
-                .orElseThrow(() -> new CustomException(ErrorCode.GYM_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(GYM_NOT_FOUND));
 
         authorityRepository.save(Authority.createAuthority(user, gym));
     }
@@ -61,9 +62,9 @@ public class AuthorityService {
     public void acceptUser(Long userId, Long gymId) {
         Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, Role.USER);
         if (authority == null)
-            throw new CustomException(ErrorCode.AUTHORITY_NOT_FOUND);
+            throw new CustomException(AUTHORITY_NOT_FOUND);
         if (authority.getAccepted())
-            throw new CustomException(ErrorCode.ALREADY_ACCEPTED_AUTHORITY);
+            throw new CustomException(ALREADY_ACCEPTED_AUTHORITY);
 
         authority.acceptUser();
     }
@@ -96,7 +97,7 @@ public class AuthorityService {
 
     public Authority findById(Long authorityId) {
         return authorityRepository.findById(authorityId)
-                .orElseThrow(() -> new CustomException(ErrorCode.AUTHORITY_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
     }
 
     public ReservationListResponse listAuthorityReservation(Long authorityId) {
