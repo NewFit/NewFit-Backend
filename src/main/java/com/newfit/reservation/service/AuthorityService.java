@@ -44,14 +44,10 @@ public class AuthorityService {
     public GymListResponse listRegistration(Long authorityId) {
 
         Long userId = findById(authorityId).getUser().getId();
-
-        return GymListResponse.builder()
-                .gyms(authorityRepository.findAllAuthorityByUserId(userId)
-                        .stream()
-                        .map(GymResponse::new)
-                        .toList()
-                )
-                .build();
+        List<GymResponse> gyms = authorityRepository.findAllAuthorityByUserId(userId).stream()
+                .map(GymResponse::new)
+                .toList();
+        return GymListResponse.createResponse(gyms);
     }
 
     public Gym getGymByAuthorityId(Long authorityId) {
