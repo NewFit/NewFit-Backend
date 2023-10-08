@@ -3,18 +3,17 @@ package com.newfit.reservation.common.jwt;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
+import com.newfit.reservation.domain.auth.RefreshToken;
 import com.newfit.reservation.repository.AuthorityRepository;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.newfit.reservation.repository.auth.RefreshTokenRepository;
+import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
@@ -25,22 +24,20 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래스
+    private final static Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(30);
+    private final static Duration REFRESH_TOKEN_DURATION = Duration.ofDays(7);
+
     private final JwtProperties jwtProperties;
     private final AuthorityRepository authorityRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public String generateToken(User user, Duration duration) {
+    public String generateAccessToken(User user) {
         Date now = new Date();
-        Date expiryAt = new Date(now.getTime() + duration.toMillis());
+        Date expiryAt = new Date(now.getTime() + ACCESS_TOKEN_DURATION.toMillis());
 
         // 회원가입을 미실시한 사용자를 위한 JWT 생성
         if (user == null) {
-            return Jwts.builder()
-                    .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                    .setIssuer(jwtProperties.getIssuer())
-                    .setIssuedAt(now)
-                    .setExpiration(expiryAt)
-                    .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
-                    .compact();
+            return generateDefaultToken(now, expiryAt);
         }
 
         List<Long> authorityIdList = user.getAuthorityList().stream().map(Authority::getId).collect(Collectors.toList());
@@ -58,16 +55,38 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
                 .compact();
     }
 
-    public boolean validToken(String token, HttpServletRequest request) {
-       try {
-           Jwts.parser()
-                   .setSigningKey(jwtProperties.getSecretKey())
-                   .parseClaimsJws(token);
-           checkAuthorityIdList(token, request);
-           return true;
-       } catch (Exception exception) {
-           return false;
-       }
+    private String generateDefaultToken(Date now, Date expiryAt) {
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(now)
+                .setExpiration(expiryAt)
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
+                .compact();
+    }
+
+    public String generateRefreshToken(User user) {
+        Date now = new Date();
+        Date expiryAt = new Date(now.getTime() + REFRESH_TOKEN_DURATION.toMillis());
+        String token = generateDefaultToken(now, expiryAt);
+
+        return refreshTokenRepository.save(RefreshToken.createRefreshToken(user, token))
+                .getToken();
+    }
+
+    public boolean validAccessToken(String token, HttpServletRequest request) {
+        Jwts.parser()
+                .setSigningKey(jwtProperties.getSecretKey())
+                .parseClaimsJws(token);
+        checkAuthorityIdList(token, request);
+        return true;
+    }
+
+    public boolean validRefreshToken(String token, HttpServletResponse response) {
+        Jwts.parser()
+                .setSigningKey(jwtProperties.getSecretKey())
+                .parseClaimsJws(token);
+        return true;
     }
 
     /*
