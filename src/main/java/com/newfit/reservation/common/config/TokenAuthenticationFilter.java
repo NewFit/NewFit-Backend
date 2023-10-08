@@ -1,6 +1,10 @@
 package com.newfit.reservation.common.config;
 
 import com.newfit.reservation.common.jwt.TokenProvider;
+import com.newfit.reservation.domain.User;
+import com.newfit.reservation.domain.auth.RefreshToken;
+import com.newfit.reservation.repository.UserRepository;
+import com.newfit.reservation.repository.auth.RefreshTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 
 @RequiredArgsConstructor
@@ -21,6 +24,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     // 수신한 JWT가 Bearer 타입인지 체크하기 위한 필드
     private final static String BEARER = "Bearer ";
     private final TokenProvider tokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
 
     // Request Header에서 JWT 추출하고 현재 request의 URI에 따라 필요한 작업 수행
     @Override
