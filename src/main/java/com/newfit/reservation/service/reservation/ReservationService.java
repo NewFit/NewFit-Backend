@@ -45,10 +45,11 @@ public class ReservationService {
                                        Long equipmentId,
                                        ReservationRequest request) {
 
-        validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
-
         Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
+
+        validateLastTagAt(authority);
+        validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
 
         checkBusinessHour(request.getStartAt(), request.getEndAt(), authority);
 
@@ -59,6 +60,12 @@ public class ReservationService {
         Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt(), request.getRepetitionNumber());
 
         reservationRepository.save(reservation);
+    }
+
+    private void validateLastTagAt(Authority authority) {
+        LocalDateTime tagAt = authority.getTagAt();
+        if (tagAt.isBefore(now().minusHours(2)))
+            throw new IllegalArgumentException("가장 최근 태그 시간이 2시간보다 전입니다.");
     }
 
 
@@ -80,6 +87,8 @@ public class ReservationService {
     public void update(Long reservationId, ReservationUpdateRequest request) {
         Reservation targetReservation = reservationRepository.findById(reservationId)
                 .orElseThrow(IllegalArgumentException::new);
+
+        validateLastTagAt(targetReservation.getAuthority());
 
         // 예약 세트 횟수 변경
         if (request.getRepetitionNumber() != null) {
@@ -337,10 +346,12 @@ public class ReservationService {
     private void updateStartTagAtAndStatus(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
         EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).orElseThrow(IllegalArgumentException::new);
         Reservation reservation = findReservationByAuthorityAndEquipmentGym(authorityId, equipmentGym);
+        Authority authority = authorityRepository.findById(authorityId).orElseThrow(IllegalArgumentException::new);
 
         reservation.updateStartTagAt(tagAt);
         reservation.updateStatus(Status.PROCESSING);
         equipmentGym.updateCondition(Condition.OCCUPIED);
+        authority.updateTagAt(tagAt);
     }
 
     private Reservation findReservationByAuthorityAndEquipmentGym(Long authorityId, EquipmentGym equipmentGym) {
