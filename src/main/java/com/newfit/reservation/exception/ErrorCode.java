@@ -14,6 +14,7 @@ public enum ErrorCode {
     INVALID_RESERVATION_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 예약 요청입니다."),
     INVALID_CREDIT_ACQUIRE_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 크레딧 획득 요청입니다."),
     INVALID_TAG_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 태그 요청입니다."),
+    INVALID_SEQUENCE(HttpStatus.BAD_REQUEST, "잘못된 sequence 값입니다."),
 
     // 404 NOT_FOUND 잘못된 리소스 접근
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
