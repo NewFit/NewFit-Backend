@@ -6,6 +6,7 @@ import com.newfit.reservation.dto.request.CreateReportRequest;
 import com.newfit.reservation.service.UserService;
 import com.newfit.reservation.service.dev.ProposalService;
 import com.newfit.reservation.service.dev.ReportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class DevApiController {
     private final UserService userService;
 
     @PostMapping("/bug")
-    public ResponseEntity<Void> createBugReport(@RequestHeader(value = "user-id") Long userId, @RequestBody CreateReportRequest request) {
+    public ResponseEntity<Void> createBugReport(@RequestHeader(value = "user-id") Long userId, @Valid @RequestBody CreateReportRequest request) {
         User user = userService.findOneById(userId);
         reportService.saveReport(user, request);
 
@@ -31,7 +32,7 @@ public class DevApiController {
     }
 
     @PostMapping("/feature")
-    public ResponseEntity<Void> createFeatureProposal(@RequestHeader(value = "user-id") Long userId, @RequestBody CreateProposalRequest request) {
+    public ResponseEntity<Void> createFeatureProposal(@RequestHeader(value = "user-id") Long userId, @Valid @RequestBody CreateProposalRequest request) {
         User user = userService.findOneById(userId);
         proposalService.saveProposal(user, request);
 
