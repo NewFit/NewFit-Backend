@@ -14,7 +14,6 @@ import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.dto.response.*;
 import com.newfit.reservation.exception.CustomException;
-import com.newfit.reservation.exception.ErrorCode;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
@@ -31,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.*;
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +49,7 @@ public class ReservationService {
                         ReservationRequest request) {
 
         Authority authority = authorityRepository.findById(authorityId)
-                .orElseThrow(() -> new CustomException(ErrorCode.AUTHORITY_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
 
         validateLastTagAt(authority);
         validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
@@ -68,14 +68,14 @@ public class ReservationService {
     private void validateLastTagAt(Authority authority) {
         LocalDateTime tagAt = authority.getTagAt();
         if (tagAt.isBefore(now().minusHours(2)))
-            throw new CustomException(ErrorCode.EXPIRED_TAG);
+            throw new CustomException(EXPIRED_TAG);
     }
 
 
     @Transactional(readOnly = true)
     public ReservationListResponse listReservation(Long equipmentGymId) {
         EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId)
-                .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_GYM_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
 
         String gymName = equipmentGym.getGym().getName();
 
@@ -157,13 +157,13 @@ public class ReservationService {
 
     public Reservation findById(Long reservationId) {
         return reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(RESERVATION_NOT_FOUND));
     }
 
     // 루틴의 특정 기구를 예약
     private RoutineReservationResponse reserveOneInRoutine(Long authorityId, Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
         Authority authority = authorityRepository.findById(authorityId)
-                .orElseThrow(() -> new CustomException(ErrorCode.AUTHORITY_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         EquipmentGym equipmentGym = null;
 
         int attempt = 0;
@@ -189,7 +189,7 @@ public class ReservationService {
                 .filter(equipmentGym ->
                         validateReservationOverlap(equipmentGym, startAt, endAt))
                 .findAny()
-                .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_GYM_NOT_FOUND, "예약 가능한 기구가 없습니다."));
+                .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND, "예약 가능한 기구가 없습니다."));
     }
 
     private void checkBusinessHour(LocalDateTime startAt, LocalDateTime endAt, Authority authority) {
@@ -199,7 +199,7 @@ public class ReservationService {
          exception이 발생 안하면 예약 시작 시간이 종료 시간보다 선행됨을 보장
          */
         if (startAt.isAfter(endAt))
-            throw new CustomException(ErrorCode.INVALID_RESERVATION_REQUEST);
+            throw new CustomException(INVALID_RESERVATION_REQUEST);
 
         Gym gym = authority.getGym();
         BusinessTime businessTime = gym.getBusinessTime();
@@ -225,7 +225,7 @@ public class ReservationService {
                 checkEndAtInBusinessHour(endAt, gymOpenHour, gymCloseHour, businessTime);
 
         if (!result)
-            throw new CustomException(ErrorCode.INVALID_RESERVATION_REQUEST, "요청이 헬스장 운영 시간과 맞지 않습니다.");
+            throw new CustomException(INVALID_RESERVATION_REQUEST, "요청이 헬스장 운영 시간과 맞지 않습니다.");
     }
 
     private boolean checkEndAtInBusinessHour(LocalDateTime endAt, int gymOpenHour, int gymCloseHour,
@@ -278,15 +278,15 @@ public class ReservationService {
         if (checkConditions(reservation, endEquipmentUseAt)) {
             if (authority.getCreditAcquisitionCount() != 10) {
                 Credit credit = creditRepository.findByAuthorityAndYearAndMonth(authority, (short) now.getYear(), (short) now.getMonthValue())
-                        .orElseThrow(() -> new CustomException(ErrorCode.CREDIT_NOT_FOUND));
+                        .orElseThrow(() -> new CustomException(CREDIT_NOT_FOUND));
                 credit.addAmount();
                 authority.incrementAcquisitionCount();
                 authority.getUser().addBalance(100L);
             } else {
-                throw new CustomException(ErrorCode.MAXIMUM_CREDIT_LIMIT);
+                throw new CustomException(MAXIMUM_CREDIT_LIMIT);
             }
         } else {
-            throw new CustomException(ErrorCode.INVALID_CREDIT_ACQUIRE_REQUEST, "크레딧 획득에 실패했습니다.");
+            throw new CustomException(INVALID_CREDIT_ACQUIRE_REQUEST, "크레딧 획득에 실패했습니다.");
         }
     }
 
@@ -317,11 +317,11 @@ public class ReservationService {
         LocalDateTime twoHourLater = now().plusHours(MAX_HOUR_TERM);
 
         if (startAt.isAfter(twoHourLater)) {
-            throw new CustomException(ErrorCode.INVALID_RESERVATION_REQUEST, "예약 시작 시간을 확인해주세요.");
+            throw new CustomException(INVALID_RESERVATION_REQUEST, "예약 시작 시간을 확인해주세요.");
         }
 
         if (endAt.isAfter(twoHourLater.plusMinutes(MAX_MINUTE))) {
-            throw new CustomException(ErrorCode.INVALID_RESERVATION_REQUEST, "예약 종료 시간을 확인해주세요.");
+            throw new CustomException(INVALID_RESERVATION_REQUEST, "예약 종료 시간을 확인해주세요.");
         }
     }
 
@@ -380,7 +380,7 @@ public class ReservationService {
 
     private void validateTagAt(LocalDateTime tagAt) {
         if (tagAt.isBefore(now().minusMinutes(3))) {
-            throw new CustomException(ErrorCode.INVALID_TAG_REQUEST, "예약 시작 시간보다 먼저 태그할 수 없습니다.");
+            throw new CustomException(INVALID_TAG_REQUEST, "요청 시각이 현재 시간과 맞지 않습니다.");
         }
     }
 }
