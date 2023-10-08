@@ -4,6 +4,8 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Credit;
 import com.newfit.reservation.dto.response.UserRankInfo;
 import com.newfit.reservation.dto.response.UserRankInfoListResponse;
+import com.newfit.reservation.exception.CustomException;
+import com.newfit.reservation.exception.ErrorCode;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,7 @@ public class CreditService {
     public UserRankInfoListResponse getRankInGym(Long authorityId) {
         LocalDateTime now = LocalDateTime.now();
         Authority authority = authorityRepository.findById(authorityId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(ErrorCode.AUTHORITY_NOT_FOUND));
         List<UserRankInfo> rankingList = new ArrayList<>();
 
         Pageable topTen = PageRequest.of(0,10);
