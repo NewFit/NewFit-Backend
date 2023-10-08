@@ -1,12 +1,10 @@
 package com.newfit.reservation.exception;
 
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -20,9 +18,8 @@ public class ExceptionResponse {
     private final String notice;
 
 
-
     @Builder(access = AccessLevel.PRIVATE)
-    private ExceptionResponse(CustomException exception){
+    private ExceptionResponse(CustomException exception) {
         this.timestamp = LocalDateTime.now();
         this.code = exception.getErrorCode().getStatusCode();
         this.error = exception.getErrorCode().name();
@@ -30,7 +27,7 @@ public class ExceptionResponse {
         this.notice = exception.getNotice();
     }
 
-    public static ExceptionResponse create(CustomException customException){
+    public static ExceptionResponse create(CustomException customException) {
         return ExceptionResponse.builder()
                 .exception(customException)
                 .build();

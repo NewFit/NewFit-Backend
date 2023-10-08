@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 import static com.newfit.reservation.exception.ErrorCode.ALREADY_TAGGED_RESERVATION;
+
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -1,6 +1,5 @@
 package com.newfit.reservation.exception;
 
-
 import lombok.Getter;
 
 @Getter

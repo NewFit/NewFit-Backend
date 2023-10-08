@@ -1,6 +1,5 @@
 package com.newfit.reservation.exception;
 
-
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -39,14 +38,13 @@ public enum ErrorCode {
     MAXIMUM_CREDIT_LIMIT(HttpStatus.CONFLICT, "일일 크레딧 획득량을 모두 채웠습니다."),
 
     // 500 INTERNAL SERVER ERROR
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러입니다.")
-    ;
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러입니다.");
 
     private final String name;
     private final int statusCode;
     private final String message;
 
-    ErrorCode(HttpStatus status, String message){
+    ErrorCode(HttpStatus status, String message) {
         this.name = status.name();
         this.statusCode = status.value();
         this.message = message;

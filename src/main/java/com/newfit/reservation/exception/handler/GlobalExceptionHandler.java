@@ -1,6 +1,5 @@
 package com.newfit.reservation.exception.handler;
 
-
 import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.exception.ExceptionResponse;
 import lombok.RequiredArgsConstructor;
