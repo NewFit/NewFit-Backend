@@ -125,4 +125,9 @@ public class AuthorityService {
                 .reservationResponseList(reservationResponseList)
                 .build();
     }
+
+    public void enterGym(Long userId, EntryRequest request) {
+        Authority authority = authorityRepository.findOneByUserIdAndGymId(userId, request.getGymId());
+        authority.updateTagAt(request.getTagAt());
+    }
 }
