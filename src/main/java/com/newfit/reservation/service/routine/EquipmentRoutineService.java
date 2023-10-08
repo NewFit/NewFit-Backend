@@ -8,6 +8,8 @@ import com.newfit.reservation.dto.request.UpdateRoutineRequest;
 import com.newfit.reservation.dto.request.routine.AddEquipmentRequest;
 import com.newfit.reservation.dto.request.routine.RemoveEquipmentRequest;
 import com.newfit.reservation.dto.request.routine.UpdateEquipmentRequest;
+import com.newfit.reservation.exception.CustomException;
+import com.newfit.reservation.exception.ErrorCode;
 import com.newfit.reservation.repository.equipment.EquipmentRepository;
 import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +49,7 @@ public class EquipmentRoutineService {
 
         for (RoutineEquipmentRequest routineRequest : routineRequests) {
             Equipment equipment = equipmentRepository.findById(routineRequest.getEquipmentId())
-                    .orElseThrow(IllegalArgumentException::new);
+                    .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND));
 
             equipmentRoutineRepository.save(
                     EquipmentRoutine.builder()
@@ -93,7 +95,7 @@ public class EquipmentRoutineService {
 
             for (AddEquipmentRequest addEquipment : addEquipments) {
                 Equipment equipment = equipmentRepository.findById(addEquipment.getEquipmentId())
-                        .orElseThrow(IllegalArgumentException::new);
+                        .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND));
 
                 equipmentRoutineRepository.save(
                         EquipmentRoutine.builder()
@@ -144,7 +146,8 @@ public class EquipmentRoutineService {
         return allByRoutine.stream()
                 .filter(equipmentRoutine -> equipmentRoutine.getEquipment().getId().equals(targetId))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() ->
+                        new CustomException(ErrorCode.EQUIPMENT_ROUTINE_NOT_FOUND, "요청 기구 id=" + targetId.toString()));
     }
 
     private List<EquipmentRoutine> extractRemoveTargets(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
@@ -174,8 +177,9 @@ public class EquipmentRoutineService {
     private List<Short> extractRemoveSequences(UpdateRoutineRequest request, Routine routine) {
         List<EquipmentRoutine> equipmentRoutines = request.getRemoveEquipments().stream()
                 .map(r -> equipmentRoutineRepository.findByEquipmentIdAndRoutine(r.getEquipmentId(), routine)
-                        .orElseThrow(IllegalArgumentException::new))
-                .collect(Collectors.toList());
+                        .orElseThrow(() ->
+                                new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND, "요청 기구 id=" + r.getEquipmentId())))
+                .toList();
 
         return equipmentRoutines.stream()
                 .map(EquipmentRoutine::getSequence)
@@ -189,7 +193,7 @@ public class EquipmentRoutineService {
         for (UpdateEquipmentRequest updateEquipmentRequest : updateEquipments) {
             EquipmentRoutine equipmentRoutine = equipmentRoutineRepository
                     .findByEquipmentIdAndRoutine(updateEquipmentRequest.getEquipmentId(), routine)
-                    .orElseThrow(IllegalArgumentException::new);
+                    .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_ROUTINE_NOT_FOUND));
 
             sequenceMap.put(equipmentRoutine.getSequence(), updateEquipmentRequest.getSequence());
         }
