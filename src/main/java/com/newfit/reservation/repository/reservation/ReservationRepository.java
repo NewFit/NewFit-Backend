@@ -11,10 +11,10 @@ import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    @Query("select r from Reservation r where r.reserver.id = :authorityId")
+    @Query("select r from Reservation r where r.authority.id = :authorityId")
     List<Reservation> findAllByAuthorityId(@Param("authorityId") Long authorityId);
 
     List<Reservation> findAllByEquipmentGym(EquipmentGym equipmentGym);
 
-    Optional<Reservation> findByReserverAndEquipmentGym(Authority reserver, EquipmentGym equipmentGym);
+    Optional<Reservation> findByAuthorityAndEquipmentGym(Authority authority, EquipmentGym equipmentGym);
 }
