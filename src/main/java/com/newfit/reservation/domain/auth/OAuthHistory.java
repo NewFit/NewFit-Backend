@@ -14,6 +14,7 @@ public class OAuthHistory { // OAuth2 인증을 통해 얻어온 사용자 정�
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Provider provider;
 
@@ -24,7 +25,7 @@ public class OAuthHistory { // OAuth2 인증을 통해 얻어온 사용자 정�
     private Boolean signup;
 
     @JoinColumn(name = "user_id")
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     private User user;
 
     @Builder

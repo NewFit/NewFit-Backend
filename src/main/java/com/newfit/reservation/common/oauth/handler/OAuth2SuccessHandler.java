@@ -4,50 +4,40 @@ import com.newfit.reservation.common.jwt.TokenProvider;
 import com.newfit.reservation.common.oauth.CustomOAuth2User;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.auth.OAuthHistory;
-import com.newfit.reservation.domain.auth.RefreshToken;
-import com.newfit.reservation.repository.auth.RefreshTokenRepository;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import java.io.IOException;
-import java.time.Duration;
 
 
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    private final static Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(30);
-    private final static Duration REFRESH_TOKEN_DURATION = Duration.ofDays(7);
     private final TokenProvider tokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         OAuthHistory oAuthHistory = oAuth2User.getOAuthHistory();
         if (oAuthHistory.isRegistered()) {  // 회원가입이 완료된 경우
             Authority authority = oAuthHistory.getUser().getAuthorityList().stream().findAny().orElse(null);
-            String accessToken = tokenProvider.generateToken(oAuthHistory.getUser(), ACCESS_TOKEN_DURATION);
-            String refreshToken = tokenProvider.generateToken(oAuthHistory.getUser(), REFRESH_TOKEN_DURATION);
-            refreshTokenRepository.save(RefreshToken.createRefreshToken(oAuthHistory.getUser(), refreshToken));
+            String accessToken = tokenProvider.generateAccessToken(oAuthHistory.getUser());
+            String refreshToken = tokenProvider.generateRefreshToken(oAuthHistory.getUser());
 
             response.setHeader("access-token", accessToken);
             response.setHeader("refresh-token", refreshToken);
-            if (authority != null) {    // 등록된 gym이 있는 경우 자신의 헬스장 기구 전체 조회 api 호출
+            if (authority != null) {    // 등록된 gym이 있는 경우
                 response.setHeader("authority-id", authority.getId().toString());
             }
-            else {  // 등록된 gym이 없는 경우 헬스장 전체 조회 api 호출
+            else {  // 등록된 gym이 없는 경우
                 response.setHeader("user-id", oAuthHistory.getUser().getId().toString());
             }
         } else {    // 회원가입이 미실시된 경우
-            String accessToken = tokenProvider.generateToken(oAuthHistory.getUser(), ACCESS_TOKEN_DURATION);
+            String accessToken = tokenProvider.generateAccessToken(oAuthHistory.getUser());
             response.setHeader("access-token", accessToken);
             response.setHeader("oauth-history-id", oAuthHistory.getId().toString());
-
         }
     }
 }

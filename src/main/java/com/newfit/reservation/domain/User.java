@@ -1,5 +1,6 @@
 package com.newfit.reservation.domain;
 
+import com.newfit.reservation.domain.auth.OAuthHistory;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.dev.Proposal;
 import com.newfit.reservation.domain.dev.Report;
@@ -67,6 +68,9 @@ public class User extends BaseTimeEntity {
     @Column(name = "file_path", nullable = false)
     private String filePath;
 
+    @OneToOne(mappedBy = "user")
+    private OAuthHistory oAuthHistory;
+
     // 양방향 연관관계를 나타냅니다.
     @OneToMany(mappedBy = "user")
     private List<Report> reportList = new ArrayList<>();
@@ -76,9 +80,8 @@ public class User extends BaseTimeEntity {
     private List<Proposal> proposalList = new ArrayList<>();
 
     // 양방향 연관관계를 나타냅니다.
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Authority> authorityList = new ArrayList<>();
-
 
     /* =========== update method  =========== */
 
