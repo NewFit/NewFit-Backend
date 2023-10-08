@@ -29,13 +29,13 @@ public class Reservation extends BaseTimeEntity {
     private EquipmentGym equipmentGym;
 
     @Column(nullable = false)
-    private LocalDateTime start_at;
+    private LocalDateTime startAt;
 
     @Column(nullable = false)
-    private LocalDateTime end_at;
+    private LocalDateTime endAt;
 
     @Column(nullable = false)
-    private Long repetition_number;
+    private Long repetitionNumber;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -52,9 +52,9 @@ public class Reservation extends BaseTimeEntity {
                        Long repetitionNumber) {
         this.authority = authority;
         this.equipmentGym = equipmentGym;
-        this.start_at = startAt;
-        this.end_at = endAt;
-        this.repetition_number = repetitionNumber;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.repetitionNumber = repetitionNumber;
         this.status = Status.WAITING;
         this.startTagAt = null;
     }
@@ -66,15 +66,15 @@ public class Reservation extends BaseTimeEntity {
 
 
     public void updateStartTime(LocalDateTime startAt) {
-        this.start_at = startAt;
+        this.startAt = startAt;
     }
 
     public void updateEndTime(LocalDateTime endAt) {
-        this.end_at = endAt;
+        this.endAt = endAt;
     }
 
     public void updateRepetitionNumber(Long repetitionNumber) {
-        this.repetition_number = repetitionNumber;
+        this.repetitionNumber = repetitionNumber;
     }
 
     public void updateStartTagAt(LocalDateTime startTagAt) {
@@ -89,11 +89,11 @@ public class Reservation extends BaseTimeEntity {
     }
 
     public boolean overlapped(LocalDateTime start, LocalDateTime end) {
-        boolean startBeforeEnd = this.start_at.isBefore(this.end_at)
+        boolean startBeforeEnd = this.startAt.isBefore(this.endAt)
                 && start.isBefore(end);
 
-        boolean isBefore = this.end_at.isBefore(start);
-        boolean isAfter = this.start_at.isAfter(end);
+        boolean isBefore = this.endAt.isBefore(start);
+        boolean isAfter = this.startAt.isAfter(end);
 
         return !(startBeforeEnd && (isBefore || isAfter));
     }

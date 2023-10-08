@@ -122,8 +122,8 @@ public class ReservationService {
 
         // reservations에서 현재 시간보다 늦게 끝나거나 현재 시간으로부터 2시간 이후내로 시작되는 예약을 OccupiedTime 리스트로 변환
         List<OccupiedTime> occupiedTimes = reservations.stream()
-                .filter(reservation -> reservation.getEnd_at().isAfter(now) || reservation.getStart_at().isBefore(now.plusHours(2)))
-                .map(reservation -> new OccupiedTime(reservation.getStart_at(), reservation.getEnd_at()))
+                .filter(reservation -> reservation.getEndAt().isAfter(now) || reservation.getStartAt().isBefore(now.plusHours(2)))
+                .map(reservation -> new OccupiedTime(reservation.getStartAt(), reservation.getEndAt()))
                 .collect(Collectors.toList());
 
         return new EquipmentInfoResponse(equipmentGym, occupiedTimes);
@@ -299,13 +299,13 @@ public class ReservationService {
     }
 
     private boolean isStartTagInTime(Reservation reservation) {
-        return (reservation.getStartTagAt().isBefore(reservation.getStart_at().plusMinutes(5)) && reservation.getStartTagAt().isAfter(reservation.getStart_at()))
-                || reservation.getStartTagAt().isEqual(reservation.getStart_at().plusMinutes(5));
+        return (reservation.getStartTagAt().isBefore(reservation.getStartAt().plusMinutes(5)) && reservation.getStartTagAt().isAfter(reservation.getStartAt()))
+                || reservation.getStartTagAt().isEqual(reservation.getStartAt().plusMinutes(5));
     }
 
     private boolean isEndTagInTime(Reservation reservation, LocalDateTime endTagAt) {
-        return (endTagAt.isBefore(reservation.getEnd_at().plusMinutes(5)) && endTagAt.isAfter(reservation.getEnd_at()))
-                || endTagAt.isEqual(reservation.getEnd_at().plusMinutes(5));
+        return (endTagAt.isBefore(reservation.getEndAt().plusMinutes(5)) && endTagAt.isAfter(reservation.getEndAt()))
+                || endTagAt.isEqual(reservation.getEndAt().plusMinutes(5));
     }
 
     private void validateReservationIn2Hours(LocalDateTime startAt, LocalDateTime endAt) {
