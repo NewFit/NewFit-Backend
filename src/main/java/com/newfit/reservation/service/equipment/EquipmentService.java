@@ -3,6 +3,8 @@ package com.newfit.reservation.service.equipment;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.domain.equipment.Purpose;
+import com.newfit.reservation.exception.CustomException;
+import com.newfit.reservation.exception.ErrorCode;
 import com.newfit.reservation.repository.equipment.EquipmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,7 @@ public class EquipmentService {
     public Equipment registerEquipment(Gym gym, String name, Purpose purpose) {
         if (doesExists(gym, name, purpose)) {
             return equipmentRepository.findByGymAndNameAndPurpose(gym, name, purpose)
-                    .orElseThrow(IllegalArgumentException::new);
+                    .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND));
         }
         return equipmentRepository.save(Equipment.createEquipment(gym, name, purpose));
     }
@@ -47,6 +49,6 @@ public class EquipmentService {
      */
     public Equipment findById(Long equipmentId) {
         return equipmentRepository.findById(equipmentId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_GYM_NOT_FOUND));
     }
 }
