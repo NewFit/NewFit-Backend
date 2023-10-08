@@ -32,9 +32,7 @@ public class AuthorityService {
         Gym gym = gymRepository.findById(gymId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        Authority authority = Authority.createAuthority(user, gym);
-
-        authorityRepository.save(authority);
+        authorityRepository.save(Authority.createAuthority(user, gym));
     }
 
     public void delete(Long authorityId) {
