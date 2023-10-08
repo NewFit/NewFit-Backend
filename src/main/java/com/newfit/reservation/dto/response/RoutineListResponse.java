@@ -17,9 +17,15 @@ public class RoutineListResponse {
     private int routinesCount;
     private List<RoutineResponse> routines;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private RoutineListResponse(List<RoutineResponse> routines) {
         this.routinesCount = routines.size();
         this.routines = routines;
+    }
+
+    public static RoutineListResponse createResponse(List<RoutineResponse> routines) {
+        return RoutineListResponse.builder()
+                .routines(routines)
+                .build();
     }
 }

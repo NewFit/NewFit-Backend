@@ -62,9 +62,7 @@ public class RoutineService {
                 .map(RoutineResponse::new)
                 .collect(Collectors.toList());
 
-        return RoutineListResponse.builder()
-                .routines(routines)
-                .build();
+        return RoutineListResponse.createResponse(routines);
     }
 
     /*
