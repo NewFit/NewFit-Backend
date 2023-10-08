@@ -106,9 +106,6 @@ public class AuthorityService {
                 .toList();
 
 
-        return ReservationListResponse.builder()
-                .gymName(gymName)
-                .reservationResponseList(reservationResponseList)
-                .build();
+        return ReservationListResponse.createResponse(gymName, reservationResponseList);
     }
 }

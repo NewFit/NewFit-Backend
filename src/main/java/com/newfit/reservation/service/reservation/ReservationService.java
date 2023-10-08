@@ -75,10 +75,7 @@ public class ReservationService {
                         .map(ReservationDetailResponse::new)
                         .toList();
 
-        return ReservationListResponse.builder()
-                .gymName(gymName)
-                .reservationResponseList(reservationDetailResponseList)
-                .build();
+        return ReservationListResponse.createResponse(gymName, reservationDetailResponseList);
     }
 
     public ReservationResponse update(Long reservationId, ReservationUpdateRequest request) {

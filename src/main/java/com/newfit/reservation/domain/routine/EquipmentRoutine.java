@@ -33,12 +33,22 @@ public class EquipmentRoutine {
     @Column(nullable = false)
     private Short sequence;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private EquipmentRoutine(Equipment equipment, Routine routine, Duration duration, Short sequence) {
         this.equipment = equipment;
         this.routine = routine;
         this.duration = duration;
         this.sequence = sequence;
+    }
+
+    public static EquipmentRoutine createEquipmentRoutine(Equipment equipment, Routine routine,
+                                                  Duration duration, Short sequence) {
+        return EquipmentRoutine.builder()
+                .equipment(equipment)
+                .routine(routine)
+                .duration(duration)
+                .sequence(sequence)
+                .build();
     }
 
     public void updateSequence(Short sequence) {
