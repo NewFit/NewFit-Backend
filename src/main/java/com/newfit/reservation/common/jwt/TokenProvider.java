@@ -40,7 +40,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
             return generateDefaultToken(now, expiryAt);
         }
 
-        List<Long> authorityIdList = user.getAuthorityList().stream().map(Authority::getId).collect(Collectors.toList());
+        List<Long> authorityIdList = user.getAuthorityList().stream().map(Authority::getId).toList();
 
         // 회원가입을 실시한 사용자를 위한 JWT 생성
         return Jwts.builder()

@@ -43,8 +43,7 @@ public class EquipmentGymService {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
 
         List<EquipmentResponse> equipmentResponses = allByGym.stream()
-                .map(EquipmentResponse::new)
-                .collect(Collectors.toList());
+                .map(EquipmentResponse::new).toList();
 
         return new EquipmentGymListResponse(gym.getName(), allByGym.size(), equipmentResponses);
     }
@@ -74,12 +73,11 @@ public class EquipmentGymService {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
         List<EquipmentGym> allByGymAndPurpose = allByGym
                 .stream()
-                .filter(equipmentGym -> equipmentGym.getEquipment().getPurpose().equals(purpose))
-                .toList();
+                .filter(equipmentGym -> equipmentGym.getEquipment().getPurpose().equals(purpose)).toList();
 
         List<EquipmentResponse> equipmentResponses = allByGymAndPurpose.stream()
-                .map(EquipmentResponse::new)
-                .collect(Collectors.toList());
+                .map(EquipmentResponse::new).toList();
+
         return new EquipmentGymListResponse(gym.getName(), allByGymAndPurpose.size(), equipmentResponses);
     }
 
@@ -90,12 +88,10 @@ public class EquipmentGymService {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
         List<EquipmentGym> allByGymAndEquipment = allByGym
                 .stream()
-                .filter(equipmentGym -> equipmentGym.getEquipment().equals(equipment))
-                .toList();
+                .filter(equipmentGym -> equipmentGym.getEquipment().equals(equipment)).toList();
 
         List<EquipmentResponse> equipmentResponses = allByGymAndEquipment.stream()
-                .map(EquipmentResponse::new)
-                .collect(Collectors.toList());
+                .map(EquipmentResponse::new).toList();
 
         return new EquipmentGymListResponse(gym.getName(), allByGymAndEquipment.size(), equipmentResponses);
     }
