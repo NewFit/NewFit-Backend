@@ -5,6 +5,9 @@ import com.newfit.reservation.common.oauth.OAuth2AuthorizationRequestCookieRepos
 import com.newfit.reservation.common.oauth.handler.OAuth2FailureHandler;
 import com.newfit.reservation.common.oauth.handler.OAuth2SuccessHandler;
 import com.newfit.reservation.common.oauth.OAuth2UserCustomService;
+import com.newfit.reservation.repository.UserRepository;
+import com.newfit.reservation.repository.auth.RefreshTokenRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,23 +19,27 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 import java.util.stream.Stream;
-
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
+    private final static String AUTHENTICATION = "Authorization";
+    private final static String BEARER = "Bearer ";
+
     private final TokenProvider tokenProvider;
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final OAuth2UserCustomService oAuth2UserCustomService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
 
     // 누구나 접근할 수 있는 URI 패턴을 정의
     private static final String[] PERMIT_ALL_PATTERNS = new String[] {
-            "/login/**"
+            "/login/**",
+            "/logout/**"
     };
 
     // Spring Security가 무시하도록 할 요청을 정의
@@ -64,17 +71,28 @@ public class WebSecurityConfig {
                         .authorizationRequestRepository(oAuth2AuthorizationRequestCookieRepository())))
                 .logout(logout -> logout
                     .logoutUrl("/logout")
+                    .addLogoutHandler((request, response, authentication) -> {
+                        tokenProvider.disableRefreshToken(getToken(request));
+                    })
                     .logoutSuccessUrl("/login"))
                 .build();
     }
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
-        return new TokenAuthenticationFilter(tokenProvider);
+        return new TokenAuthenticationFilter(tokenProvider, refreshTokenRepository, userRepository);
     }
 
     @Bean
     public OAuth2AuthorizationRequestCookieRepository oAuth2AuthorizationRequestCookieRepository() {
         return new OAuth2AuthorizationRequestCookieRepository();
+    }
+
+    private String getToken(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader(AUTHENTICATION);
+        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
+            return authorizationHeader.substring(BEARER.length());
+        }
+        return null;
     }
 }
