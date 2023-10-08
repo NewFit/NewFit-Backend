@@ -7,12 +7,15 @@ import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.equipment.Purpose;
 import com.newfit.reservation.dto.response.EquipmentGymListResponse;
 import com.newfit.reservation.dto.response.EquipmentResponse;
+import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +28,8 @@ public class EquipmentGymService {
     입력받은 개수(count)만큼 등록
      */
     public void registerEquipmentInGym(Equipment equipment, Gym gym, Integer count, List<String> equipmentGymNames) {
-        if(equipmentGymNames.size() < count)
-            throw new IllegalArgumentException("EquipmentGym의 이름 개수가 부족합니다.");
+        if (equipmentGymNames.size() < count)
+            throw new CustomException(INCOMPATIBLE_EQUIPMENT_NAME_COUNT);
 
         IntStream.range(0, count)
                 .forEach(repeat -> equipmentGymRepository
@@ -50,8 +53,7 @@ public class EquipmentGymService {
     EquipmentGym의 Condition을 수정
      */
     public void updateCondition(Long equipmentGymId, Condition condition) {
-        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId)
-                .orElseThrow(IllegalArgumentException::new);
+        EquipmentGym equipmentGym = findOneById(equipmentGymId);
         equipmentGym.updateCondition(condition);
     }
 
@@ -59,9 +61,7 @@ public class EquipmentGymService {
     equipmentGym 삭제
      */
     public void deleteEquipmentGym(Long equipmentGymId) {
-        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId)
-                .orElseThrow(IllegalArgumentException::new);
-        equipmentGymRepository.delete(equipmentGym);
+        equipmentGymRepository.deleteById(equipmentGymId);
     }
 
     /*
@@ -97,6 +97,8 @@ public class EquipmentGymService {
     EquipmentGymId로 EquipmentGym 조회
      */
     public EquipmentGym findOneById(Long equipmentGymId) {
-        return equipmentGymRepository.findById(equipmentGymId).orElseThrow(IllegalArgumentException::new);
+        return equipmentGymRepository
+                .findById(equipmentGymId)
+                .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
     }
 }

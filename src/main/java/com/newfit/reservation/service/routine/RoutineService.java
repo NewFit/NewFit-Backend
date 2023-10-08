@@ -9,12 +9,15 @@ import com.newfit.reservation.dto.response.RoutineDetailEquipmentResponse;
 import com.newfit.reservation.dto.response.RoutineDetailResponse;
 import com.newfit.reservation.dto.response.RoutineListResponse;
 import com.newfit.reservation.dto.response.RoutineResponse;
+import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import com.newfit.reservation.repository.routine.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +32,8 @@ public class RoutineService {
     아니라면 새로운 Routine을 등록하고 그 Routine을 반환합니다.
      */
     public Routine registerRoutine(Authority authority, String routineName) {
-        if(validateDuplicate(authority, routineName))
-            throw new IllegalArgumentException();
+        if (validateDuplicate(authority, routineName))
+            throw new CustomException(DUPLICATE_ROUTINE_NAME);
 
         return routineRepository.save(Routine.createRoutine(authority, routineName));
     }
@@ -38,15 +41,14 @@ public class RoutineService {
     // id를 통해 Routine 객체를 조회합니다.
     public Routine findById(Long routineId) {
         return routineRepository.findById(routineId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
     }
 
     /*
     Routine의 이름을 업데이트하는 메소드입니다.
      */
     public void updateRoutine(Long routineId, String routineName) {
-        Routine findRoutine = routineRepository.findById(routineId)
-                .orElseThrow(IllegalArgumentException::new);
+        Routine findRoutine = findById(routineId);
         findRoutine.updateName(routineName);
     }
 
@@ -65,8 +67,7 @@ public class RoutineService {
     특정 Routine 객체를 삭제하는 경우 해당 Routine에 묶여있는 EquipmentRoutine 객체들도 모두 삭제합니다.
      */
     public void deleteRoutine(Long routineId) {
-        Routine findRoutine = routineRepository.findById(routineId)
-                .orElseThrow(IllegalArgumentException::new);
+        Routine findRoutine = findById(routineId);
         equipmentRoutineRepository.deleteAllByRoutine(findRoutine);
         routineRepository.deleteById(routineId);
     }
@@ -78,8 +79,7 @@ public class RoutineService {
     Routine 정보와 함께 RoutineDetailResponse를 구성하여 반환합니다.
      */
     public RoutineDetailResponse findRoutineDetail(Long routineId) {
-        Routine findRoutine = routineRepository.findById(routineId)
-                .orElseThrow(IllegalArgumentException::new);
+        Routine findRoutine = findById(routineId);
 
         List<EquipmentRoutine> findEquipmentRoutines = equipmentRoutineRepository.findAllByRoutine(findRoutine);
 
