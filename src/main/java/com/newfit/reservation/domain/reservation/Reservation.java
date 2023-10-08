@@ -22,7 +22,7 @@ public class Reservation extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "authority_id", nullable = false)
-    private Authority reserver;
+    private Authority authority;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipment_gym_id", nullable = false)
@@ -44,13 +44,14 @@ public class Reservation extends BaseTimeEntity {
     @Column(name = "start_tag_at")
     private LocalDateTime startTagAt;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private Reservation(Authority reserver,
+
+    @Builder
+    private Reservation(Authority authority,
                        EquipmentGym equipmentGym,
                        LocalDateTime startAt,
                        LocalDateTime endAt,
                        Long repetitionNumber) {
-        this.reserver = reserver;
+        this.authority = authority;
         this.equipmentGym = equipmentGym;
         this.start_at = startAt;
         this.end_at = endAt;
@@ -99,13 +100,13 @@ public class Reservation extends BaseTimeEntity {
     }
 
 
-    public static Reservation create(Authority reserver,
+    public static Reservation create(Authority authority,
                                      EquipmentGym equipmentGym,
                                      LocalDateTime startAt,
                                      LocalDateTime endAt,
                                      Long repetitionNumber) {
         return Reservation.builder()
-                .reserver(reserver)
+                .authority(authority)
                 .equipmentGym(equipmentGym)
                 .startAt(startAt)
                 .endAt(endAt)

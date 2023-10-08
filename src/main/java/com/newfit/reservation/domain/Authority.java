@@ -50,7 +50,7 @@ public class Authority extends BaseTimeEntity {
     @OneToMany(mappedBy = "authority", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Credit> creditList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "reserver", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "authority", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservationList = new ArrayList<>();
 
     // accepted 필드값을 true로 업데이트하는 메소드입니다.

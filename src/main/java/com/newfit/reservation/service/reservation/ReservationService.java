@@ -47,15 +47,17 @@ public class ReservationService {
 
         validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
 
-        Authority reserver = authorityRepository.findById(authorityId)
+        Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        checkBusinessHour(request.getStartAt(), request.getEndAt(), reserver);
+        checkBusinessHour(request.getStartAt(), request.getEndAt(), authority);
 
         // 사용 가능한 기구 하나를 가져옴
         EquipmentGym usedEquipment = getOneAvailable(equipmentId, request.getStartAt(), request.getEndAt());
 
-        Reservation reservation = Reservation.create(reserver, usedEquipment, request.getStartAt(), request.getEndAt(), request.getRepetitionNumber());
+
+        Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt(), request.getRepetitionNumber());
+
         reservationRepository.save(reservation);
 
         return new ReservationResponse(reservation.getId());
@@ -89,7 +91,7 @@ public class ReservationService {
 
         // 예약 시간 변경
         validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
-        checkBusinessHour(request.getStartAt(), request.getEndAt(), targetReservation.getReserver());
+        checkBusinessHour(request.getStartAt(), request.getEndAt(), targetReservation.getAuthority());
 
         if (request.getStartAt() != null)
             targetReservation.updateStartTime(request.getStartAt());
@@ -152,7 +154,7 @@ public class ReservationService {
 
     // 루틴의 특정 기구를 예약
     private RoutineReservationResponse reserveOneInRoutine(Long authorityId, Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
-        Authority reserver = authorityRepository.findById(authorityId)
+        Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(IllegalArgumentException::new);
         EquipmentGym equipmentGym = null;
 
@@ -160,7 +162,7 @@ public class ReservationService {
         while (attempt != 5) {
             try {
                 equipmentGym = getOneAvailable(equipmentId, startAt, endAt);
-                Reservation reservation = Reservation.create(reserver, equipmentGym, startAt, endAt, 0L);
+                Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt, 0L);
                 reservationRepository.save(reservation);
                 return new RoutineReservationResponse(equipmentGym.getId(), true, startAt);
             } catch (NoSuchElementException exception) {
@@ -182,7 +184,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NoSuchElementException("There is no available equipment"));
     }
 
-    private void checkBusinessHour(LocalDateTime startAt, LocalDateTime endAt, Authority reserver) {
+    private void checkBusinessHour(LocalDateTime startAt, LocalDateTime endAt, Authority authority) {
 
         /*
          예약의 시작 시간이 종료 시간보다 선행되는지 체크
@@ -191,7 +193,7 @@ public class ReservationService {
         if (startAt.isAfter(endAt))
             throw new IllegalArgumentException("잘못된 예약 요청입니다.");
 
-        Gym gym = reserver.getGym();
+        Gym gym = authority.getGym();
         BusinessTime businessTime = gym.getBusinessTime();
 
         // 헬스장이 24시간 운영이면 true 리턴
@@ -348,7 +350,7 @@ public class ReservationService {
 
     private Reservation findReservationByAuthorityAndEquipmentGym(Long authorityId, EquipmentGym equipmentGym) {
         Authority authority = authorityRepository.findById(authorityId).orElseThrow(IllegalArgumentException::new);
-        return reservationRepository.findByReserverAndEquipmentGym(authority, equipmentGym).orElseThrow(IllegalArgumentException::new);
+        return reservationRepository.findByAuthorityAndEquipmentGym(authority, equipmentGym).orElseThrow(IllegalArgumentException::new);
     }
 
     private void validateTagAt(LocalDateTime tagAt) {
