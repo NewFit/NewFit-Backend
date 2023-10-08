@@ -1,5 +1,6 @@
 package com.newfit.reservation.controller;
 
+import com.newfit.reservation.common.auth.AuthorityCheckService;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.routine.Routine;
 import com.newfit.reservation.dto.request.DeleteRoutineRequest;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,13 +26,17 @@ public class RoutineApiController {
     private final RoutineService routineService;
     private final EquipmentRoutineService equipmentRoutineService;
     private final AuthorityService authorityService;
+    private final AuthorityCheckService authorityCheckService;
 
-    /* 
+    /*
     Routine을 새로 등록
     Routine 객체 등록 후 EquipmentRoutine들 등록
      */
     @PostMapping("")
-    public ResponseEntity<Void> registerRoutine(@RequestHeader(value = "authority-id") Long authorityId, @Valid @RequestBody RegisterRoutineRequest request) {
+    public ResponseEntity<Void> registerRoutine(Authentication authentication,
+                                                @RequestHeader(value = "authority-id") Long authorityId,
+                                                @Valid @RequestBody RegisterRoutineRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         Authority authority = authorityService.findById(authorityId);
 
         Routine routine = routineService.registerRoutine(authority, request.getRoutineName());
@@ -48,8 +54,11 @@ public class RoutineApiController {
     EquipmentRoutineService로 로직 실행
      */
     @PatchMapping("/{routineId}")
-    public ResponseEntity<Void> updateRoutine(@Valid @RequestBody UpdateRoutineRequest request,
+    public ResponseEntity<Void> updateRoutine(Authentication authentication,
+                                              @RequestHeader(value = "authority-id") Long authorityId,
+                                              @Valid @RequestBody UpdateRoutineRequest request,
                                               @PathVariable("routineId") Long routineId) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         if (request.getRoutineName() != null) {
             routineService.updateRoutine(routineId, request.getRoutineName());
         }
@@ -79,7 +88,10 @@ public class RoutineApiController {
     특정 Routine을 삭제
      */
     @DeleteMapping("")
-    public ResponseEntity<Void> deleteRoutine(@Valid @RequestBody DeleteRoutineRequest request) {
+    public ResponseEntity<Void> deleteRoutine(Authentication authentication,
+                                              @RequestHeader(value = "authority-id") Long authorityId,
+                                              @Valid @RequestBody DeleteRoutineRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         routineService.deleteRoutine(request.getRoutineId());
         return ResponseEntity
                 .noContent()
