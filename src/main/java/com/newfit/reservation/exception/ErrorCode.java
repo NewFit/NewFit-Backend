@@ -16,6 +16,7 @@ public enum ErrorCode {
     EQUIPMENT_GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 기구를 찾을 수 없습니다."),
     EQUIPMENT_ROUTINE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 루틴 기구를 찾을 수 없습니다."),
     ROUTINE_NOT_FOUND(HttpStatus.NOT_FOUND, "루틴을 찾을 수 없습니다."),
+    OAUTH_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "OAuth 내역을 찾을 수 없습니다."),
 
     // 500 INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러입니다.")
