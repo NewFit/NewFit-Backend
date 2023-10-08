@@ -94,7 +94,7 @@ public class RoutineService {
 
         List<Equipment> findEquipments = findEquipmentRoutines.stream()
                 .map(EquipmentRoutine::getEquipment)
-                .collect(Collectors.toList());
+                .toList();
 
         List<RoutineDetailEquipmentResponse> equipments = findEquipments.stream()
                 .map(RoutineDetailEquipmentResponse::new)
