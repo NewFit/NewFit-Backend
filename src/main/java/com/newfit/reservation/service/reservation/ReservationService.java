@@ -22,12 +22,10 @@ import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.*;
 import static com.newfit.reservation.exception.ErrorCode.*;
@@ -82,8 +80,7 @@ public class ReservationService {
         List<ReservationDetailResponse> reservationDetailResponseList =
                 reservationRepository.findAllByEquipmentGym(equipmentGym)
                         .stream()
-                        .map(ReservationDetailResponse::new)
-                        .toList();
+                        .map(ReservationDetailResponse::new).toList();
 
         return ReservationListResponse.createResponse(gymName, reservationDetailResponseList);
     }
@@ -130,8 +127,7 @@ public class ReservationService {
         // reservations에서 현재 시간보다 늦게 끝나거나 현재 시간으로부터 2시간 이후내로 시작되는 예약을 OccupiedTime 리스트로 변환
         List<OccupiedTime> occupiedTimes = reservations.stream()
                 .filter(reservation -> reservation.getEndAt().isAfter(now) || reservation.getStartAt().isBefore(now.plusHours(2)))
-                .map(reservation -> new OccupiedTime(reservation.getStartAt(), reservation.getEndAt()))
-                .collect(Collectors.toList());
+                .map(reservation -> new OccupiedTime(reservation.getStartAt(), reservation.getEndAt())).toList();
 
         return new EquipmentInfoResponse(equipmentGym, occupiedTimes);
     }

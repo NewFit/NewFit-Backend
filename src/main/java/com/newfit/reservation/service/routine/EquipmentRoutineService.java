@@ -15,13 +15,11 @@ import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -41,8 +39,7 @@ public class EquipmentRoutineService {
                                          List<RoutineEquipmentRequest> routineRequests) {
 
         List<Short> sequences = routineRequests.stream()
-                .map(RoutineEquipmentRequest::getSequence)
-                .collect(Collectors.toList());
+                .map(RoutineEquipmentRequest::getSequence).toList();
 
         // valid한 sequence 값들로 이루어져 있는지 체크합니다.
         checkSequence(sequences);
@@ -146,37 +143,30 @@ public class EquipmentRoutineService {
     private List<EquipmentRoutine> extractRemoveTargets(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
         // 사용자가 Routine에서 제거한 Equipment들의 id List
         List<Long> equipmentIdList = request.getRemoveEquipments().stream()
-                .map(RemoveEquipmentRequest::getEquipmentId)
-                .toList();
+                .map(RemoveEquipmentRequest::getEquipmentId).toList();
 
         // allByRoutine을 순회하며 equipmentIdList에 들어있는 값과 대응되는 EquipmentRoutine List
         return allByRoutine.stream()
-                .filter(equipmentRoutine -> equipmentIdList.contains(equipmentRoutine.getEquipment().getId()))
-                .collect(Collectors.toList());
+                .filter(equipmentRoutine -> equipmentIdList.contains(equipmentRoutine.getEquipment().getId())).toList();
     }
 
     private List<Short> extractCurrentSequences(List<EquipmentRoutine> allByRoutine) {
         return allByRoutine.stream()
-                .map(EquipmentRoutine::getSequence)
-                .collect(Collectors.toList());
+                .map(EquipmentRoutine::getSequence).toList();
     }
 
     private List<Short> extractAddSequences(UpdateRoutineRequest request) {
         return request.getAddEquipments().stream()
-                .map(AddEquipmentRequest::getSequence)
-                .collect(Collectors.toList());
+                .map(AddEquipmentRequest::getSequence).toList();
     }
 
     private List<Short> extractRemoveSequences(UpdateRoutineRequest request, Routine routine) {
         List<EquipmentRoutine> equipmentRoutines = request.getRemoveEquipments().stream()
                 .map(r -> equipmentRoutineRepository.findByEquipmentIdAndRoutine(r.getEquipmentId(), routine)
-                        .orElseThrow(() ->
-                                new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND, "요청 기구 id=" + r.getEquipmentId())))
-                .toList();
+                    .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND, "요청 기구 id=" + r.getEquipmentId()))).toList();
 
         return equipmentRoutines.stream()
-                .map(EquipmentRoutine::getSequence)
-                .collect(Collectors.toList());
+                .map(EquipmentRoutine::getSequence).toList();
     }
 
     private Map<Short, Short> generateSequenceMap(UpdateRoutineRequest request, Routine routine) {
