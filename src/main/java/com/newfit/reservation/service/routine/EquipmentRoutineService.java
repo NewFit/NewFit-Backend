@@ -164,7 +164,7 @@ public class EquipmentRoutineService {
     private List<Short> extractRemoveSequences(UpdateRoutineRequest request, Routine routine) {
         List<EquipmentRoutine> equipmentRoutines = request.getRemoveEquipments().stream()
                 .map(r -> equipmentRoutineRepository.findByEquipmentIdAndRoutine(r.getEquipmentId(), routine)
-                        .orElseThrow(() -> new CustomException(EQUIPMENT_NOT_FOUND, "요청 기구 id=" + r.getEquipmentId()))).toList();
+                        .orElseThrow(() -> new CustomException(EQUIPMENT_ROUTINE_NOT_FOUND, "요청 기구 id=" + r.getEquipmentId()))).toList();
 
         return equipmentRoutines.stream()
                 .map(EquipmentRoutine::getSequence).toList();

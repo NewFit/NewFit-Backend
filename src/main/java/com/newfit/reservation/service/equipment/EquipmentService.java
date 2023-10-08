@@ -49,6 +49,6 @@ public class EquipmentService {
      */
     public Equipment findById(Long equipmentId) {
         return equipmentRepository.findById(equipmentId)
-                .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(EQUIPMENT_NOT_FOUND));
     }
 }

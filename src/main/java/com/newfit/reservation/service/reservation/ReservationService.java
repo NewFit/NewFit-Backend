@@ -364,7 +364,7 @@ public class ReservationService {
         }
 
         if (tagAt.isBefore(reservationStartAt.minusMinutes(3))) {
-            throw new CustomException(INVALID_TAG_REQUEST, "예약 시작 5분 전에 태그할 수 있습니다.");
+            throw new CustomException(INVALID_TAG_REQUEST, "예약 시작 3분 전에 태그할 수 있습니다.");
         }
     }
 }
