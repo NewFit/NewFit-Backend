@@ -90,7 +90,7 @@ public class EquipmentRoutineService {
     }
 
     private void addEquipRoutineInRoutine(Routine routine, UpdateRoutineRequest request) {
-        if (!request.getAddEquipments().isEmpty()){
+        if (!request.getAddEquipments().isEmpty()) {
             List<AddEquipmentRequest> addEquipments = request.getAddEquipments();
 
             for (AddEquipmentRequest addEquipment : addEquipments) {
@@ -109,35 +109,38 @@ public class EquipmentRoutineService {
     }
 
     private void modifyEquipmentRoutineInRoutine(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
-        if (!request.getUpdateEquipments().isEmpty()) {
-            List<UpdateEquipmentRequest> updateEquipments = request.getUpdateEquipments();
+        if (request.getUpdateEquipments().isEmpty())
+            return;
 
-            for (UpdateEquipmentRequest updateEquipment : updateEquipments) {
+        List<UpdateEquipmentRequest> updateEquipments = request.getUpdateEquipments();
 
-                // 수정 사항을 반영할 EquipmentRoutine 객체를 allByRoutine에서 추출합니다.
-                EquipmentRoutine equipmentRoutine = extractUpdateTarget(updateEquipment, allByRoutine);
+        for (UpdateEquipmentRequest updateEquipment : updateEquipments) {
 
-                // 순서를 수정 시 실행.
-                if (updateEquipment.getSequence() != null) {
-                    equipmentRoutine.updateSequence(updateEquipment.getSequence());
-                }
-                // 운동시간을 수정 시 실행.
-                if (updateEquipment.getDuration() != null) {
-                    equipmentRoutine.updateDuration(Duration.ofMinutes(updateEquipment.getDuration()));
-                }
+            // 수정 사항을 반영할 EquipmentRoutine 객체를 allByRoutine에서 추출합니다.
+            EquipmentRoutine equipmentRoutine = extractUpdateTarget(updateEquipment, allByRoutine);
+
+            // 순서를 수정 시 실행.
+            if (updateEquipment.getSequence() != null) {
+                equipmentRoutine.updateSequence(updateEquipment.getSequence());
+            }
+
+            // 운동시간을 수정 시 실행.
+            if (updateEquipment.getDuration() != null) {
+                equipmentRoutine.updateDuration(Duration.ofMinutes(updateEquipment.getDuration()));
             }
         }
     }
 
     private void removeEquipmentRoutineInRoutine(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
-        if (!request.getRemoveEquipments().isEmpty()) {
+        if (request.getRemoveEquipments().isEmpty())
+            return;
 
-            // allByRoutine에서 제거 대상인 EquipmentRoutine List
-            List<EquipmentRoutine> removeTargets = extractRemoveTargets(request, allByRoutine);
+        // allByRoutine에서 제거 대상인 EquipmentRoutine List
+        List<EquipmentRoutine> removeTargets = extractRemoveTargets(request, allByRoutine);
 
-            // 추출한 EquipmentRoutine 객체들을 모두 삭제
-            equipmentRoutineRepository.deleteAll(removeTargets);
-        }
+        // 추출한 EquipmentRoutine 객체들을 모두 삭제
+        equipmentRoutineRepository.deleteAll(removeTargets);
+
     }
 
     private EquipmentRoutine extractUpdateTarget(UpdateEquipmentRequest updateEquipment, List<EquipmentRoutine> allByRoutine) {
@@ -154,7 +157,7 @@ public class EquipmentRoutineService {
         // 사용자가 Routine에서 제거한 Equipment들의 id List
         List<Long> equipmentIdList = request.getRemoveEquipments().stream()
                 .map(RemoveEquipmentRequest::getEquipmentId)
-                .collect(Collectors.toList());
+                .toList();
 
         // allByRoutine을 순회하며 equipmentIdList에 들어있는 값과 대응되는 EquipmentRoutine List
         return allByRoutine.stream()
@@ -227,6 +230,6 @@ public class EquipmentRoutineService {
                 && (IntStream.range(0, sequences.size() - 1)
                 .allMatch(i -> sequences.get(i + 1) == sequences.get(i) + 1));
 
-        if(!result) throw new IllegalArgumentException("잘못된 sequence 값입니다.");
+        if (!result) throw new IllegalArgumentException("잘못된 sequence 값입니다.");
     }
 }
