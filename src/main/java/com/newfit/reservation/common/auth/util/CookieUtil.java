@@ -1,4 +1,4 @@
-package com.newfit.reservation.common.util;
+package com.newfit.reservation.common.auth.util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.newfit.reservation.common.oauth;
+package com.newfit.reservation.common.auth.oauth;
 
 import com.newfit.reservation.domain.auth.OAuthHistory;
 import lombok.Getter;

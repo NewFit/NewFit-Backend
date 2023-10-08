@@ -1,7 +1,7 @@
-package com.newfit.reservation.common.oauth.handler;
+package com.newfit.reservation.common.auth.oauth.handler;
 
-import com.newfit.reservation.common.jwt.TokenProvider;
-import com.newfit.reservation.common.oauth.CustomOAuth2User;
+import com.newfit.reservation.common.auth.jwt.TokenProvider;
+import com.newfit.reservation.common.auth.oauth.CustomOAuth2User;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.auth.OAuthHistory;
 import jakarta.servlet.http.HttpServletRequest;

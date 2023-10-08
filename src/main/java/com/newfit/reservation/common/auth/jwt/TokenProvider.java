@@ -1,4 +1,4 @@
-package com.newfit.reservation.common.jwt;
+package com.newfit.reservation.common.auth.jwt;
 
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Role;
