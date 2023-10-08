@@ -38,7 +38,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if(request.getRequestURI().equals("/refresh") && tokenProvider.validRefreshToken(token, response)) {
             String accessToken = reIssueAccessToken(token);
             response.setHeader("access-token", accessToken);
-            filterChain.doFilter(request, response);
             return;
         }
         if(requiresValidityCheck(request) && tokenProvider.validAccessToken(token, request)) {
