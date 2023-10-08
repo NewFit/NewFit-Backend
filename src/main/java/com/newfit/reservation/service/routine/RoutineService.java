@@ -36,7 +36,7 @@ public class RoutineService {
      */
     public Routine registerRoutine(Authority authority, String routineName) {
         if (validateDuplicate(authority, routineName))
-            throw new IllegalArgumentException();
+            throw new CustomException(ErrorCode.DUPLICATE_ROUTINE_NAME);
 
         return routineRepository.save(Routine.builder()
                 .authority(authority)
