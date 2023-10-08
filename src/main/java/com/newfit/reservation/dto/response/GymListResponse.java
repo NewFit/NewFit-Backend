@@ -16,13 +16,13 @@ public class GymListResponse {
     private int gymCount;
     private List<GymResponse> gyms;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private GymListResponse(List<GymResponse> gyms) {
         this.gymCount = gyms.size();
         this.gyms = gyms;
     }
 
-    public static GymListResponse createGymListResponse(List<GymResponse> gyms) {
+    public static GymListResponse createResponse(List<GymResponse> gyms) {
         return GymListResponse.builder()
                 .gyms(gyms)
                 .build();
