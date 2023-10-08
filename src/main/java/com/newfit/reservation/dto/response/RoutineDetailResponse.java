@@ -19,11 +19,20 @@ public class RoutineDetailResponse {
     private int equipmentsCount;
     private List<RoutineDetailEquipmentResponse> equipments;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private RoutineDetailResponse(Long routineId, String routineName, List<RoutineDetailEquipmentResponse> equipments) {
         this.routineId = routineId;
         this.routineName = routineName;
         this.equipmentsCount = equipments.size();
         this.equipments = equipments;
+    }
+
+    public static RoutineDetailResponse createResponse(Long routineId, String routineName,
+                                                       List<RoutineDetailEquipmentResponse> equipments) {
+        return RoutineDetailResponse.builder()
+                .routineId(routineId)
+                .routineName(routineName)
+                .equipments(equipments)
+                .build();
     }
 }
