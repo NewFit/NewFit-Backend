@@ -4,6 +4,7 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
+import com.newfit.reservation.dto.request.EntryRequest;
 import com.newfit.reservation.dto.response.*;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.GymRepository;

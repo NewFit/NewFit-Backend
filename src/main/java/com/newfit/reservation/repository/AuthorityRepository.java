@@ -19,4 +19,7 @@ public interface AuthorityRepository extends JpaRepository<Authority, Long> {
 
     @Query("select a from Authority a where a.creditAcquisitionCount <> 0")
     List<Authority> findAllByCreditAcquisitionCountNotZero();
+
+    @Query("SELECT a from Authority a where a.user.id =:userId and a.gym.id =:gymId")
+    Authority findOneByUserIdAndGymId(@Param("userId") Long userId, @Param("gymId") Long gymId);
 }
