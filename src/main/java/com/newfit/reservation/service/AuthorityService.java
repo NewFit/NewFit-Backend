@@ -12,7 +12,6 @@ import com.newfit.reservation.repository.reservation.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,11 +93,7 @@ public class AuthorityService {
                 requests.add(response);
         }
 
-        return UserAndPendingListResponse.builder()
-                .gymName(gymName)
-                .requests(requests)
-                .users(users)
-                .build();
+        return UserAndPendingListResponse.createResponse(gymName, requests, users);
     }
 
     public Authority findById(Long authorityId) {
