@@ -4,6 +4,7 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
+import com.newfit.reservation.dto.request.EntryRequest;
 import com.newfit.reservation.dto.response.*;
 import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.exception.ErrorCode;
@@ -113,5 +114,10 @@ public class AuthorityService {
 
 
         return ReservationListResponse.createResponse(gymName, reservationResponseList);
+    }
+
+    public void enterGym(Long authorityId, EntryRequest request) {
+        Authority authority = authorityRepository.findById(authorityId).orElseThrow(IllegalArgumentException::new);
+        authority.updateTagAt(request.getTagAt());
     }
 }
