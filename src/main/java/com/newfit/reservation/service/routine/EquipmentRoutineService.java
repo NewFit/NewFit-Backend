@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.newfit.reservation.exception.ErrorCode.*;
@@ -40,7 +41,7 @@ public class EquipmentRoutineService {
                                          List<RoutineEquipmentRequest> routineRequests) {
 
         List<Short> sequences = routineRequests.stream()
-                .map(RoutineEquipmentRequest::getSequence).toList();
+                .map(RoutineEquipmentRequest::getSequence).collect(Collectors.toList());
 
         // valid한 sequence 값들로 이루어져 있는지 체크합니다.
         checkSequence(sequences);

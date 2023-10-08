@@ -1,5 +1,6 @@
 package com.newfit.reservation.controller;
 
+import com.newfit.reservation.common.auth.AuthorityCheckService;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.reservation.Reservation;
 import com.newfit.reservation.dto.request.ObtainCreditRequest;
@@ -15,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -27,12 +29,14 @@ public class ReservationApiController {
 
     private final ReservationService reservationService;
     private final AuthorityService authorityService;
-
+    private final AuthorityCheckService authorityCheckService;
 
     @PostMapping
-    public ResponseEntity<Void> reserve(@RequestHeader("authority-id") Long authorityId,
-                                       @RequestParam(value = "equipment_id") Long equipmentId,
-                                       @Valid @RequestBody ReservationRequest request) {
+    public ResponseEntity<Void> reserve(Authentication authentication,
+                                        @RequestHeader("authority-id") Long authorityId,
+                                        @RequestParam(value = "equipment_id") Long equipmentId,
+                                        @Valid @RequestBody ReservationRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         reservationService.reserve(authorityId, equipmentId, request);
         return ResponseEntity
                 .status(CREATED)
@@ -48,8 +52,11 @@ public class ReservationApiController {
     }
 
     @PatchMapping
-    public ResponseEntity<Void> updateReservation(@RequestParam("reservation_id") Long reservationId,
-                                                 @Valid @RequestBody ReservationUpdateRequest request) {
+    public ResponseEntity<Void> updateReservation(Authentication authentication,
+                                                  @RequestHeader("authority-id") Long authorityId,
+                                                  @RequestParam("reservation_id") Long reservationId,
+                                                  @Valid @RequestBody ReservationUpdateRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         reservationService.update(reservationId, request);
         return ResponseEntity
                 .noContent()
@@ -57,14 +64,20 @@ public class ReservationApiController {
     }
 
     @DeleteMapping("/{reservationId}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long reservationId) {
+    public ResponseEntity<Void> deleteReservation(Authentication authentication,
+                                                  @RequestHeader("authority-id") Long authorityId,
+                                                  @PathVariable Long reservationId) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         reservationService.delete(reservationId);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/routines/{routineId}")
-    public ResponseEntity<RoutineReservationListResponse> reserveByRoutine(@PathVariable Long routineId, @Valid @RequestBody RoutineReservationRequest request) {
-        Long authorityId = 1L;
+    public ResponseEntity<RoutineReservationListResponse> reserveByRoutine(Authentication authentication,
+                                                                           @RequestHeader("authority-id") Long authorityId,
+                                                                           @PathVariable Long routineId,
+                                                                           @Valid @RequestBody RoutineReservationRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         RoutineReservationListResponse response = new RoutineReservationListResponse(reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt()));
 
         return ResponseEntity
@@ -73,7 +86,10 @@ public class ReservationApiController {
     }
 
     @PatchMapping("/start")
-    public ResponseEntity<Void> startOfUse(@RequestHeader("authority-id") Long authorityId, @Valid @RequestBody StartReservationRequest request) {
+    public ResponseEntity<Void> startOfUse(Authentication authentication,
+                                           @RequestHeader("authority-id") Long authorityId,
+                                           @Valid @RequestBody StartReservationRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         reservationService.startUse(authorityId, request.getEquipmentGymId(), request.getTagAt());
         return ResponseEntity
                 .noContent()
@@ -81,9 +97,11 @@ public class ReservationApiController {
     }
 
     @PatchMapping("/end")
-    public ResponseEntity<Void> endOfUseAndObtainCredit(@RequestHeader(name = "authority-id") Long authorityId,
-                                                                  @RequestParam(name = "reservation_id") Long reservationId,
-                                                                  @Valid @RequestBody ObtainCreditRequest request) {
+    public ResponseEntity<Void> endOfUseAndObtainCredit(Authentication authentication,
+                                                        @RequestHeader(name = "authority-id") Long authorityId,
+                                                        @RequestParam(name = "reservation_id") Long reservationId,
+                                                        @Valid @RequestBody ObtainCreditRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         Reservation reservation = reservationService.findById(reservationId);
         Authority authority = authorityService.findById(authorityId);
 

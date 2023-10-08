@@ -1,10 +1,11 @@
-package com.newfit.reservation.common.config;
+package com.newfit.reservation.common.auth.config;
 
-import com.newfit.reservation.common.jwt.TokenProvider;
-import com.newfit.reservation.common.oauth.OAuth2AuthorizationRequestCookieRepository;
-import com.newfit.reservation.common.oauth.handler.OAuth2FailureHandler;
-import com.newfit.reservation.common.oauth.handler.OAuth2SuccessHandler;
-import com.newfit.reservation.common.oauth.OAuth2UserCustomService;
+import com.newfit.reservation.common.auth.jwt.TokenAuthenticationFilter;
+import com.newfit.reservation.common.auth.jwt.TokenProvider;
+import com.newfit.reservation.common.auth.oauth.OAuth2AuthorizationRequestCookieRepository;
+import com.newfit.reservation.common.auth.oauth.handler.OAuth2FailureHandler;
+import com.newfit.reservation.common.auth.oauth.handler.OAuth2SuccessHandler;
+import com.newfit.reservation.common.auth.oauth.OAuth2UserCustomService;
 import com.newfit.reservation.repository.UserRepository;
 import com.newfit.reservation.repository.auth.RefreshTokenRepository;
 import jakarta.servlet.http.HttpServletRequest;

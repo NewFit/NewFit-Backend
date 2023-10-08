@@ -1,4 +1,4 @@
-package com.newfit.reservation.common.jwt;
+package com.newfit.reservation.common.auth.jwt;
 
 import lombok.Getter;
 import lombok.Setter;

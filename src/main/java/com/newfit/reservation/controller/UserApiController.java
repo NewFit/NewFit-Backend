@@ -1,6 +1,7 @@
 package com.newfit.reservation.controller;
 
 
+import com.newfit.reservation.common.auth.AuthorityCheckService;
 import com.newfit.reservation.dto.request.UserSignUpRequest;
 import com.newfit.reservation.dto.request.UserUpdateRequest;
 import com.newfit.reservation.dto.response.UserDetailResponse;
@@ -8,6 +9,7 @@ import com.newfit.reservation.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -17,9 +19,13 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class UserApiController {
 
     private final UserService userService;
+    private final AuthorityCheckService authorityCheckService;
 
     @PatchMapping
-    public ResponseEntity<Void> modify(@RequestHeader(value = "user-id") Long userId, @Valid @RequestBody UserUpdateRequest request) {
+    public ResponseEntity<Void> modify(Authentication authentication,
+                                       @RequestHeader(value = "user-id") Long userId,
+                                       @Valid @RequestBody UserUpdateRequest request) {
+        authorityCheckService.validateByUserId(authentication, userId);
         userService.modify(userId, request);
         return ResponseEntity
                 .noContent()
@@ -34,7 +40,9 @@ public class UserApiController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> drop(@RequestHeader(value = "user-id") Long userId) {
+    public ResponseEntity<Void> drop(Authentication authentication,
+                                     @RequestHeader(value = "user-id") Long userId) {
+        authorityCheckService.validateByUserId(authentication, userId);
         userService.drop(userId);
         return ResponseEntity
                 .noContent()
@@ -42,7 +50,9 @@ public class UserApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> signUp(@RequestHeader(value = "oauth-history-id") Long oauthHistoryId, @Valid @RequestBody UserSignUpRequest request) {
+    public ResponseEntity<Void> signUp(@RequestHeader(value = "oauth-history-id") Long oauthHistoryId,
+                                       @Valid @RequestBody UserSignUpRequest request) {
+        // TODO: 권한 확인 로직 추가해야함. 근데 여기서 굳이 필요한 지는 모르겠음
         userService.signUp(oauthHistoryId, request);
         return ResponseEntity
                 .status(CREATED)

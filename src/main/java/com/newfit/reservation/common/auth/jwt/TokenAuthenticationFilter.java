@@ -1,6 +1,5 @@
-package com.newfit.reservation.common.config;
+package com.newfit.reservation.common.auth.jwt;
 
-import com.newfit.reservation.common.jwt.TokenProvider;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.auth.RefreshToken;
 import com.newfit.reservation.exception.CustomException;
