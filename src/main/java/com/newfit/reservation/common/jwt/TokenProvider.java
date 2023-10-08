@@ -134,4 +134,10 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    public void disableRefreshToken(String accessToken) {
+        Claims claims = getClaims(accessToken);
+        Long userId = claims.get("id", Long.class);
+        refreshTokenRepository.deleteById(userId);
+    }
 }
