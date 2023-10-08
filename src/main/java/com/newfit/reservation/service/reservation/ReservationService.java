@@ -41,7 +41,7 @@ public class ReservationService {
     private final CreditRepository creditRepository;
 
 
-    public ReservationResponse reserve(Long authorityId,
+    public void reserve(Long authorityId,
                                        Long equipmentId,
                                        ReservationRequest request) {
 
@@ -59,8 +59,6 @@ public class ReservationService {
         Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt(), request.getRepetitionNumber());
 
         reservationRepository.save(reservation);
-
-        return new ReservationResponse(reservation.getId());
     }
 
 
@@ -80,7 +78,7 @@ public class ReservationService {
         return ReservationListResponse.createResponse(gymName, reservationDetailResponseList);
     }
 
-    public ReservationResponse update(Long reservationId, ReservationUpdateRequest request) {
+    public void update(Long reservationId, ReservationUpdateRequest request) {
         Reservation targetReservation = reservationRepository.findById(reservationId)
                 .orElseThrow(IllegalArgumentException::new);
 
@@ -107,7 +105,6 @@ public class ReservationService {
                     getOneAvailable(targetEquipmentId, request.getStartAt(), request.getEndAt());
             targetReservation.updateEquipmentGym(anotherEquipmentGym);
         }
-        return new ReservationResponse(reservationId);
     }
 
     public void delete(Long reservationId) {
