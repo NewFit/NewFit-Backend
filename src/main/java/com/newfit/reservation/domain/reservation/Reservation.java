@@ -3,7 +3,8 @@ package com.newfit.reservation.domain.reservation;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
-import com.newfit.reservation.dto.request.ReservationRequest;
+import com.newfit.reservation.exception.CustomException;
+import com.newfit.reservation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -80,7 +81,7 @@ public class Reservation extends BaseTimeEntity {
 
     public void updateStartTagAt(LocalDateTime startTagAt) {
         if (this.startTagAt != null) {
-            throw new IllegalArgumentException("can't update twice");
+            throw new CustomException(ErrorCode.ALREADY_TAGGED_RESERVATION);
         }
         this.startTagAt = startTagAt;
     }
