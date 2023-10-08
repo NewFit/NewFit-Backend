@@ -9,7 +9,6 @@ import com.newfit.reservation.dto.response.RoutineDetailEquipmentResponse;
 import com.newfit.reservation.dto.response.RoutineDetailResponse;
 import com.newfit.reservation.dto.response.RoutineListResponse;
 import com.newfit.reservation.dto.response.RoutineResponse;
-import com.newfit.reservation.repository.equipment.EquipmentRepository;
 import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import com.newfit.reservation.repository.routine.RoutineRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,6 @@ public class RoutineService {
 
     private final RoutineRepository routineRepository;
     private final EquipmentRoutineRepository equipmentRoutineRepository;
-    private final EquipmentRepository equipmentRepository;
 
     /*
     이전에 등록한 루틴과 동일한 이름이라면 exception이 발생합니다.
