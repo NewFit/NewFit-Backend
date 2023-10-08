@@ -16,6 +16,9 @@ public enum ErrorCode {
     INVALID_TAG_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 태그 요청입니다."),
     INVALID_SEQUENCE(HttpStatus.BAD_REQUEST, "잘못된 sequence 값입니다."),
 
+    // 401 UNAUTHORIZED
+    UNAUTHORIZED_REQUEST(HttpStatus.UNAUTHORIZED, "인가에 실패하였습니다."),
+
     // 404 NOT_FOUND 잘못된 리소스 접근
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "헬스장을 찾을 수 없습니다."),
