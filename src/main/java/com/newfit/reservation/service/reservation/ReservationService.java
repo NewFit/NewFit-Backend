@@ -361,14 +361,14 @@ public class ReservationService {
     }
 
 
-        return reservationRepository
-                .findByAuthorityAndEquipmentGym(authority, equipmentGym)
-                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
-    }
-
-    private void validateTagAt(LocalDateTime tagAt) {
+    private void validateTagAt(LocalDateTime tagAt, LocalDateTime reservationStartAt) {
+        // TODO: 시간은 기배님의 의견에 따라 결정
         if (tagAt.isBefore(now().minusMinutes(3))) {
             throw new CustomException(INVALID_TAG_REQUEST, "요청 시각이 현재 시간과 맞지 않습니다.");
+        }
+
+        if (tagAt.isBefore(reservationStartAt.minusMinutes(3))) {
+            throw new CustomException(INVALID_TAG_REQUEST, "예약 시작 5분 전에 태그할 수 있습니다.");
         }
     }
 }
