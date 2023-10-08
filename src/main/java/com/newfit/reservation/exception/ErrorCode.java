@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
 
+    // 400 BAD_REQUEST
+    INCOMPATIBLE_EQUIPMENT_NAME_COUNT(HttpStatus.BAD_REQUEST, "기구 이름 개수가 부족합니다."),
+
     // 404 NOT_FOUND 잘못된 리소스 접근
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "헬스장을 찾을 수 없습니다."),
