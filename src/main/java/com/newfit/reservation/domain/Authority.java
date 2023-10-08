@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,13 +86,20 @@ public class Authority extends BaseTimeEntity {
     }
 
     // Gym과의 연관관계 편의 메소드는 논의가 필요합니다.
-    @Builder
-    public Authority(User user, Gym gym) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Authority(User user, Gym gym) {
         this.user = user;
         this.gym = gym;
         this.accepted = false;
         this.role = Role.USER;
         this.creditAcquisitionCount = 0;
+    }
+
+    public static Authority createAuthority(User user, Gym gym) {
+        return Authority.builder()
+                .user(user)
+                .gym(gym)
+                .build();
     }
 
     public Long getTermCredit(LocalDateTime term) {

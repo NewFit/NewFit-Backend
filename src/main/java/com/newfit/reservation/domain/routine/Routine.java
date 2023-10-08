@@ -1,9 +1,7 @@
 package com.newfit.reservation.domain.routine;
 
-
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
-import com.newfit.reservation.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,9 +30,16 @@ public class Routine extends BaseTimeEntity {
         this.name = name;
     }
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Routine(Authority authority, String name) {
         this.authority = authority;
         this.name = name;
+    }
+
+    public static Routine createRoutine(Authority authority, String name) {
+        return Routine.builder()
+                .authority(authority)
+                .name(name)
+                .build();
     }
 }

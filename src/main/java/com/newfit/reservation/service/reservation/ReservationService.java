@@ -41,7 +41,7 @@ public class ReservationService {
     private final CreditRepository creditRepository;
 
 
-    public ReservationResponse reserve(Long authorityId,
+    public void reserve(Long authorityId,
                                        Long equipmentId,
                                        ReservationRequest request) {
 
@@ -56,10 +56,10 @@ public class ReservationService {
         // 사용 가능한 기구 하나를 가져옴
         EquipmentGym usedEquipment = getOneAvailable(equipmentId, request.getStartAt(), request.getEndAt());
 
-        Reservation reservation = Reservation.create(authority, usedEquipment, request);
-        reservationRepository.save(reservation);
 
-        return new ReservationResponse(reservation.getId());
+        Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt(), request.getRepetitionNumber());
+
+        reservationRepository.save(reservation);
     }
 
     private void validateLastTagAt(Authority authority) {
@@ -82,13 +82,10 @@ public class ReservationService {
                         .map(ReservationDetailResponse::new)
                         .toList();
 
-        return ReservationListResponse.builder()
-                .gymName(gymName)
-                .reservationResponseList(reservationDetailResponseList)
-                .build();
+        return ReservationListResponse.createResponse(gymName, reservationDetailResponseList);
     }
 
-    public ReservationResponse update(Long reservationId, ReservationUpdateRequest request) {
+    public void update(Long reservationId, ReservationUpdateRequest request) {
         Reservation targetReservation = reservationRepository.findById(reservationId)
                 .orElseThrow(IllegalArgumentException::new);
 
@@ -117,7 +114,6 @@ public class ReservationService {
                     getOneAvailable(targetEquipmentId, request.getStartAt(), request.getEndAt());
             targetReservation.updateEquipmentGym(anotherEquipmentGym);
         }
-        return new ReservationResponse(reservationId);
     }
 
     public void delete(Long reservationId) {
@@ -131,8 +127,8 @@ public class ReservationService {
 
         // reservations에서 현재 시간보다 늦게 끝나거나 현재 시간으로부터 2시간 이후내로 시작되는 예약을 OccupiedTime 리스트로 변환
         List<OccupiedTime> occupiedTimes = reservations.stream()
-                .filter(reservation -> reservation.getEnd_at().isAfter(now) || reservation.getStart_at().isBefore(now.plusHours(2)))
-                .map(reservation -> new OccupiedTime(reservation.getStart_at(), reservation.getEnd_at()))
+                .filter(reservation -> reservation.getEndAt().isAfter(now) || reservation.getStartAt().isBefore(now.plusHours(2)))
+                .map(reservation -> new OccupiedTime(reservation.getStartAt(), reservation.getEndAt()))
                 .collect(Collectors.toList());
 
         return new EquipmentInfoResponse(equipmentGym, occupiedTimes);
@@ -172,13 +168,7 @@ public class ReservationService {
         while (attempt != 5) {
             try {
                 equipmentGym = getOneAvailable(equipmentId, startAt, endAt);
-                Reservation reservation = Reservation.builder()
-                        .authority(authority)
-                        .equipmentGym(equipmentGym)
-                        .startAt(startAt)
-                        .endAt(endAt)
-                        .repetitionNumber(0L)
-                        .build();
+                Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt, 0L);
                 reservationRepository.save(reservation);
                 return new RoutineReservationResponse(equipmentGym.getId(), true, startAt);
             } catch (NoSuchElementException exception) {
@@ -308,13 +298,13 @@ public class ReservationService {
     }
 
     private boolean isStartTagInTime(Reservation reservation) {
-        return (reservation.getStartTagAt().isBefore(reservation.getStart_at().plusMinutes(5)) && reservation.getStartTagAt().isAfter(reservation.getStart_at()))
-                || reservation.getStartTagAt().isEqual(reservation.getStart_at().plusMinutes(5));
+        return (reservation.getStartTagAt().isBefore(reservation.getStartAt().plusMinutes(5)) && reservation.getStartTagAt().isAfter(reservation.getStartAt()))
+                || reservation.getStartTagAt().isEqual(reservation.getStartAt().plusMinutes(5));
     }
 
     private boolean isEndTagInTime(Reservation reservation, LocalDateTime endTagAt) {
-        return (endTagAt.isBefore(reservation.getEnd_at().plusMinutes(5)) && endTagAt.isAfter(reservation.getEnd_at()))
-                || endTagAt.isEqual(reservation.getEnd_at().plusMinutes(5));
+        return (endTagAt.isBefore(reservation.getEndAt().plusMinutes(5)) && endTagAt.isAfter(reservation.getEndAt()))
+                || endTagAt.isEqual(reservation.getEndAt().plusMinutes(5));
     }
 
     private void validateReservationIn2Hours(LocalDateTime startAt, LocalDateTime endAt) {

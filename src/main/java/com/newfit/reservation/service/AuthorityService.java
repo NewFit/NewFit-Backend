@@ -13,7 +13,6 @@ import com.newfit.reservation.repository.reservation.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,12 +33,7 @@ public class AuthorityService {
         Gym gym = gymRepository.findById(gymId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        Authority authority = Authority.builder()
-                .user(user)
-                .gym(gym)
-                .build();
-
-        authorityRepository.save(authority);
+        authorityRepository.save(Authority.createAuthority(user, gym));
     }
 
     public void delete(Long authorityId) {
@@ -49,14 +43,10 @@ public class AuthorityService {
     public GymListResponse listRegistration(Long authorityId) {
 
         Long userId = findById(authorityId).getUser().getId();
-
-        return GymListResponse.builder()
-                .gyms(authorityRepository.findAllAuthorityByUserId(userId)
-                        .stream()
-                        .map(GymResponse::new)
-                        .toList()
-                )
-                .build();
+        List<GymResponse> gyms = authorityRepository.findAllAuthorityByUserId(userId).stream()
+                .map(GymResponse::new)
+                .toList();
+        return GymListResponse.createResponse(gyms);
     }
 
     public Gym getGymByAuthorityId(Long authorityId) {
@@ -98,11 +88,7 @@ public class AuthorityService {
                 requests.add(response);
         }
 
-        return UserAndPendingListResponse.builder()
-                .gymName(gymName)
-                .requests(requests)
-                .users(users)
-                .build();
+        return UserAndPendingListResponse.createResponse(gymName, requests, users);
     }
 
     public Authority findById(Long authorityId) {
@@ -121,10 +107,7 @@ public class AuthorityService {
                 .toList();
 
 
-        return ReservationListResponse.builder()
-                .gymName(gymName)
-                .reservationResponseList(reservationResponseList)
-                .build();
+        return ReservationListResponse.createResponse(gymName, reservationResponseList);
     }
 
     public void enterGym(Long userId, EntryRequest request) {

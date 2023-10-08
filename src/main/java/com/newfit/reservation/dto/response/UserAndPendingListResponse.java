@@ -19,7 +19,7 @@ public class UserAndPendingListResponse {
     private int userCount;
     private List<UserAndPendingResponse> users;
 
-    @Builder    // 생성자를 private으로 설정하고 빌더 패턴 적용함으로써 오직 빌더로만 객체 생성 가능합니다.
+    @Builder(access = AccessLevel.PRIVATE)
     private UserAndPendingListResponse(String gymName,
                                        List<UserAndPendingResponse> requests,
                                        List<UserAndPendingResponse> users) {
@@ -28,5 +28,15 @@ public class UserAndPendingListResponse {
         this.requestCount = requests.size();
         this.users = users;
         this.userCount = users.size();
+    }
+
+    public static UserAndPendingListResponse createResponse(String gymName,
+                                                            List<UserAndPendingResponse> requests,
+                                                            List<UserAndPendingResponse> users) {
+        return UserAndPendingListResponse.builder()
+                .gymName(gymName)
+                .requests(requests)
+                .users(users)
+                .build();
     }
 }

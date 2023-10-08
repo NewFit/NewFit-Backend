@@ -20,7 +20,7 @@ public class GymService {
                 .map(GymResponse::new)
                 .toList();
 
-        return GymListResponse.createGymListResponse(gyms);
+        return GymListResponse.createResponse(gyms);
     }
 
     private String processQueryParam(String gymName) {
