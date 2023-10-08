@@ -44,6 +44,7 @@ public class Reservation extends BaseTimeEntity {
     @Column(name = "start_tag_at")
     private LocalDateTime startTagAt;
 
+
     @Builder
     private Reservation(Authority authority,
                        EquipmentGym equipmentGym,
@@ -101,13 +102,15 @@ public class Reservation extends BaseTimeEntity {
 
     public static Reservation create(Authority authority,
                                      EquipmentGym equipmentGym,
-                                     ReservationRequest request) {
+                                     LocalDateTime startAt,
+                                     LocalDateTime endAt,
+                                     Long repetitionNumber) {
         return Reservation.builder()
                 .authority(authority)
                 .equipmentGym(equipmentGym)
-                .startAt(request.getStartAt())
-                .endAt(request.getEndAt())
-                .repetitionNumber(request.getRepetitionNumber())
+                .startAt(startAt)
+                .endAt(endAt)
+                .repetitionNumber(repetitionNumber)
                 .build();
     }
 }
