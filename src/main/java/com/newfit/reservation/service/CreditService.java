@@ -4,6 +4,7 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Credit;
 import com.newfit.reservation.dto.response.UserRankInfo;
 import com.newfit.reservation.dto.response.UserRankInfoListResponse;
+import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.newfit.reservation.exception.ErrorCode.AUTHORITY_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -26,16 +29,16 @@ public class CreditService {
     public UserRankInfoListResponse getRankInGym(Long authorityId) {
         LocalDateTime now = LocalDateTime.now();
         Authority authority = authorityRepository.findById(authorityId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         List<UserRankInfo> rankingList = new ArrayList<>();
 
-        Pageable topTen = PageRequest.of(0,10);
+        Pageable topTen = PageRequest.of(0, 10);
         List<Credit> creditList = creditRepository.findAllByGymAndYearAndMonth(authority.getGym(), (short) now.getYear(), (short) now.getMonthValue(), topTen).stream().toList();
         creditList.forEach((credit -> rankingList.add(new UserRankInfo(credit, getRank(rankingList, credit)))));
         return new UserRankInfoListResponse(authority.getGym().getName(), rankingList);
     }
 
-    private Long getRank(List<UserRankInfo> rankingList , Credit credit) {
+    private Long getRank(List<UserRankInfo> rankingList, Credit credit) {
         if (rankingList.isEmpty()) {
             return 1L;
         }
@@ -44,9 +47,8 @@ public class CreditService {
         int indexOfLastElement = rankingList.size() - 1;
         if (rankingList.get(indexOfLastElement).getAmount().equals(credit.getAmount())) {
             return rankingList.get(indexOfLastElement).getRank();
-        }
-        else {
-            return rankingList.get(indexOfLastElement).getRank() +1L;
+        } else {
+            return rankingList.get(indexOfLastElement).getRank() + 1L;
         }
     }
 }

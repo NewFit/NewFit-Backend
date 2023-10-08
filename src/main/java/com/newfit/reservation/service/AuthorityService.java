@@ -6,6 +6,7 @@ import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.dto.request.EntryRequest;
 import com.newfit.reservation.dto.response.*;
+import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.GymRepository;
 import com.newfit.reservation.repository.UserRepository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +32,9 @@ public class AuthorityService {
     public void register(Long userId, Long gymId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Gym gym = gymRepository.findById(gymId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(GYM_NOT_FOUND));
 
         authorityRepository.save(Authority.createAuthority(user, gym));
     }
@@ -49,7 +52,7 @@ public class AuthorityService {
     }
 
     public Gym getGymByAuthorityId(Long authorityId) {
-        return authorityRepository.findById(authorityId).get().getGym();
+        return findById(authorityId).getGym();
     }
 
     /*
@@ -58,8 +61,10 @@ public class AuthorityService {
      */
     public void acceptUser(Long userId, Long gymId) {
         Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, Role.USER);
-        if (authority == null || authority.getAccepted())
-            throw new IllegalArgumentException();
+        if (authority == null)
+            throw new CustomException(AUTHORITY_NOT_FOUND);
+        if (authority.getAccepted())
+            throw new CustomException(ALREADY_ACCEPTED_AUTHORITY);
 
         authority.acceptUser();
     }
@@ -92,7 +97,7 @@ public class AuthorityService {
 
     public Authority findById(Long authorityId) {
         return authorityRepository.findById(authorityId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
     }
 
     public ReservationListResponse listAuthorityReservation(Long authorityId) {
@@ -109,7 +114,7 @@ public class AuthorityService {
     }
 
     public void enterGym(Long authorityId, EntryRequest request) {
-        Authority authority = authorityRepository.findById(authorityId).orElseThrow(IllegalArgumentException::new);
+        Authority authority = findById(authorityId);
         authority.updateTagAt(request.getTagAt());
     }
 }
