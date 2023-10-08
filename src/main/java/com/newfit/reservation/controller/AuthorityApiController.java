@@ -55,8 +55,8 @@ public class AuthorityApiController {
     }
 
     @PatchMapping("/entry")
-    public ResponseEntity<Void> enterGym(@RequestHeader("user-id") Long userId, @Valid @RequestBody EntryRequest request) {
-        authorityService.enterGym(userId, request);
+    public ResponseEntity<Void> enterGym(@RequestHeader("authority-id") Long authorityId, @Valid @RequestBody EntryRequest request) {
+        authorityService.enterGym(authorityId, request);
         return ResponseEntity
                 .noContent()
                 .build();

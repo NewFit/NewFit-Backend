@@ -110,8 +110,8 @@ public class AuthorityService {
         return ReservationListResponse.createResponse(gymName, reservationResponseList);
     }
 
-    public void enterGym(Long userId, EntryRequest request) {
-        Authority authority = authorityRepository.findOneByUserIdAndGymId(userId, request.getGymId());
+    public void enterGym(Long authorityId, EntryRequest request) {
+        Authority authority = authorityRepository.findById(authorityId).orElseThrow(IllegalArgumentException::new);
         authority.updateTagAt(request.getTagAt());
     }
 }
