@@ -1,6 +1,7 @@
 package com.newfit.reservation.controller;
 
 import com.newfit.reservation.dto.request.AuthorityRequest;
+import com.newfit.reservation.dto.request.EntryRequest;
 import com.newfit.reservation.dto.response.GymListResponse;
 import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.service.AuthorityService;
@@ -51,5 +52,13 @@ public class AuthorityApiController {
         ReservationListResponse reservationListResponse = authorityService.listAuthorityReservation(authorityId);
         return ResponseEntity
                 .ok(reservationListResponse);
+    }
+
+    @PatchMapping("/entry")
+    public ResponseEntity<Void> enterGym(@RequestHeader("authority-id") Long authorityId, @Valid @RequestBody EntryRequest request) {
+        authorityService.enterGym(authorityId, request);
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }

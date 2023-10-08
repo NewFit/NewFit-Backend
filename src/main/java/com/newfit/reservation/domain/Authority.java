@@ -46,6 +46,9 @@ public class Authority extends BaseTimeEntity {
     @Column(nullable = false, name = "credit_acquisition_count")
     private Short creditAcquisitionCount;
 
+    @Column(name = "tag_at")
+    private LocalDateTime tagAt;
+
     // 양방향 연관관계를 나타냅니다.
     @OneToMany(mappedBy = "authority", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Credit> creditList = new ArrayList<>();
@@ -56,6 +59,10 @@ public class Authority extends BaseTimeEntity {
     // accepted 필드값을 true로 업데이트하는 메소드입니다.
     public void acceptUser() {
         this.accepted = true;
+    }
+
+    public void updateTagAt(LocalDateTime tagAt) {
+        this.tagAt = tagAt;
     }
 
     public void incrementAcquisitionCount() {
