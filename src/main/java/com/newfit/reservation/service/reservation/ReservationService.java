@@ -343,35 +343,23 @@ public class ReservationService {
     }
 
     public void startUse(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
-        validateTagAt(tagAt);
-        updateStartTagAtAndStatus(authorityId, equipmentGymId, tagAt);
-    }
 
-    private void updateStartTagAtAndStatus(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
-        /* TODO: 실제 서비스 시 매우 많이 사용 될 로직인데, 중복된 DB 접근이 많음
-        Authority를 받는 줄을 위로 올리고, reservation을 찾아오는 로직을 수정하여 중복을 줄일 수 있어보임
-        -> AuthorityId가 아닌 위에서 받은 Authority를 넘겨줄 수 있음
-        */
+        Authority authority = authorityRepository.findById(authorityId).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId).orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
+        Reservation reservation = reservationRepository.findByAuthorityAndEquipmentGym(authority, equipmentGym).orElseThrow(() -> new CustomException(RESERVATION_NOT_FOUND));
 
-        EquipmentGym equipmentGym = equipmentGymRepository
-                .findById(equipmentGymId)
-                .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_GYM_NOT_FOUND));
+        validateTagAt(tagAt, reservation.getStartAt()); // 요청 시각과 현재 시각을 비교
 
-        Reservation reservation = findReservationByAuthorityAndEquipmentGym(authorityId, equipmentGym);
-        Authority authority = authorityRepository
-                .findById(authorityId)
-                .orElseThrow(() -> new CustomException(ErrorCode.AUTHORITY_NOT_FOUND));
-
-        reservation.updateStartTagAt(tagAt);
-        reservation.updateStatus(Status.PROCESSING);
+        updateReservation(reservation, tagAt);
         equipmentGym.updateCondition(Condition.OCCUPIED);
         authority.updateTagAt(tagAt);
     }
 
-    private Reservation findReservationByAuthorityAndEquipmentGym(Long authorityId, EquipmentGym equipmentGym) {
-        Authority authority = authorityRepository
-                .findById(authorityId)
-                .orElseThrow(() -> new CustomException(ErrorCode.AUTHORITY_NOT_FOUND));
+    private void updateReservation(Reservation reservation, LocalDateTime tagAt) {
+        reservation.updateStartTagAt(tagAt);
+        reservation.updateStatus(Status.PROCESSING);
+    }
+
 
         return reservationRepository
                 .findByAuthorityAndEquipmentGym(authority, equipmentGym)
