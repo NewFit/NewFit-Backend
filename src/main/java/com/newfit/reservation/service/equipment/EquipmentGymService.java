@@ -11,9 +11,7 @@ import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -86,8 +84,7 @@ public class EquipmentGymService {
      */
     public EquipmentGymListResponse findAllInGymByEquipment(Gym gym, Equipment equipment) {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
-        List<EquipmentGym> allByGymAndEquipment = allByGym
-                .stream()
+        List<EquipmentGym> allByGymAndEquipment = allByGym.stream()
                 .filter(equipmentGym -> equipmentGym.getEquipment().equals(equipment)).toList();
 
         List<EquipmentResponse> equipmentResponses = allByGymAndEquipment.stream()
