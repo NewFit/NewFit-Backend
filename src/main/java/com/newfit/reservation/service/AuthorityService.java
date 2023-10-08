@@ -52,9 +52,7 @@ public class AuthorityService {
     }
 
     public Gym getGymByAuthorityId(Long authorityId) {
-        return authorityRepository.findById(authorityId)
-                .orElseThrow(() -> new CustomException(ErrorCode.AUTHORITY_NOT_FOUND))
-                .getGym();
+        return findById(authorityId).getGym();
     }
 
     /*
@@ -117,7 +115,7 @@ public class AuthorityService {
     }
 
     public void enterGym(Long authorityId, EntryRequest request) {
-        Authority authority = authorityRepository.findById(authorityId).orElseThrow(IllegalArgumentException::new);
+        Authority authority = findById(authorityId);
         authority.updateTagAt(request.getTagAt());
     }
 }
