@@ -55,7 +55,9 @@ public class ReservationService {
         // 사용 가능한 기구 하나를 가져옴
         EquipmentGym usedEquipment = getOneAvailable(equipmentId, request.getStartAt(), request.getEndAt());
 
-        Reservation reservation = Reservation.create(authority, usedEquipment, request);
+
+        Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt(), request.getRepetitionNumber());
+
         reservationRepository.save(reservation);
 
         return new ReservationResponse(reservation.getId());
@@ -75,10 +77,7 @@ public class ReservationService {
                         .map(ReservationDetailResponse::new)
                         .toList();
 
-        return ReservationListResponse.builder()
-                .gymName(gymName)
-                .reservationResponseList(reservationDetailResponseList)
-                .build();
+        return ReservationListResponse.createResponse(gymName, reservationDetailResponseList);
     }
 
     public ReservationResponse update(Long reservationId, ReservationUpdateRequest request) {
@@ -163,13 +162,7 @@ public class ReservationService {
         while (attempt != 5) {
             try {
                 equipmentGym = getOneAvailable(equipmentId, startAt, endAt);
-                Reservation reservation = Reservation.builder()
-                        .authority(authority)
-                        .equipmentGym(equipmentGym)
-                        .startAt(startAt)
-                        .endAt(endAt)
-                        .repetitionNumber(0L)
-                        .build();
+                Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt, 0L);
                 reservationRepository.save(reservation);
                 return new RoutineReservationResponse(equipmentGym.getId(), true, startAt);
             } catch (NoSuchElementException exception) {

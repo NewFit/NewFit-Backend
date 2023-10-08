@@ -38,10 +38,7 @@ public class RoutineService {
         if (validateDuplicate(authority, routineName))
             throw new CustomException(ErrorCode.DUPLICATE_ROUTINE_NAME);
 
-        return routineRepository.save(Routine.builder()
-                .authority(authority)
-                .name(routineName)
-                .build());
+        return routineRepository.save(Routine.createRoutine(authority, routineName));
     }
 
     // id를 통해 Routine 객체를 조회합니다.
@@ -66,9 +63,7 @@ public class RoutineService {
                 .map(RoutineResponse::new)
                 .collect(Collectors.toList());
 
-        return RoutineListResponse.builder()
-                .routines(routines)
-                .build();
+        return RoutineListResponse.createResponse(routines);
     }
 
     /*
@@ -100,11 +95,7 @@ public class RoutineService {
                 .map(RoutineDetailEquipmentResponse::new)
                 .collect(Collectors.toList());
 
-        return RoutineDetailResponse.builder()
-                .routineId(findRoutine.getId())
-                .routineName(findRoutine.getName())
-                .equipments(equipments)
-                .build();
+        return RoutineDetailResponse.createResponse(findRoutine.getId(), findRoutine.getName(), equipments);
     }
 
     // 해당 User의 Authority가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.

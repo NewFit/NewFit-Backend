@@ -51,13 +51,8 @@ public class EquipmentRoutineService {
             Equipment equipment = equipmentRepository.findById(routineRequest.getEquipmentId())
                     .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND));
 
-            equipmentRoutineRepository.save(
-                    EquipmentRoutine.builder()
-                            .equipment(equipment)
-                            .routine(routine)
-                            .duration(Duration.ofMinutes(routineRequest.getDuration()))
-                            .sequence(routineRequest.getSequence())
-                            .build());
+            equipmentRoutineRepository.save(EquipmentRoutine.createEquipmentRoutine(equipment, routine,
+                            Duration.ofMinutes(routineRequest.getDuration()), routineRequest.getSequence()));
         }
     }
 
@@ -97,13 +92,8 @@ public class EquipmentRoutineService {
                 Equipment equipment = equipmentRepository.findById(addEquipment.getEquipmentId())
                         .orElseThrow(() -> new CustomException(ErrorCode.EQUIPMENT_NOT_FOUND));
 
-                equipmentRoutineRepository.save(
-                        EquipmentRoutine.builder()
-                                .equipment(equipment)
-                                .routine(routine)
-                                .duration(Duration.ofMinutes(addEquipment.getDuration()))
-                                .sequence(addEquipment.getSequence())
-                                .build());
+                equipmentRoutineRepository.save(EquipmentRoutine.createEquipmentRoutine(equipment, routine,
+                        Duration.ofMinutes(addEquipment.getDuration()),addEquipment.getSequence()));
             }
         }
     }
