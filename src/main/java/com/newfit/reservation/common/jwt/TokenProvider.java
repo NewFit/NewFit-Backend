@@ -123,12 +123,12 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
         return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
     }
 
-    public List<Integer> getAuthorityIdList(String token) {
+    private List<Integer> getAuthorityIdList(String token) {
         Claims claims = getClaims(token);
         return claims.get("authorityIdList", List.class);
     }
 
-    public Claims getClaims(String token) {
+    private Claims getClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtProperties.getSecretKey())
                 .parseClaimsJws(token)
