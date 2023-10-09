@@ -14,4 +14,10 @@ public class UserRankInfo {
         this.nickname = credit.getAuthority().getUser().getNickname();
         this.amount = credit.getAmount();
     }
+
+    public UserRankInfo(CreditRanking creditRanking) {
+        this.rank = creditRanking.getRank();
+        this.nickname = creditRanking.getAuthority().getUser().getNickname();
+        this.amount = creditRanking.getAmount();
+    }
 }
