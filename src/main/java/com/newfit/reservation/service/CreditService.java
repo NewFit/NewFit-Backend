@@ -41,7 +41,7 @@ public class CreditService {
         UserRankInfo userRankInfo = creditList.stream()
                 .filter(c -> c.getAuthority().equals(authority))
                 .map(UserRankInfo::new)
-                .findAny().orElse(null);
+                .findAny().orElseGet(() -> UserRankInfo.noCredit(authority));
 
         return new UserRankInfoListResponse(authority.getGym().getName(), rankingList, userRankInfo);
     }

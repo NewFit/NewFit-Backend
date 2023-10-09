@@ -1,5 +1,6 @@
 package com.newfit.reservation.dto.response;
 
+import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Credit;
 import lombok.Getter;
 
@@ -19,5 +20,15 @@ public class UserRankInfo {
         this.rank = creditRanking.getRank();
         this.nickname = creditRanking.getAuthority().getUser().getNickname();
         this.amount = creditRanking.getAmount();
+    }
+
+    private UserRankInfo(Authority authority) {
+        this.rank = 0L;
+        this.nickname = authority.getUser().getNickname();
+        this.amount = 0L;
+    }
+
+    public static UserRankInfo noCredit(Authority authority) {
+        return new UserRankInfo(authority);
     }
 }
