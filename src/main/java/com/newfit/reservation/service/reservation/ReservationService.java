@@ -10,15 +10,18 @@ import com.newfit.reservation.domain.equipment.EquipmentGym;
 import com.newfit.reservation.domain.reservation.Reservation;
 import com.newfit.reservation.domain.reservation.Status;
 import com.newfit.reservation.domain.routine.EquipmentRoutine;
+import com.newfit.reservation.domain.routine.Routine;
 import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.dto.response.*;
 import com.newfit.reservation.exception.CustomException;
+import com.newfit.reservation.exception.ErrorCode;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
 import com.newfit.reservation.repository.reservation.ReservationRepository;
 import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
+import com.newfit.reservation.repository.routine.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +43,7 @@ public class ReservationService {
     private final EquipmentGymRepository equipmentGymRepository;
     private final EquipmentRoutineRepository equipmentRoutineRepository;
     private final CreditRepository creditRepository;
-
+    private final RoutineRepository routineRepository;
 
     public void reserve(Long authorityId,
                         Long equipmentId,
@@ -148,6 +151,8 @@ public class ReservationService {
             }
         }
 
+        Routine routine = routineRepository.findById(routineId).orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
+        routine.incrementCount();
         return reservedList;
     }
 

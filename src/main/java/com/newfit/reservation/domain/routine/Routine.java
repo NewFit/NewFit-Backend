@@ -30,6 +30,10 @@ public class Routine extends BaseTimeEntity {
         this.name = name;
     }
 
+    public void incrementCount() {
+        this.count++;
+    }
+
     @Builder(access = AccessLevel.PRIVATE)
     private Routine(Authority authority, String name) {
         this.authority = authority;
