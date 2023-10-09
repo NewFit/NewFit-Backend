@@ -28,7 +28,7 @@ public interface CreditRepository extends JpaRepository<Credit, Long> {
     @Query(value = "SELECT * " +
             "FROM (SELECT *, dense_rank() over (order by amount desc) as rank " +
             "   FROM CREDIT " +
-            "   WHERE gymId = :gymId " +
+            "   WHERE gym_Id = :gymId " +
             "       AND credit_year = :year " +
             "       AND credit_month = :month " +
             "   ORDER BY rank)" +
