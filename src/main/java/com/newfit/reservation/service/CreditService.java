@@ -1,19 +1,16 @@
 package com.newfit.reservation.service;
 
 import com.newfit.reservation.domain.Authority;
-import com.newfit.reservation.domain.Credit;
+import com.newfit.reservation.dto.response.CreditRanking;
 import com.newfit.reservation.dto.response.UserRankInfo;
 import com.newfit.reservation.dto.response.UserRankInfoListResponse;
 import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.newfit.reservation.exception.ErrorCode.AUTHORITY_NOT_FOUND;
@@ -30,25 +27,23 @@ public class CreditService {
         LocalDateTime now = LocalDateTime.now();
         Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
-        List<UserRankInfo> rankingList = new ArrayList<>();
 
-        Pageable topTen = PageRequest.of(0, 10);
-        List<Credit> creditList = creditRepository.findAllByGymAndYearAndMonth(authority.getGym(), (short) now.getYear(), (short) now.getMonthValue(), topTen).stream().toList();
-        creditList.forEach((credit -> rankingList.add(new UserRankInfo(credit, getRank(rankingList, credit)))));
-        return new UserRankInfoListResponse(authority.getGym().getName(), rankingList);
-    }
+        // 헬스장의 상위 랭킹 조회
+        List<CreditRanking> creditList = creditRepository
+                .findTop10ByGymIdAndYearAndMonth(authority.getGym().getId(), (short) now.getYear(), (short) now.getMonthValue());
 
-    private Long getRank(List<UserRankInfo> rankingList, Credit credit) {
-        if (rankingList.isEmpty()) {
-            return 1L;
-        }
+        List<UserRankInfo> rankingList = creditList.stream()
+                .map(UserRankInfo::new).toList();
 
-        // credit 동점자 순위 처리
-        int indexOfLastElement = rankingList.size() - 1;
-        if (rankingList.get(indexOfLastElement).getAmount().equals(credit.getAmount())) {
-            return rankingList.get(indexOfLastElement).getRank();
-        } else {
-            return rankingList.get(indexOfLastElement).getRank() + 1L;
-        }
+        // 헬스장에서 사용자의 랭킹 조회
+        UserRankInfo userRankInfo = creditRepository
+                .findRank(authority.getId(),
+                        authority.getGym().getId(),
+                        (short) now.getYear(),
+                        (short) now.getMonthValue())
+                .map(UserRankInfo::new)
+                .orElseGet(() -> UserRankInfo.noCredit(authority));
+
+        return new UserRankInfoListResponse(authority.getGym().getName(), rankingList, userRankInfo);
     }
 }
