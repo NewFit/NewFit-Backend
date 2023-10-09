@@ -13,15 +13,30 @@ public interface CreditRepository extends JpaRepository<Credit, Long> {
 
     List<Credit> findAllByAuthorityAndYearAndMonth(Authority authority, Short year, Short month);
 
-    @Query(value = "SELECT *, dense_rank() over (order by amount desc) as rank " +
-            "FROM CREDIT " +
-            "WHERE gym_id = :gymId " +
-            "   AND credit_year = :year " +
-            "   AND credit_month = :month " +
-            "ORDER BY rank", nativeQuery = true)
-    List<CreditRanking> findAllByGymIdAndYearAndMonth(@Param("gymId") Long gymId,
-                                                      @Param("year") Short year,
-                                                      @Param("month") Short month);
+    @Query(value = "SELECT * " +
+            "FROM (SELECT *, dense_rank() over (order by amount desc) as rank " +
+            "   FROM CREDIT " +
+            "   WHERE gym_id = :gymId " +
+            "       AND credit_year = :year " +
+            "       AND credit_month = :month " +
+            "   ORDER BY rank)" +
+            "WHERE rank <= 10", nativeQuery = true)
+    List<CreditRanking> findHighRankByGymIdAndYearAndMonth(@Param("gymId") Long gymId,
+                                                           @Param("year") Short year,
+                                                           @Param("month") Short month);
+
+    @Query(value = "SELECT * " +
+            "FROM (SELECT *, dense_rank() over (order by amount desc) as rank " +
+            "   FROM CREDIT " +
+            "   WHERE gymId = :gymId " +
+            "       AND credit_year = :year " +
+            "       AND credit_month = :month " +
+            "   ORDER BY rank)" +
+            "WHERE authority_id = :authorityId", nativeQuery = true)
+    Optional<CreditRanking> findRank(@Param("authorityId") Long authorityId,
+                                     @Param("gymId") Long gymId,
+                                     @Param("year") Short year,
+                                     @Param("month") Short month);
 
     Optional<Credit> findByAuthorityAndYearAndMonth(Authority authority, Short year, Short month);
 }

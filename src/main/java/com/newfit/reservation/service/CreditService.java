@@ -28,18 +28,22 @@ public class CreditService {
         Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
 
+        // 헬스장의 상위 랭킹 조회
         List<CreditRanking> creditList = creditRepository
-                .findAllByGymIdAndYearAndMonth(authority.getGym().getId(), (short) now.getYear(), (short) now.getMonthValue());
+                .findHighRankByGymIdAndYearAndMonth(authority.getGym().getId(), (short) now.getYear(), (short) now.getMonthValue());
 
-        List<UserRankInfo> rankingList = creditList.subList(0, 10)
-                .stream()
+        List<UserRankInfo> rankingList = creditList.stream()
                 .map(UserRankInfo::new)
                 .toList();
 
-        UserRankInfo userRankInfo = creditList.stream()
-                .filter(c -> c.getAuthority().equals(authority))
+        // 헬스장에서 사용자의 랭킹 조회
+        UserRankInfo userRankInfo = creditRepository
+                .findRank(authority.getId(),
+                        authority.getGym().getId(),
+                        (short) now.getYear(),
+                        (short) now.getMonthValue())
                 .map(UserRankInfo::new)
-                .findAny().orElseGet(() -> UserRankInfo.noCredit(authority));
+                .orElseGet(() -> UserRankInfo.noCredit(authority));
 
         return new UserRankInfoListResponse(authority.getGym().getName(), rankingList, userRankInfo);
     }
