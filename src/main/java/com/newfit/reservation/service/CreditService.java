@@ -33,8 +33,7 @@ public class CreditService {
                 .findHighRankByGymIdAndYearAndMonth(authority.getGym().getId(), (short) now.getYear(), (short) now.getMonthValue());
 
         List<UserRankInfo> rankingList = creditList.stream()
-                .map(UserRankInfo::new)
-                .toList();
+                .map(UserRankInfo::new).toList();
 
         // 헬스장에서 사용자의 랭킹 조회
         UserRankInfo userRankInfo = creditRepository
