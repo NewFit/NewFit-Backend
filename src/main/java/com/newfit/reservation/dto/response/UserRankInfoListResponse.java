@@ -13,9 +13,12 @@ public class UserRankInfoListResponse {
     private final Long rankingsCount;
     private final List<UserRankInfo> rankings;
 
-    public UserRankInfoListResponse(String gymName, List<UserRankInfo> rankings) {
+    private final UserRankInfo userRankInfo;
+
+    public UserRankInfoListResponse(String gymName, List<UserRankInfo> rankings, UserRankInfo userRankInfo) {
         this.gymName = gymName;
         this.rankingsCount = (long) rankings.size();
         this.rankings = rankings;
+        this.userRankInfo = userRankInfo;
     }
 }
