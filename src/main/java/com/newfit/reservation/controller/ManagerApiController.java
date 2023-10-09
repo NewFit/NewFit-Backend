@@ -1,5 +1,6 @@
 package com.newfit.reservation.controller;
 
+import com.newfit.reservation.common.auth.AuthorityCheckService;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.dto.request.*;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import static org.springframework.http.HttpStatus.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -25,6 +27,7 @@ public class ManagerApiController {
     private final AuthorityService authorityService;
     private final EquipmentGymService equipmentGymService;
     private final GymService gymService;
+    private final AuthorityCheckService authorityCheckService;
 
     /*
     user의 gym을 조회
@@ -32,8 +35,10 @@ public class ManagerApiController {
     equipmentGym에 count만큼 등록
      */
     @PostMapping("/equipments")
-    public ResponseEntity<Void> registerEquipment(@RequestHeader(value = "authority-id") Long authorityId, @Valid @RequestBody RegisterEquipmentRequest request) {
-
+    public ResponseEntity<Void> registerEquipment(Authentication authentication,
+                                                  @RequestHeader(value = "authority-id") Long authorityId,
+                                                  @Valid @RequestBody RegisterEquipmentRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         Gym gym = authorityService.getGymByAuthorityId(authorityId);
         Equipment equipment = equipmentService.registerEquipment(gym, request.getName(), request.getPurpose());
         equipmentGymService.registerEquipmentInGym(equipment, gym, request.getCount(), request.getEquipmentGymNames());
@@ -58,7 +63,11 @@ public class ManagerApiController {
     condition 수정
      */
     @PatchMapping("/equipment-gym/{equipmentGymId}")
-    public ResponseEntity<Void> updateEquipmentCondition(@PathVariable Long equipmentGymId, @Valid @RequestBody UpdateConditionRequest request) {
+    public ResponseEntity<Void> updateEquipmentCondition(Authentication authentication,
+                                                         @RequestHeader("authority-id") Long authorityId,
+                                                         @PathVariable Long equipmentGymId,
+                                                         @Valid @RequestBody UpdateConditionRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         equipmentGymService.updateCondition(equipmentGymId, request.getCondition());
         return ResponseEntity
                 .noContent()
@@ -70,7 +79,10 @@ public class ManagerApiController {
     cascade 설정에 따라 연관된 EquipmentGym도 삭제
      */
     @DeleteMapping("/equipments")
-    public ResponseEntity<Void> deleteEquipment(@Valid @RequestBody DeleteEquipmentRequest request) {
+    public ResponseEntity<Void> deleteEquipment( Authentication authentication,
+                                                 @RequestHeader("authority-id") Long authorityId,
+                                                 @Valid @RequestBody DeleteEquipmentRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         equipmentService.deleteEquipment(request.getEquipmentId());
         return ResponseEntity
                 .noContent()
@@ -81,7 +93,10 @@ public class ManagerApiController {
     특정 EquipmentGym 삭제
      */
     @DeleteMapping("/equipment-gym")
-    public ResponseEntity<Void> deleteEquipmentGym(@Valid @RequestBody DeleteEquipmentGymRequest request) {
+    public ResponseEntity<Void> deleteEquipmentGym(Authentication authentication,
+                                                   @RequestHeader("authority-id") Long authorityId,
+                                                   @Valid @RequestBody DeleteEquipmentGymRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         equipmentGymService.deleteEquipmentGym(request.getEquipmentGymId());
         return ResponseEntity
                 .noContent()
@@ -93,7 +108,10 @@ public class ManagerApiController {
     AuthorityService에게 로직 실행을 위임한 뒤에 Dto를 넘겨받아 반환합니다.
      */
     @PostMapping("/authority")
-    public ResponseEntity<Void> acceptUser(@Valid @RequestBody UserAcceptRequest request) {
+    public ResponseEntity<Void> acceptUser(Authentication authentication,
+                                           @RequestHeader("authority-id") Long authorityId,
+                                           @Valid @RequestBody UserAcceptRequest request) {
+        authorityCheckService.validateByAuthorityId(authentication, authorityId);
         authorityService.acceptUser(request.getUserId(), request.getGymId());
         return ResponseEntity
                 .status(CREATED)

@@ -8,12 +8,12 @@ import com.newfit.reservation.dto.request.UpdateRoutineRequest;
 import com.newfit.reservation.dto.request.routine.AddEquipmentRequest;
 import com.newfit.reservation.dto.request.routine.RemoveEquipmentRequest;
 import com.newfit.reservation.dto.request.routine.UpdateEquipmentRequest;
+import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.equipment.EquipmentRepository;
 import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,23 +41,17 @@ public class EquipmentRoutineService {
                                          List<RoutineEquipmentRequest> routineRequests) {
 
         List<Short> sequences = routineRequests.stream()
-                .map(RoutineEquipmentRequest::getSequence)
-                .collect(Collectors.toList());
+                .map(RoutineEquipmentRequest::getSequence).collect(Collectors.toList());
 
         // valid한 sequence 값들로 이루어져 있는지 체크합니다.
         checkSequence(sequences);
 
         for (RoutineEquipmentRequest routineRequest : routineRequests) {
             Equipment equipment = equipmentRepository.findById(routineRequest.getEquipmentId())
-                    .orElseThrow(IllegalArgumentException::new);
+                    .orElseThrow(() -> new CustomException(EQUIPMENT_NOT_FOUND));
 
-            equipmentRoutineRepository.save(
-                    EquipmentRoutine.builder()
-                            .equipment(equipment)
-                            .routine(routine)
-                            .duration(Duration.ofMinutes(routineRequest.getDuration()))
-                            .sequence(routineRequest.getSequence())
-                            .build());
+            equipmentRoutineRepository.save(EquipmentRoutine.createEquipmentRoutine(equipment, routine,
+                    Duration.ofMinutes(routineRequest.getDuration()), routineRequest.getSequence()));
         }
     }
 
@@ -88,54 +84,52 @@ public class EquipmentRoutineService {
     }
 
     private void addEquipRoutineInRoutine(Routine routine, UpdateRoutineRequest request) {
-        if (!request.getAddEquipments().isEmpty()){
+        if (!request.getAddEquipments().isEmpty()) {
             List<AddEquipmentRequest> addEquipments = request.getAddEquipments();
 
             for (AddEquipmentRequest addEquipment : addEquipments) {
                 Equipment equipment = equipmentRepository.findById(addEquipment.getEquipmentId())
-                        .orElseThrow(IllegalArgumentException::new);
+                        .orElseThrow(() -> new CustomException(EQUIPMENT_NOT_FOUND));
 
-                equipmentRoutineRepository.save(
-                        EquipmentRoutine.builder()
-                                .equipment(equipment)
-                                .routine(routine)
-                                .duration(Duration.ofMinutes(addEquipment.getDuration()))
-                                .sequence(addEquipment.getSequence())
-                                .build());
+                equipmentRoutineRepository.save(EquipmentRoutine.createEquipmentRoutine(equipment, routine,
+                        Duration.ofMinutes(addEquipment.getDuration()), addEquipment.getSequence()));
             }
         }
     }
 
     private void modifyEquipmentRoutineInRoutine(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
-        if (!request.getUpdateEquipments().isEmpty()) {
-            List<UpdateEquipmentRequest> updateEquipments = request.getUpdateEquipments();
+        if (request.getUpdateEquipments().isEmpty())
+            return;
 
-            for (UpdateEquipmentRequest updateEquipment : updateEquipments) {
+        List<UpdateEquipmentRequest> updateEquipments = request.getUpdateEquipments();
 
-                // 수정 사항을 반영할 EquipmentRoutine 객체를 allByRoutine에서 추출합니다.
-                EquipmentRoutine equipmentRoutine = extractUpdateTarget(updateEquipment, allByRoutine);
+        for (UpdateEquipmentRequest updateEquipment : updateEquipments) {
 
-                // 순서를 수정 시 실행.
-                if (updateEquipment.getSequence() != null) {
-                    equipmentRoutine.updateSequence(updateEquipment.getSequence());
-                }
-                // 운동시간을 수정 시 실행.
-                if (updateEquipment.getDuration() != null) {
-                    equipmentRoutine.updateDuration(Duration.ofMinutes(updateEquipment.getDuration()));
-                }
+            // 수정 사항을 반영할 EquipmentRoutine 객체를 allByRoutine에서 추출합니다.
+            EquipmentRoutine equipmentRoutine = extractUpdateTarget(updateEquipment, allByRoutine);
+
+            // 순서를 수정 시 실행.
+            if (updateEquipment.getSequence() != null) {
+                equipmentRoutine.updateSequence(updateEquipment.getSequence());
+            }
+
+            // 운동시간을 수정 시 실행.
+            if (updateEquipment.getDuration() != null) {
+                equipmentRoutine.updateDuration(Duration.ofMinutes(updateEquipment.getDuration()));
             }
         }
     }
 
     private void removeEquipmentRoutineInRoutine(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
-        if (!request.getRemoveEquipments().isEmpty()) {
+        if (request.getRemoveEquipments().isEmpty())
+            return;
 
-            // allByRoutine에서 제거 대상인 EquipmentRoutine List
-            List<EquipmentRoutine> removeTargets = extractRemoveTargets(request, allByRoutine);
+        // allByRoutine에서 제거 대상인 EquipmentRoutine List
+        List<EquipmentRoutine> removeTargets = extractRemoveTargets(request, allByRoutine);
 
-            // 추출한 EquipmentRoutine 객체들을 모두 삭제
-            equipmentRoutineRepository.deleteAll(removeTargets);
-        }
+        // 추출한 EquipmentRoutine 객체들을 모두 삭제
+        equipmentRoutineRepository.deleteAll(removeTargets);
+
     }
 
     private EquipmentRoutine extractUpdateTarget(UpdateEquipmentRequest updateEquipment, List<EquipmentRoutine> allByRoutine) {
@@ -144,42 +138,37 @@ public class EquipmentRoutineService {
         return allByRoutine.stream()
                 .filter(equipmentRoutine -> equipmentRoutine.getEquipment().getId().equals(targetId))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() ->
+                        new CustomException(EQUIPMENT_ROUTINE_NOT_FOUND, "요청 기구 id=" + targetId.toString()));
     }
 
     private List<EquipmentRoutine> extractRemoveTargets(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
         // 사용자가 Routine에서 제거한 Equipment들의 id List
         List<Long> equipmentIdList = request.getRemoveEquipments().stream()
-                .map(RemoveEquipmentRequest::getEquipmentId)
-                .collect(Collectors.toList());
+                .map(RemoveEquipmentRequest::getEquipmentId).toList();
 
         // allByRoutine을 순회하며 equipmentIdList에 들어있는 값과 대응되는 EquipmentRoutine List
         return allByRoutine.stream()
-                .filter(equipmentRoutine -> equipmentIdList.contains(equipmentRoutine.getEquipment().getId()))
-                .collect(Collectors.toList());
+                .filter(equipmentRoutine -> equipmentIdList.contains(equipmentRoutine.getEquipment().getId())).toList();
     }
 
     private List<Short> extractCurrentSequences(List<EquipmentRoutine> allByRoutine) {
         return allByRoutine.stream()
-                .map(EquipmentRoutine::getSequence)
-                .collect(Collectors.toList());
+                .map(EquipmentRoutine::getSequence).toList();
     }
 
     private List<Short> extractAddSequences(UpdateRoutineRequest request) {
         return request.getAddEquipments().stream()
-                .map(AddEquipmentRequest::getSequence)
-                .collect(Collectors.toList());
+                .map(AddEquipmentRequest::getSequence).toList();
     }
 
     private List<Short> extractRemoveSequences(UpdateRoutineRequest request, Routine routine) {
         List<EquipmentRoutine> equipmentRoutines = request.getRemoveEquipments().stream()
                 .map(r -> equipmentRoutineRepository.findByEquipmentIdAndRoutine(r.getEquipmentId(), routine)
-                        .orElseThrow(IllegalArgumentException::new))
-                .collect(Collectors.toList());
+                        .orElseThrow(() -> new CustomException(EQUIPMENT_ROUTINE_NOT_FOUND, "요청 기구 id=" + r.getEquipmentId()))).toList();
 
         return equipmentRoutines.stream()
-                .map(EquipmentRoutine::getSequence)
-                .collect(Collectors.toList());
+                .map(EquipmentRoutine::getSequence).toList();
     }
 
     private Map<Short, Short> generateSequenceMap(UpdateRoutineRequest request, Routine routine) {
@@ -189,7 +178,7 @@ public class EquipmentRoutineService {
         for (UpdateEquipmentRequest updateEquipmentRequest : updateEquipments) {
             EquipmentRoutine equipmentRoutine = equipmentRoutineRepository
                     .findByEquipmentIdAndRoutine(updateEquipmentRequest.getEquipmentId(), routine)
-                    .orElseThrow(IllegalArgumentException::new);
+                    .orElseThrow(() -> new CustomException(EQUIPMENT_ROUTINE_NOT_FOUND));
 
             sequenceMap.put(equipmentRoutine.getSequence(), updateEquipmentRequest.getSequence());
         }
@@ -223,6 +212,6 @@ public class EquipmentRoutineService {
                 && (IntStream.range(0, sequences.size() - 1)
                 .allMatch(i -> sequences.get(i + 1) == sequences.get(i) + 1));
 
-        if(!result) throw new IllegalArgumentException("잘못된 sequence 값입니다.");
+        if (!result) throw new CustomException(INVALID_SEQUENCE);
     }
 }

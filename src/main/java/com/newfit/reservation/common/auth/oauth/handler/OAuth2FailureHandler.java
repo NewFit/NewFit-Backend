@@ -1,4 +1,4 @@
-package com.newfit.reservation.common.oauth.handler;
+package com.newfit.reservation.common.auth.oauth.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

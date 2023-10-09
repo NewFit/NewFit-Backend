@@ -3,13 +3,15 @@ package com.newfit.reservation.domain.reservation;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.common.BaseTimeEntity;
 import com.newfit.reservation.domain.equipment.EquipmentGym;
-import com.newfit.reservation.dto.request.ReservationRequest;
+import com.newfit.reservation.exception.CustomException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+
+import static com.newfit.reservation.exception.ErrorCode.ALREADY_TAGGED_RESERVATION;
 
 @Getter
 @Entity
@@ -29,13 +31,13 @@ public class Reservation extends BaseTimeEntity {
     private EquipmentGym equipmentGym;
 
     @Column(nullable = false)
-    private LocalDateTime start_at;
+    private LocalDateTime startAt;
 
     @Column(nullable = false)
-    private LocalDateTime end_at;
+    private LocalDateTime endAt;
 
     @Column(nullable = false)
-    private Long repetition_number;
+    private Long repetitionNumber;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -43,6 +45,7 @@ public class Reservation extends BaseTimeEntity {
 
     @Column(name = "start_tag_at")
     private LocalDateTime startTagAt;
+
 
     @Builder
     private Reservation(Authority authority,
@@ -52,9 +55,9 @@ public class Reservation extends BaseTimeEntity {
                        Long repetitionNumber) {
         this.authority = authority;
         this.equipmentGym = equipmentGym;
-        this.start_at = startAt;
-        this.end_at = endAt;
-        this.repetition_number = repetitionNumber;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.repetitionNumber = repetitionNumber;
         this.status = Status.WAITING;
         this.startTagAt = null;
     }
@@ -66,20 +69,20 @@ public class Reservation extends BaseTimeEntity {
 
 
     public void updateStartTime(LocalDateTime startAt) {
-        this.start_at = startAt;
+        this.startAt = startAt;
     }
 
     public void updateEndTime(LocalDateTime endAt) {
-        this.end_at = endAt;
+        this.endAt = endAt;
     }
 
     public void updateRepetitionNumber(Long repetitionNumber) {
-        this.repetition_number = repetitionNumber;
+        this.repetitionNumber = repetitionNumber;
     }
 
     public void updateStartTagAt(LocalDateTime startTagAt) {
         if (this.startTagAt != null) {
-            throw new IllegalArgumentException("can't update twice");
+            throw new CustomException(ALREADY_TAGGED_RESERVATION);
         }
         this.startTagAt = startTagAt;
     }
@@ -89,11 +92,11 @@ public class Reservation extends BaseTimeEntity {
     }
 
     public boolean overlapped(LocalDateTime start, LocalDateTime end) {
-        boolean startBeforeEnd = this.start_at.isBefore(this.end_at)
+        boolean startBeforeEnd = this.startAt.isBefore(this.endAt)
                 && start.isBefore(end);
 
-        boolean isBefore = this.end_at.isBefore(start);
-        boolean isAfter = this.start_at.isAfter(end);
+        boolean isBefore = this.endAt.isBefore(start);
+        boolean isAfter = this.startAt.isAfter(end);
 
         return !(startBeforeEnd && (isBefore || isAfter));
     }
@@ -101,13 +104,15 @@ public class Reservation extends BaseTimeEntity {
 
     public static Reservation create(Authority authority,
                                      EquipmentGym equipmentGym,
-                                     ReservationRequest request) {
+                                     LocalDateTime startAt,
+                                     LocalDateTime endAt,
+                                     Long repetitionNumber) {
         return Reservation.builder()
                 .authority(authority)
                 .equipmentGym(equipmentGym)
-                .startAt(request.getStartAt())
-                .endAt(request.getEndAt())
-                .repetitionNumber(request.getRepetitionNumber())
+                .startAt(startAt)
+                .endAt(endAt)
+                .repetitionNumber(repetitionNumber)
                 .build();
     }
 }

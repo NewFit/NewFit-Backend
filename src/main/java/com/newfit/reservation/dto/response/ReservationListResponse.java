@@ -19,12 +19,19 @@ public class ReservationListResponse {
     private int reservationCount;
     private List<ReservationDetailResponse> reservations;
 
-    @Builder
-    public ReservationListResponse(String gymName,
+    @Builder(access = AccessLevel.PRIVATE)
+    private ReservationListResponse(String gymName,
                                    List<ReservationDetailResponse> reservationResponseList) {
         this.gymName = gymName;
         this.reservationCount = reservationResponseList.size();
         this.reservations = reservationResponseList;
     }
 
+    public static ReservationListResponse createResponse(String gymName,
+                                                         List<ReservationDetailResponse> reservationResponseList) {
+        return ReservationListResponse.builder()
+                .gymName(gymName)
+                .reservationResponseList(reservationResponseList)
+                .build();
+    }
 }

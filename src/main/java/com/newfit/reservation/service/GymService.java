@@ -17,10 +17,9 @@ public class GymService {
         String keywordString = processQueryParam(gymName);
         List<Gym> findGyms = gymRepository.findAllByNameContaining(keywordString);
         List<GymResponse> gyms = findGyms.stream()
-                .map(GymResponse::new)
-                .toList();
+                .map(GymResponse::new).toList();
 
-        return GymListResponse.createGymListResponse(gyms);
+        return GymListResponse.createResponse(gyms);
     }
 
     private String processQueryParam(String gymName) {

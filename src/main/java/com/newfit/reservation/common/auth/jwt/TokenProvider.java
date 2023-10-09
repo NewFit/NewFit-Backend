@@ -1,9 +1,10 @@
-package com.newfit.reservation.common.jwt;
+package com.newfit.reservation.common.auth.jwt;
 
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.auth.RefreshToken;
+import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.auth.RefreshTokenRepository;
 import io.jsonwebtoken.*;
@@ -19,7 +20,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
             return generateDefaultToken(now, expiryAt);
         }
 
-        List<Long> authorityIdList = user.getAuthorityList().stream().map(Authority::getId).collect(Collectors.toList());
+        List<Long> authorityIdList = user.getAuthorityList().stream().map(Authority::getId).toList();
 
         // 회원가입을 실시한 사용자를 위한 JWT 생성
         return Jwts.builder()
@@ -95,18 +97,18 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
      */
     private void checkAuthorityIdList(String token, HttpServletRequest request) {
         List<Integer> authorityIdList = getAuthorityIdList(token);
-        Integer authorityId = authorityRepository.findById(Long.parseLong(request.getHeader("authority-id"))).orElseThrow(IllegalArgumentException::new).getId().intValue();
+        Integer authorityId = authorityRepository.findById(Long.parseLong(request.getHeader("authority-id"))).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND)).getId().intValue();
         authorityIdList
                 .stream()
                 .filter(authority -> authority.equals(authorityId))
                 .findAny()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(UNAUTHORIZED_REQUEST));
     }
 
     public Authentication getAuthentication(String token, HttpServletRequest request) {
         Claims claims = getClaims(token);
         Authority authority = authorityRepository.findById(Long.parseLong(request.getHeader("authority-id")))
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(authority.getRole().getDescription()));
 
         return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);

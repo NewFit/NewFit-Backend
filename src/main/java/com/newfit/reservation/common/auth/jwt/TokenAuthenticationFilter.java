@@ -1,8 +1,8 @@
-package com.newfit.reservation.common.config;
+package com.newfit.reservation.common.auth.jwt;
 
-import com.newfit.reservation.common.jwt.TokenProvider;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.auth.RefreshToken;
+import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.UserRepository;
 import com.newfit.reservation.repository.auth.RefreshTokenRepository;
 import jakarta.servlet.FilterChain;
@@ -14,7 +14,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
@@ -31,16 +34,16 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getToken(request);
-        if(request.getRequestURI().equals("/login") || token == null) {
+        if (request.getRequestURI().equals("/login") || token == null) {
             filterChain.doFilter(request, response);
             return;
         }
-        if(request.getRequestURI().equals("/refresh") && tokenProvider.validRefreshToken(token, response)) {
+        if (request.getRequestURI().equals("/refresh") && tokenProvider.validRefreshToken(token, response)) {
             String accessToken = reIssueAccessToken(token);
             response.setHeader("access-token", accessToken);
             return;
         }
-        if(requiresValidityCheck(request) && tokenProvider.validAccessToken(token, request)) {
+        if (requiresValidityCheck(request) && tokenProvider.validAccessToken(token, request)) {
             Authentication authentication = tokenProvider.getAuthentication(token, request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
@@ -51,8 +54,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String reIssueAccessToken(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(IllegalArgumentException::new);
-        User user = userRepository.findById(refreshToken.getId()).orElseThrow(IllegalArgumentException::new);
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(() -> new CustomException(REFRESH_TOKEN_NOT_FOUND));
+        User user = userRepository.findById(refreshToken.getId()).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         return tokenProvider.generateAccessToken(user);
     }
 

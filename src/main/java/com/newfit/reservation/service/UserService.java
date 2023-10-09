@@ -9,6 +9,7 @@ import com.newfit.reservation.dto.request.UserSignUpRequest;
 import com.newfit.reservation.dto.request.UserUpdateRequest;
 import com.newfit.reservation.dto.response.AuthorityGymResponse;
 import com.newfit.reservation.dto.response.UserDetailResponse;
+import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import com.newfit.reservation.repository.UserRepository;
@@ -16,10 +17,10 @@ import com.newfit.reservation.repository.auth.OAuthHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.newfit.reservation.exception.ErrorCode.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -48,7 +49,7 @@ public class UserService {
 
     public UserDetailResponse userDetail(Long authorityId) {
         Authority authority = authorityRepository.findById(authorityId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         User user = authority.getUser();
         AuthorityGymResponse current = new AuthorityGymResponse(authority);
 
@@ -57,8 +58,7 @@ public class UserService {
         // current Authority를 제외한 나머지 Authority들만 추출
         List<AuthorityGymResponse> authorityGyms = authorities.stream()
                 .filter(authorityIter -> !(authorityIter.getId().equals(authorityId)))
-                .map(AuthorityGymResponse::new)
-                .toList();
+                .map(AuthorityGymResponse::new).toList();
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -79,11 +79,13 @@ public class UserService {
 
     public User findOneById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
     }
 
     public void signUp(Long oauthHistoryId, UserSignUpRequest request) {
-        OAuthHistory oAuthHistory = oAuthHistoryRepository.findById(oauthHistoryId).orElseThrow(IllegalArgumentException::new);
+        OAuthHistory oAuthHistory = oAuthHistoryRepository
+                .findById(oauthHistoryId)
+                .orElseThrow(() -> new CustomException(OAUTH_HISTORY_NOT_FOUND));
         User user = User.userSignUp(request, oAuthHistory.getProvider());
         userRepository.save(user);
         oAuthHistory.signUp(user);

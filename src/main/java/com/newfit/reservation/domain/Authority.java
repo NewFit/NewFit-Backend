@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +46,9 @@ public class Authority extends BaseTimeEntity {
     @Column(nullable = false, name = "credit_acquisition_count")
     private Short creditAcquisitionCount;
 
+    @Column(name = "tag_at")
+    private LocalDateTime tagAt;
+
     // 양방향 연관관계를 나타냅니다.
     @OneToMany(mappedBy = "authority", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Credit> creditList = new ArrayList<>();
@@ -57,6 +59,10 @@ public class Authority extends BaseTimeEntity {
     // accepted 필드값을 true로 업데이트하는 메소드입니다.
     public void acceptUser() {
         this.accepted = true;
+    }
+
+    public void updateTagAt(LocalDateTime tagAt) {
+        this.tagAt = tagAt;
     }
 
     public void incrementAcquisitionCount() {
@@ -80,13 +86,20 @@ public class Authority extends BaseTimeEntity {
     }
 
     // Gym과의 연관관계 편의 메소드는 논의가 필요합니다.
-    @Builder
-    public Authority(User user, Gym gym) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Authority(User user, Gym gym) {
         this.user = user;
         this.gym = gym;
         this.accepted = false;
         this.role = Role.USER;
         this.creditAcquisitionCount = 0;
+    }
+
+    public static Authority createAuthority(User user, Gym gym) {
+        return Authority.builder()
+                .user(user)
+                .gym(gym)
+                .build();
     }
 
     public Long getTermCredit(LocalDateTime term) {

@@ -56,10 +56,6 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Provider provider;
 
-    // 가장 최근 출입한 시점을 나타냅니다.
-    @Column(name = "tag_at")
-    private LocalDateTime tagAt;
-
     // 사용자의 크레딧 잔여량을 나타냅니다.
     @Column(nullable = false)
     private Long balance;

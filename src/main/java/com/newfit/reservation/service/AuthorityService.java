@@ -4,7 +4,9 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
+import com.newfit.reservation.dto.request.EntryRequest;
 import com.newfit.reservation.dto.response.*;
+import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.GymRepository;
 import com.newfit.reservation.repository.UserRepository;
@@ -12,9 +14,10 @@ import com.newfit.reservation.repository.reservation.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.newfit.reservation.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,16 +32,11 @@ public class AuthorityService {
     public void register(Long userId, Long gymId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Gym gym = gymRepository.findById(gymId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(GYM_NOT_FOUND));
 
-        Authority authority = Authority.builder()
-                .user(user)
-                .gym(gym)
-                .build();
-
-        authorityRepository.save(authority);
+        authorityRepository.save(Authority.createAuthority(user, gym));
     }
 
     public void delete(Long authorityId) {
@@ -48,18 +46,13 @@ public class AuthorityService {
     public GymListResponse listRegistration(Long authorityId) {
 
         Long userId = findById(authorityId).getUser().getId();
-
-        return GymListResponse.builder()
-                .gyms(authorityRepository.findAllAuthorityByUserId(userId)
-                        .stream()
-                        .map(GymResponse::new)
-                        .toList()
-                )
-                .build();
+        List<GymResponse> gyms = authorityRepository.findAllAuthorityByUserId(userId).stream()
+                .map(GymResponse::new).toList();
+        return GymListResponse.createResponse(gyms);
     }
 
     public Gym getGymByAuthorityId(Long authorityId) {
-        return authorityRepository.findById(authorityId).get().getGym();
+        return findById(authorityId).getGym();
     }
 
     /*
@@ -68,8 +61,10 @@ public class AuthorityService {
      */
     public void acceptUser(Long userId, Long gymId) {
         Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, Role.USER);
-        if (authority == null || authority.getAccepted())
-            throw new IllegalArgumentException();
+        if (authority == null)
+            throw new CustomException(AUTHORITY_NOT_FOUND);
+        if (authority.getAccepted())
+            throw new CustomException(ALREADY_ACCEPTED_AUTHORITY);
 
         authority.acceptUser();
     }
@@ -97,16 +92,12 @@ public class AuthorityService {
                 requests.add(response);
         }
 
-        return UserAndPendingListResponse.builder()
-                .gymName(gymName)
-                .requests(requests)
-                .users(users)
-                .build();
+        return UserAndPendingListResponse.createResponse(gymName, requests, users);
     }
 
     public Authority findById(Long authorityId) {
         return authorityRepository.findById(authorityId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
     }
 
     public ReservationListResponse listAuthorityReservation(Long authorityId) {
@@ -116,13 +107,14 @@ public class AuthorityService {
         List<ReservationDetailResponse> reservationResponseList = reservationRepository
                 .findAllByAuthorityId(authorityId)
                 .stream()
-                .map(ReservationDetailResponse::new)
-                .toList();
+                .map(ReservationDetailResponse::new).toList();
 
 
-        return ReservationListResponse.builder()
-                .gymName(gymName)
-                .reservationResponseList(reservationResponseList)
-                .build();
+        return ReservationListResponse.createResponse(gymName, reservationResponseList);
+    }
+
+    public void enterGym(Long authorityId, EntryRequest request) {
+        Authority authority = findById(authorityId);
+        authority.updateTagAt(request.getTagAt());
     }
 }
