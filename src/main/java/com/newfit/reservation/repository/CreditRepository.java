@@ -21,9 +21,9 @@ public interface CreditRepository extends JpaRepository<Credit, Long> {
             "       AND credit_month = :month " +
             "   ORDER BY rank)" +
             "WHERE rank <= 10", nativeQuery = true)
-    List<CreditRanking> findHighRankByGymIdAndYearAndMonth(@Param("gymId") Long gymId,
-                                                           @Param("year") Short year,
-                                                           @Param("month") Short month);
+    List<CreditRanking> findTop10ByGymIdAndYearAndMonth(@Param("gymId") Long gymId,
+                                                        @Param("year") Short year,
+                                                        @Param("month") Short month);
 
     @Query(value = "SELECT * " +
             "FROM (SELECT *, dense_rank() over (order by amount desc) as rank " +
