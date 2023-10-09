@@ -154,7 +154,7 @@ public class EquipmentRoutineService {
 
     private List<Short> extractCurrentSequences(List<EquipmentRoutine> allByRoutine) {
         return allByRoutine.stream()
-                .map(EquipmentRoutine::getSequence).toList();
+                .map(EquipmentRoutine::getSequence).collect(Collectors.toList());
     }
 
     private List<Short> extractAddSequences(UpdateRoutineRequest request) {
