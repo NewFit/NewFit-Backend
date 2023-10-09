@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.newfit.reservation.exception.ErrorCode.AUTHORITY_NOT_FOUND;
@@ -28,12 +27,11 @@ public class CreditService {
         LocalDateTime now = LocalDateTime.now();
         Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
-        List<UserRankInfo> rankingList = new ArrayList<>();
 
         List<CreditRanking> creditList = creditRepository
                 .findAllByGymIdAndYearAndMonth(authority.getGym().getId(), (short) now.getYear(), (short) now.getMonthValue());
 
-        rankingList = creditList.subList(0, 10)
+        List<UserRankInfo> rankingList = creditList.subList(0, 10)
                 .stream()
                 .map(UserRankInfo::new)
                 .toList();
