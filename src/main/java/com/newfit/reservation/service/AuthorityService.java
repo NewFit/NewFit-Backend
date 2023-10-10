@@ -1,5 +1,6 @@
 package com.newfit.reservation.service;
 
+import com.newfit.reservation.common.auth.jwt.TokenProvider;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.Role;
@@ -11,7 +12,9 @@ import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.GymRepository;
 import com.newfit.reservation.repository.UserRepository;
 import com.newfit.reservation.repository.reservation.ReservationRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import java.util.List;
 
 import static com.newfit.reservation.exception.ErrorCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -28,19 +32,33 @@ public class AuthorityService {
     private final UserRepository userRepository;
     private final GymRepository gymRepository;
     private final ReservationRepository reservationRepository;
+    private final TokenProvider tokenProvider;
 
-    public void register(Long userId, Long gymId) {
+    public void register(Long userId, Long gymId, HttpServletResponse response) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Gym gym = gymRepository.findById(gymId)
                 .orElseThrow(() -> new CustomException(GYM_NOT_FOUND));
 
-        authorityRepository.save(Authority.createAuthority(user, gym));
+        Authority authority = authorityRepository.save(Authority.createAuthority(user, gym));
+        user.getAuthorityList().add(authority);
+
+        String accessToken = tokenProvider.generateAccessToken(user);
+        log.info("AuthorityRegister.accessToken = {}", accessToken);
+        response.setHeader("access-token", accessToken);
     }
 
-    public void delete(Long authorityId) {
-        authorityRepository.deleteById(authorityId);
+    public void delete(Long authorityId, HttpServletResponse response) {
+        Authority authority = authorityRepository.findById(authorityId).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+        User user = authority.getUser();
+
+        user.getAuthorityList().remove(authority);
+        authorityRepository.delete(authority);
+
+        String accessToken = tokenProvider.generateAccessToken(user);
+        log.info("AuthorityDelete.accessToken = {}", accessToken);
+        response.setHeader("access-token", accessToken);
     }
 
     public GymListResponse listRegistration(Long authorityId) {

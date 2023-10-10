@@ -9,7 +9,6 @@ import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.auth.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,6 +26,7 @@ import static com.newfit.reservation.exception.ErrorCode.*;
 @RequiredArgsConstructor
 public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래스
     private final static Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(30);
+    private final static Duration ACCESS_TEMPORARY_TOKEN_DURATION = Duration.ofMinutes(10);
     private final static Duration REFRESH_TOKEN_DURATION = Duration.ofDays(7);
 
     private final JwtProperties jwtProperties;
@@ -35,16 +35,23 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
 
     public String generateAccessToken(User user) {
         Date now = new Date();
-        Date expiryAt = new Date(now.getTime() + ACCESS_TOKEN_DURATION.toMillis());
 
-        // 회원가입을 미실시한 사용자를 위한 JWT 생성
-        if (user == null) {
+        if (user == null) {     // 회원가입을 미실시한 사용자
+            Date expiryAt = new Date(now.getTime() + ACCESS_TEMPORARY_TOKEN_DURATION.toMillis());
             return generateDefaultToken(now, expiryAt);
         }
 
         List<Long> authorityIdList = user.getAuthorityList().stream().map(Authority::getId).toList();
+        if (authorityIdList.isEmpty()) {    // 가입된 헬스장이 없는 사용자
+            Date expiryAt = new Date(now.getTime() + ACCESS_TEMPORARY_TOKEN_DURATION.toMillis());
+            return generateAccessToken(user, now, expiryAt, authorityIdList);
+        } else {
+            Date expiryAt = new Date(now.getTime() + ACCESS_TOKEN_DURATION.toMillis());
+            return generateAccessToken(user, now, expiryAt, authorityIdList);
+        }
+    }
 
-        // 회원가입을 실시한 사용자를 위한 JWT 생성
+    private String generateAccessToken(User user, Date now, Date expiryAt, List<Long> authorityIdList) {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
@@ -76,19 +83,15 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
                 .getToken();
     }
 
-    public boolean validAccessToken(String token, HttpServletRequest request) {
-        Jwts.parser()
-                .setSigningKey(jwtProperties.getSecretKey())
-                .parseClaimsJws(token);
+    public void validAccessToken(String token, HttpServletRequest request) {
+        validToken(token);
         checkAuthorityIdList(token, request);
-        return true;
     }
 
-    public boolean validRefreshToken(String token, HttpServletResponse response) {
+    public void validToken(String token) {
         Jwts.parser()
                 .setSigningKey(jwtProperties.getSecretKey())
                 .parseClaimsJws(token);
-        return true;
     }
 
     /*
@@ -122,7 +125,13 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
         Claims claims = getClaims(token);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.GUEST.getDescription()));
 
-        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User("anonymous", "", authorities), token, authorities);
+        if (claims.getSubject() != null) {
+            return new UsernamePasswordAuthenticationToken(
+                new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
+        } else {
+            return new UsernamePasswordAuthenticationToken(
+                new org.springframework.security.core.userdetails.User("anonymous", "", authorities), token, authorities);
+        }
     }
 
     private List<Integer> getAuthorityIdList(String token) {

@@ -6,13 +6,14 @@ import com.newfit.reservation.dto.request.EntryRequest;
 import com.newfit.reservation.dto.response.GymListResponse;
 import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.service.AuthorityService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import static org.springframework.http.HttpStatus.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api/v1/authority")
@@ -24,9 +25,10 @@ public class AuthorityApiController {
     @PostMapping
     public ResponseEntity<Void> register(Authentication authentication,
                                          @RequestHeader(value = "user-id") Long userId,
-                                         @Valid @RequestBody AuthorityRequest request) {
+                                         @Valid @RequestBody AuthorityRequest request,
+                                         HttpServletResponse response) {
         authorityCheckService.validateByUserId(authentication, userId);
-        authorityService.register(userId, request.getGymId());
+        authorityService.register(userId, request.getGymId(), response);
 
         return ResponseEntity
                 .status(CREATED)
@@ -42,9 +44,10 @@ public class AuthorityApiController {
 
     @DeleteMapping
     public ResponseEntity<Void> delete(Authentication authentication,
-                                       @RequestHeader(value = "authority-id") Long authorityId) {
+                                       @RequestHeader(value = "authority-id") Long authorityId,
+                                       HttpServletResponse response) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
-        authorityService.delete(authorityId);
+        authorityService.delete(authorityId, response);
 
         return ResponseEntity
                 .noContent()

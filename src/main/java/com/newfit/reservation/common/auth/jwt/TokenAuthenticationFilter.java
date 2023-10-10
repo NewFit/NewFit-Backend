@@ -10,7 +10,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -35,21 +34,21 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String token = getToken(request);
         if (request.getRequestURI().equals("/login") || token == null) {
             filterChain.doFilter(request, response);
-            return;
-        }
-        if (request.getRequestURI().equals("/refresh") && tokenProvider.validRefreshToken(token, response)) {
+        } else if (request.getRequestURI().equals("/refresh")) {
+            tokenProvider.validToken(token);
             String accessToken = reIssueAccessToken(token);
             response.setHeader("access-token", accessToken);
-            return;
-        }
-        if (requiresValidityCheck(request) && tokenProvider.validAccessToken(token, request)) {
+        } else if (request.getHeader("authority-id") != null) {
+            tokenProvider.validAccessToken(token, request);
             Authentication authentication = tokenProvider.getAuthentication(token, request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
         } else {
+            tokenProvider.validToken(token);
             Authentication authentication = tokenProvider.getAnonymousAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
         }
-        filterChain.doFilter(request, response);
     }
 
     private String reIssueAccessToken(String token) {
@@ -65,22 +64,5 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             return authorizationHeader.substring(BEARER.length());
         }
         return null;
-    }
-
-    /*
-    Authority가 생성되지 않은 상태로 요청을 보낼 수 있는 URI에 대해서
-    JWT validation을 진행하지 않도록 체크하는 메소드
-     */
-    private boolean requiresValidityCheck(HttpServletRequest request) {
-        if (request.getRequestURI().equals("/api/v1/authority") && request.getMethod().equals(HttpMethod.POST.toString())) {
-            return false;
-        }
-        if (request.getRequestURI().equals("/api/v1/gyms") && request.getMethod().equals(HttpMethod.GET.toString())) {
-            return false;
-        }
-        if (request.getRequestURI().equals("/api/v1/users") && request.getMethod().equals(HttpMethod.POST.toString())) {
-            return false;
-        }
-        return true;
     }
 }
