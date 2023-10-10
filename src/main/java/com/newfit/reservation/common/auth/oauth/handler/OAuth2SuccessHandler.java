@@ -7,11 +7,12 @@ import com.newfit.reservation.domain.auth.OAuthHistory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -28,6 +29,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
             response.setHeader("access-token", accessToken);
             response.setHeader("refresh-token", refreshToken);
+            log.info("AfterSignup.accessToken = {}", accessToken);
             if (authority != null) {    // 등록된 gym이 있는 경우
                 response.setHeader("authority-id", authority.getId().toString());
             }
@@ -36,6 +38,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             }
         } else {    // 회원가입이 미실시된 경우
             String accessToken = tokenProvider.generateAccessToken(oAuthHistory.getUser());
+            log.info("BeforeSignup.accessToken = {}", accessToken);
             response.setHeader("access-token", accessToken);
             response.setHeader("oauth-history-id", oAuthHistory.getId().toString());
         }
