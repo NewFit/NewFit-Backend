@@ -1,6 +1,5 @@
 package com.newfit.reservation.controller;
 
-
 import com.newfit.reservation.common.auth.AuthorityCheckService;
 import com.newfit.reservation.common.auth.jwt.TokenProvider;
 import com.newfit.reservation.domain.User;
@@ -11,11 +10,14 @@ import com.newfit.reservation.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.http.HttpStatus.CREATED;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -59,6 +61,7 @@ public class UserApiController {
                                        HttpServletResponse response) {
         User user = userService.signUp(oauthHistoryId, request);
         String accessToken = tokenProvider.generateAccessToken(user);
+        log.info("accessToken = {}", accessToken);
         response.setHeader("access-token", accessToken);
         return ResponseEntity
                 .status(CREATED)
