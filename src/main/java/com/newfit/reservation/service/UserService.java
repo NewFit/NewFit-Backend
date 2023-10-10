@@ -1,6 +1,7 @@
 package com.newfit.reservation.service;
 
 
+import com.newfit.reservation.common.auth.jwt.TokenProvider;
 import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Credit;
 import com.newfit.reservation.domain.User;
@@ -14,7 +15,9 @@ import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import com.newfit.reservation.repository.UserRepository;
 import com.newfit.reservation.repository.auth.OAuthHistoryRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -22,6 +25,7 @@ import java.util.List;
 
 import static com.newfit.reservation.exception.ErrorCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -31,6 +35,7 @@ public class UserService {
     private final AuthorityRepository authorityRepository;
     private final CreditRepository creditRepository;
     private final OAuthHistoryRepository oAuthHistoryRepository;
+    private final TokenProvider tokenProvider;
 
     public void modify(Long userId, UserUpdateRequest request) {
         User updateUser = findOneById(userId);
@@ -83,13 +88,16 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
     }
 
-    public User signUp(Long oauthHistoryId, UserSignUpRequest request) {
+    public void signUp(Long oauthHistoryId, UserSignUpRequest request, HttpServletResponse response) {
         OAuthHistory oAuthHistory = oAuthHistoryRepository
                 .findById(oauthHistoryId)
                 .orElseThrow(() -> new CustomException(OAUTH_HISTORY_NOT_FOUND));
         User user = User.userSignUp(request);
         userRepository.save(user);
         oAuthHistory.signUp(user);
-        return user;
+
+        String accessToken = tokenProvider.generateAccessToken(user);
+        log.info("accessToken = {}", accessToken);
+        response.setHeader("access-token", accessToken);
     }
 }
