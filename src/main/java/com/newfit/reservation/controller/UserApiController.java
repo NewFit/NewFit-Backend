@@ -52,7 +52,6 @@ public class UserApiController {
     @PostMapping
     public ResponseEntity<Void> signUp(@RequestHeader(value = "oauth-history-id") Long oauthHistoryId,
                                        @Valid @RequestBody UserSignUpRequest request) {
-        // TODO: 권한 확인 로직 추가해야함. 근데 여기서 굳이 필요한 지는 모르겠음
         userService.signUp(oauthHistoryId, request);
         return ResponseEntity
                 .status(CREATED)
