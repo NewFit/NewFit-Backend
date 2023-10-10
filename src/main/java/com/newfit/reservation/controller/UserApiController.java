@@ -57,7 +57,6 @@ public class UserApiController {
     public ResponseEntity<Void> signUp(@RequestHeader(value = "oauth-history-id") Long oauthHistoryId,
                                        @Valid @RequestBody UserSignUpRequest request,
                                        HttpServletResponse response) {
-        // TODO: 권한 확인 로직 추가해야함. 근데 여기서 굳이 필요한 지는 모르겠음
         User user = userService.signUp(oauthHistoryId, request);
         String accessToken = tokenProvider.generateAccessToken(user);
         response.setHeader("access-token", accessToken);
