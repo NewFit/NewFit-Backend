@@ -21,7 +21,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import java.util.stream.Stream;
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @EnableWebSecurity
 @Configuration
@@ -47,7 +46,6 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-                .requestMatchers(toH2Console())
                 .requestMatchers(AntPathRequestMatcher.antMatcher("/static/**"));
     }
 
