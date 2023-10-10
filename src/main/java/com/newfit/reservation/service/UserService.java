@@ -83,12 +83,13 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
     }
 
-    public void signUp(Long oauthHistoryId, UserSignUpRequest request) {
+    public User signUp(Long oauthHistoryId, UserSignUpRequest request) {
         OAuthHistory oAuthHistory = oAuthHistoryRepository
                 .findById(oauthHistoryId)
                 .orElseThrow(() -> new CustomException(OAUTH_HISTORY_NOT_FOUND));
         User user = User.userSignUp(request);
         userRepository.save(user);
         oAuthHistory.signUp(user);
+        return user;
     }
 }

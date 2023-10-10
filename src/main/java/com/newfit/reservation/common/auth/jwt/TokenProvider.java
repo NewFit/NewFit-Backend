@@ -122,7 +122,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
         Claims claims = getClaims(token);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.GUEST.getDescription()));
 
-        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
+        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User("anonymous", "", authorities), token, authorities);
     }
 
     private List<Integer> getAuthorityIdList(String token) {
