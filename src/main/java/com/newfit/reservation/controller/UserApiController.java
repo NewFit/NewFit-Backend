@@ -2,10 +2,13 @@ package com.newfit.reservation.controller;
 
 
 import com.newfit.reservation.common.auth.AuthorityCheckService;
+import com.newfit.reservation.common.auth.jwt.TokenProvider;
+import com.newfit.reservation.domain.User;
 import com.newfit.reservation.dto.request.UserSignUpRequest;
 import com.newfit.reservation.dto.request.UserUpdateRequest;
 import com.newfit.reservation.dto.response.UserDetailResponse;
 import com.newfit.reservation.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,7 @@ public class UserApiController {
 
     private final UserService userService;
     private final AuthorityCheckService authorityCheckService;
+    private final TokenProvider tokenProvider;
 
     @PatchMapping
     public ResponseEntity<Void> modify(Authentication authentication,
@@ -51,9 +55,12 @@ public class UserApiController {
 
     @PostMapping
     public ResponseEntity<Void> signUp(@RequestHeader(value = "oauth-history-id") Long oauthHistoryId,
-                                       @Valid @RequestBody UserSignUpRequest request) {
+                                       @Valid @RequestBody UserSignUpRequest request,
+                                       HttpServletResponse response) {
         // TODO: 권한 확인 로직 추가해야함. 근데 여기서 굳이 필요한 지는 모르겠음
-        userService.signUp(oauthHistoryId, request);
+        User user = userService.signUp(oauthHistoryId, request);
+        String accessToken = tokenProvider.generateAccessToken(user);
+        response.setHeader("access-token", accessToken);
         return ResponseEntity
                 .status(CREATED)
                 .build();
