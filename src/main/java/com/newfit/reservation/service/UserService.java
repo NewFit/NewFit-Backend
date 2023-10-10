@@ -97,7 +97,7 @@ public class UserService {
         oAuthHistory.signUp(user);
 
         String accessToken = tokenProvider.generateAccessToken(user);
-        log.info("accessToken = {}", accessToken);
+        log.info("UserSignup.accessToken = {}", accessToken);
         response.setHeader("access-token", accessToken);
     }
 }
