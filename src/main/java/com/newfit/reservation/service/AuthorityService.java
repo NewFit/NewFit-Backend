@@ -29,18 +29,25 @@ public class AuthorityService {
     private final GymRepository gymRepository;
     private final ReservationRepository reservationRepository;
 
-    public void register(Long userId, Long gymId) {
+    public User register(Long userId, Long gymId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Gym gym = gymRepository.findById(gymId)
                 .orElseThrow(() -> new CustomException(GYM_NOT_FOUND));
 
-        authorityRepository.save(Authority.createAuthority(user, gym));
+        Authority authority = authorityRepository.save(Authority.createAuthority(user, gym));
+        user.getAuthorityList().add(authority);
+        return user;
     }
 
-    public void delete(Long authorityId) {
-        authorityRepository.deleteById(authorityId);
+    public User delete(Long authorityId) {
+        Authority authority = authorityRepository.findById(authorityId).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+        User user = authority.getUser();
+
+        user.getAuthorityList().remove(authority);
+        authorityRepository.delete(authority);
+        return user;
     }
 
     public GymListResponse listRegistration(Long authorityId) {
