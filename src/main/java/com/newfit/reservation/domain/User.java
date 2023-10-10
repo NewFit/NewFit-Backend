@@ -11,7 +11,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,12 +49,6 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String nickname;
 
-    // 사용자가 Oauth 2.0 로그인할 때 이용한 OAuth 제공자를 나타냅니다.
-    // Provider 라는 Enum 타입을 새로 정의했습니다.
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Provider provider;
-
     // 사용자의 크레딧 잔여량을 나타냅니다.
     @Column(nullable = false)
     private Long balance;
@@ -82,33 +75,23 @@ public class User extends BaseTimeEntity {
     /* =========== update method  =========== */
 
     public void updateEmail(String email) {
-
         this.email = email;
-
     }
 
     public void updateTel(String tel) {
-
         this.tel = tel;
-
     }
 
     public void updateNickname(String nickname) {
-
         this.nickname = nickname;
-
     }
 
     public void updateFilePath(String filePath) {
-
         this.filePath = filePath;
-
     }
 
     public void addBalance(Long balance) {
-
         this.balance += balance;
-
     }
 
     public Long getTermCredit(LocalDateTime term) {
@@ -120,21 +103,19 @@ public class User extends BaseTimeEntity {
     }
 
     @Builder
-    private User(UserSignUpRequest userInfo, Provider provider) {
+    private User(UserSignUpRequest userInfo) {
         this.username = userInfo.getUsername();
         this.nickname = userInfo.getNickname();
         this.email = userInfo.getEmail();
         this.tel = userInfo.getTel();
-        this.provider = provider;
         this.balance = 0L;
         this.lastLoginAt = LocalDateTime.now();
         this.filePath = "https://newfit-image.s3.ap-northeast-2.amazonaws.com/newfitIcon.png";
     }
 
-    public static User userSignUp(UserSignUpRequest request, Provider provider) {
+    public static User userSignUp(UserSignUpRequest request) {
         return User.builder()
                 .userInfo(request)
-                .provider(provider)
                 .build();
     }
 }
