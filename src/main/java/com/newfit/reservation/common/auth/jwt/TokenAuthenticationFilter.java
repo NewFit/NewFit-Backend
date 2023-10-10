@@ -14,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 
 import static com.newfit.reservation.exception.ErrorCode.*;
@@ -77,6 +76,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             return false;
         }
         if (request.getRequestURI().equals("/api/v1/gyms") && request.getMethod().equals(HttpMethod.GET.toString())) {
+            return false;
+        }
+        if (request.getRequestURI().equals("/api/v1/users") && request.getMethod().equals(HttpMethod.POST.toString())) {
             return false;
         }
         return true;
