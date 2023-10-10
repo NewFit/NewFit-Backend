@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.newfit.reservation.exception.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -86,7 +87,7 @@ public class UserService {
         OAuthHistory oAuthHistory = oAuthHistoryRepository
                 .findById(oauthHistoryId)
                 .orElseThrow(() -> new CustomException(OAUTH_HISTORY_NOT_FOUND));
-        User user = User.userSignUp(request, oAuthHistory.getProvider());
+        User user = User.userSignUp(request);
         userRepository.save(user);
         oAuthHistory.signUp(user);
     }
