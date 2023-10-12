@@ -37,20 +37,24 @@ public class UserService {
     private final OAuthHistoryRepository oAuthHistoryRepository;
     private final TokenProvider tokenProvider;
 
-    public void modify(Long userId, UserUpdateRequest request) {
+    public void modify(Long userId, UserUpdateRequest request, HttpServletResponse response) {
         User updateUser = findOneById(userId);
 
         if (request.getEmail() != null)
             updateUser.updateEmail(request.getEmail());
-
-        if (request.getNickname() != null)
-            updateUser.updateNickname(request.getNickname());
 
         if (request.getTel() != null)
             updateUser.updateTel(request.getTel());
 
         if (request.getUserProfileImage() != null)
             updateUser.updateFilePath(request.getUserProfileImage());
+
+        if (request.getNickname() != null) {
+            updateUser.updateNickname(request.getNickname());
+            String accessToken = tokenProvider.generateAccessToken(updateUser);
+            log.info("UserModify.accessToken = {}", accessToken);
+            response.setHeader("access-token", accessToken);
+        }
     }
 
     public UserDetailResponse userDetail(Long authorityId) {
