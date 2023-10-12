@@ -1,10 +1,12 @@
 package com.newfit.reservation.controller;
 
+import com.newfit.reservation.common.RequestHeaderUtil;
 import com.newfit.reservation.common.auth.AuthorityCheckService;
 import com.newfit.reservation.dto.request.UserSignUpRequest;
 import com.newfit.reservation.dto.request.UserUpdateRequest;
 import com.newfit.reservation.dto.response.UserDetailResponse;
 import com.newfit.reservation.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +23,17 @@ public class UserApiController {
 
     private final UserService userService;
     private final AuthorityCheckService authorityCheckService;
+    private final RequestHeaderUtil requestHeaderUtil;
 
     @PatchMapping
     public ResponseEntity<Void> modify(Authentication authentication,
-                                       @RequestHeader(value = "user-id") Long userId,
+                                       HttpServletRequest servletRequest,
                                        @Valid @RequestBody UserUpdateRequest request) {
-        authorityCheckService.validateByUserId(authentication, userId);
+        authorityCheckService.checkHeaderAndValidateAuthority(authentication, servletRequest);
+
+        Long userId = requestHeaderUtil.extractUserId(servletRequest);
         userService.modify(userId, request);
+
         return ResponseEntity
                 .noContent()
                 .build();
@@ -42,9 +48,12 @@ public class UserApiController {
 
     @DeleteMapping
     public ResponseEntity<Void> drop(Authentication authentication,
-                                     @RequestHeader(value = "user-id") Long userId) {
-        authorityCheckService.validateByUserId(authentication, userId);
+                                     HttpServletRequest request) {
+        authorityCheckService.checkHeaderAndValidateAuthority(authentication, request);
+
+        Long userId = requestHeaderUtil.extractUserId(request);
         userService.drop(userId);
+
         return ResponseEntity
                 .noContent()
                 .build();
