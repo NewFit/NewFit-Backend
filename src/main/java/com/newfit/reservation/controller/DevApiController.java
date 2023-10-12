@@ -1,5 +1,6 @@
 package com.newfit.reservation.controller;
 
+import com.newfit.reservation.common.RequestHeaderUtil;
 import com.newfit.reservation.common.auth.AuthorityCheckService;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.dto.request.CreateProposalRequest;
@@ -7,6 +8,7 @@ import com.newfit.reservation.dto.request.CreateReportRequest;
 import com.newfit.reservation.service.UserService;
 import com.newfit.reservation.service.dev.ProposalService;
 import com.newfit.reservation.service.dev.ReportService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,13 +25,15 @@ public class DevApiController {
     private final ProposalService proposalService;
     private final UserService userService;
     private final AuthorityCheckService authorityCheckService;
+    private final RequestHeaderUtil requestHeaderUtil;
 
     @PostMapping("/bug")
     public ResponseEntity<Void> createBugReport(Authentication authentication,
-                                                @RequestHeader(value = "user-id") Long userId,
+                                                HttpServletRequest servletRequest,
                                                 @Valid @RequestBody CreateReportRequest request) {
-        authorityCheckService.validateByUserId(authentication, userId);
+        authorityCheckService.checkHeaderAndValidateAuthority(authentication, servletRequest);
 
+        Long userId = requestHeaderUtil.extractUserId(servletRequest);
         User user = userService.findOneById(userId);
         reportService.saveReport(user, request);
 
@@ -40,10 +44,11 @@ public class DevApiController {
 
     @PostMapping("/feature")
     public ResponseEntity<Void> createFeatureProposal(Authentication authentication,
-                                                      @RequestHeader(value = "user-id") Long userId,
+                                                      HttpServletRequest servletRequest,
                                                       @Valid @RequestBody CreateProposalRequest request) {
-        authorityCheckService.validateByUserId(authentication, userId);
+        authorityCheckService.checkHeaderAndValidateAuthority(authentication, servletRequest);
 
+        Long userId = requestHeaderUtil.extractUserId(servletRequest);
         User user = userService.findOneById(userId);
         proposalService.saveProposal(user, request);
 
