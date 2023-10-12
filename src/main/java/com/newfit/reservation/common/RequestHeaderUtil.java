@@ -16,7 +16,6 @@ public class RequestHeaderUtil {
             return Long.parseLong(request.getHeader("user-id"));
         } else {
             Long authorityId = Long.parseLong(request.getHeader("authority-id"));
-            // TODO: user 잘 fetch 하는지 체크할 것
             return authorityService.findById(authorityId).getUser().getId();
         }
     }
