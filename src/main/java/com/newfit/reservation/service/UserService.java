@@ -50,7 +50,10 @@ public class UserService {
             updateUser.updateFilePath(request.getUserProfileImage());
 
         if (request.getNickname() != null) {
-            updateUser.updateNickname(request.getNickname());
+            String nickname = request.getNickname();
+            validateDuplicateNickname(nickname);
+            updateUser.updateNickname(nickname);
+
             String accessToken = tokenProvider.generateAccessToken(updateUser);
             log.info("UserModify.accessToken = {}", accessToken);
             response.setHeader("access-token", accessToken);
@@ -103,5 +106,11 @@ public class UserService {
         String accessToken = tokenProvider.generateAccessToken(user);
         log.info("UserSignup.accessToken = {}", accessToken);
         response.setHeader("access-token", accessToken);
+    }
+
+    private void validateDuplicateNickname(String nickname) {
+        if (userRepository.findByNickname(nickname).isPresent()) {
+            throw new CustomException(DUPLICATE_NICKNAME);
+        }
     }
 }
