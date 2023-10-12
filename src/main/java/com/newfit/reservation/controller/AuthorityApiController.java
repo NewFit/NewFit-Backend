@@ -1,11 +1,13 @@
 package com.newfit.reservation.controller;
 
+import com.newfit.reservation.common.RequestHeaderUtil;
 import com.newfit.reservation.common.auth.AuthorityCheckService;
 import com.newfit.reservation.dto.request.AuthorityRequest;
 import com.newfit.reservation.dto.request.EntryRequest;
 import com.newfit.reservation.dto.response.GymListResponse;
 import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.service.AuthorityService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +23,16 @@ import static org.springframework.http.HttpStatus.*;
 public class AuthorityApiController {
     private final AuthorityService authorityService;
     private final AuthorityCheckService authorityCheckService;
+    private final RequestHeaderUtil requestHeaderUtil;
 
     @PostMapping
     public ResponseEntity<Void> register(Authentication authentication,
-                                         @RequestHeader(value = "user-id") Long userId,
-                                         @Valid @RequestBody AuthorityRequest request,
-                                         HttpServletResponse response) {
-        authorityCheckService.validateByUserId(authentication, userId);
+                                         HttpServletRequest servletRequest,
+                                         HttpServletResponse response,
+                                         @Valid @RequestBody AuthorityRequest request) {
+        authorityCheckService.checkHeaderAndValidateAuthority(authentication, servletRequest);
+
+        Long userId = requestHeaderUtil.extractUserId(servletRequest);
         authorityService.register(userId, request.getGymId(), response);
 
         return ResponseEntity
