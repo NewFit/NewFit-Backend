@@ -99,6 +99,8 @@ public class UserService {
         OAuthHistory oAuthHistory = oAuthHistoryRepository
                 .findById(oauthHistoryId)
                 .orElseThrow(() -> new CustomException(OAUTH_HISTORY_NOT_FOUND));
+
+        validateDuplicateNickname(request.getNickname());
         User user = User.userSignUp(request);
         userRepository.save(user);
         oAuthHistory.signUp(user);
