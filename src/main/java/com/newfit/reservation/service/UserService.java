@@ -37,20 +37,27 @@ public class UserService {
     private final OAuthHistoryRepository oAuthHistoryRepository;
     private final TokenProvider tokenProvider;
 
-    public void modify(Long userId, UserUpdateRequest request) {
+    public void modify(Long userId, UserUpdateRequest request, HttpServletResponse response) {
         User updateUser = findOneById(userId);
 
         if (request.getEmail() != null)
             updateUser.updateEmail(request.getEmail());
-
-        if (request.getNickname() != null)
-            updateUser.updateNickname(request.getNickname());
 
         if (request.getTel() != null)
             updateUser.updateTel(request.getTel());
 
         if (request.getUserProfileImage() != null)
             updateUser.updateFilePath(request.getUserProfileImage());
+
+        if (request.getNickname() != null) {
+            String nickname = request.getNickname();
+            validateDuplicateNickname(nickname);
+            updateUser.updateNickname(nickname);
+
+            String accessToken = tokenProvider.generateAccessToken(updateUser);
+            log.info("UserModify.accessToken = {}", accessToken);
+            response.setHeader("access-token", accessToken);
+        }
     }
 
     public UserDetailResponse userDetail(Long authorityId) {
@@ -92,6 +99,8 @@ public class UserService {
         OAuthHistory oAuthHistory = oAuthHistoryRepository
                 .findById(oauthHistoryId)
                 .orElseThrow(() -> new CustomException(OAUTH_HISTORY_NOT_FOUND));
+
+        validateDuplicateNickname(request.getNickname());
         User user = User.userSignUp(request);
         userRepository.save(user);
         oAuthHistory.signUp(user);
@@ -99,5 +108,11 @@ public class UserService {
         String accessToken = tokenProvider.generateAccessToken(user);
         log.info("UserSignup.accessToken = {}", accessToken);
         response.setHeader("access-token", accessToken);
+    }
+
+    private void validateDuplicateNickname(String nickname) {
+        if (userRepository.findByNickname(nickname).isPresent()) {
+            throw new CustomException(DUPLICATE_NICKNAME);
+        }
     }
 }
