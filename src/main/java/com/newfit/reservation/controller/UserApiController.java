@@ -24,10 +24,11 @@ public class UserApiController {
 
     @PatchMapping
     public ResponseEntity<Void> modify(Authentication authentication,
+                                       HttpServletResponse response,
                                        @RequestHeader(value = "user-id") Long userId,
                                        @Valid @RequestBody UserUpdateRequest request) {
         authorityCheckService.validateByUserId(authentication, userId);
-        userService.modify(userId, request);
+        userService.modify(userId, request, response);
         return ResponseEntity
                 .noContent()
                 .build();
