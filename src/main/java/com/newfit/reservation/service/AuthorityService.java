@@ -5,6 +5,7 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Gym;
 import com.newfit.reservation.domain.Role;
 import com.newfit.reservation.domain.User;
+import com.newfit.reservation.domain.routine.Routine;
 import com.newfit.reservation.dto.request.EntryRequest;
 import com.newfit.reservation.dto.response.*;
 import com.newfit.reservation.exception.CustomException;
@@ -12,6 +13,7 @@ import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.GymRepository;
 import com.newfit.reservation.repository.UserRepository;
 import com.newfit.reservation.repository.reservation.ReservationRepository;
+import com.newfit.reservation.repository.routine.RoutineRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,7 @@ public class AuthorityService {
     private final GymRepository gymRepository;
     private final ReservationRepository reservationRepository;
     private final TokenProvider tokenProvider;
+    private final RoutineRepository routineRepository;
 
     public void register(Long userId, Long gymId, HttpServletResponse response) {
 
@@ -52,7 +55,9 @@ public class AuthorityService {
     public void delete(Long authorityId, HttpServletResponse response) {
         Authority authority = authorityRepository.findById(authorityId).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         User user = authority.getUser();
+        List<Routine> routines = routineRepository.findAllByAuthority(authority);
 
+        routineRepository.deleteAll(routines);
         user.getAuthorityList().remove(authority);
         authorityRepository.delete(authority);
 
