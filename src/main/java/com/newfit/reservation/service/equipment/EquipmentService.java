@@ -5,6 +5,7 @@ import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.domain.equipment.Purpose;
 import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.equipment.EquipmentRepository;
+import com.newfit.reservation.repository.routine.EquipmentRoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import static com.newfit.reservation.exception.ErrorCode.*;
 @Transactional
 public class EquipmentService {
     private final EquipmentRepository equipmentRepository;
+    private final EquipmentRoutineRepository equipmentRoutineRepository;
 
     /*
     Equipment를 새로 등록.
@@ -41,6 +43,9 @@ public class EquipmentService {
     equipment 삭제
      */
     public void deleteEquipment(Long equipmentId) {
+        Equipment equipment = findById(equipmentId);
+
+        equipmentRoutineRepository.deleteAllByEquipment(equipment);
         equipmentRepository.deleteById(equipmentId);
     }
 
