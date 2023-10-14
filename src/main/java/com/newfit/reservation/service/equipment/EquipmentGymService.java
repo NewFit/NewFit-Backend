@@ -9,6 +9,7 @@ import com.newfit.reservation.dto.response.EquipmentGymListResponse;
 import com.newfit.reservation.dto.response.EquipmentResponse;
 import com.newfit.reservation.exception.CustomException;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
+import com.newfit.reservation.repository.reservation.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import static com.newfit.reservation.exception.ErrorCode.*;
 public class EquipmentGymService {
 
     private final EquipmentGymRepository equipmentGymRepository;
+    private final ReservationRepository reservationRepository;
 
     /*
     입력받은 개수(count)만큼 등록
@@ -61,6 +63,9 @@ public class EquipmentGymService {
     equipmentGym 삭제
      */
     public void deleteEquipmentGym(Long equipmentGymId) {
+        EquipmentGym equipmentGym = findOneById(equipmentGymId);
+
+        reservationRepository.deleteAllByEquipmentGym(equipmentGym);
         equipmentGymRepository.deleteById(equipmentGymId);
     }
 
