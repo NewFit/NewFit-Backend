@@ -11,4 +11,6 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> {
     Optional<Routine> findByAuthorityAndName(Authority authority, String name);
 
     List<Routine> findAllByAuthority(Authority authority);
+
+    void deleteAllByAuthority(Authority authority);
 }
