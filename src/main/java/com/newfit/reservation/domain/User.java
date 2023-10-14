@@ -57,7 +57,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "file_path", nullable = false)
     private String filePath;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
     private OAuthHistory oAuthHistory;
 
     // 양방향 연관관계를 나타냅니다.
