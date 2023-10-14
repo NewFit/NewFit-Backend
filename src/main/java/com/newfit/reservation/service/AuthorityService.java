@@ -53,11 +53,10 @@ public class AuthorityService {
     }
 
     public void delete(Long authorityId, HttpServletResponse response) {
-        Authority authority = authorityRepository.findById(authorityId).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+        Authority authority = findById(authorityId);
         User user = authority.getUser();
-        List<Routine> routines = routineRepository.findAllByAuthority(authority);
 
-        routineRepository.deleteAll(routines);
+        routineRepository.deleteAllByAuthority(authority);
         user.getAuthorityList().remove(authority);
         authorityRepository.delete(authority);
 
