@@ -1,5 +1,6 @@
 package com.newfit.reservation.repository.routine;
 
+import com.newfit.reservation.domain.equipment.Equipment;
 import com.newfit.reservation.domain.routine.EquipmentRoutine;
 import com.newfit.reservation.domain.routine.Routine;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,8 @@ public interface EquipmentRoutineRepository extends JpaRepository<EquipmentRouti
 
     // Routine의 모든 EquipmentRoutine 객체를 삭제
     void deleteAllByRoutine(Routine routine);
+
+    void deleteAllByEquipment(Equipment equipment);
 
     // Routine의 모든 EquipmentRoutine 객체를 조회
     List<EquipmentRoutine> findAllByRoutine(Routine routine);
