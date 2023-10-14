@@ -6,6 +6,8 @@ import com.newfit.reservation.domain.Authority;
 import com.newfit.reservation.domain.Credit;
 import com.newfit.reservation.domain.User;
 import com.newfit.reservation.domain.auth.OAuthHistory;
+import com.newfit.reservation.domain.dev.Proposal;
+import com.newfit.reservation.domain.dev.Report;
 import com.newfit.reservation.dto.request.UserSignUpRequest;
 import com.newfit.reservation.dto.request.UserUpdateRequest;
 import com.newfit.reservation.dto.response.AuthorityGymResponse;
@@ -15,6 +17,9 @@ import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import com.newfit.reservation.repository.UserRepository;
 import com.newfit.reservation.repository.auth.OAuthHistoryRepository;
+import com.newfit.reservation.repository.auth.RefreshTokenRepository;
+import com.newfit.reservation.repository.dev.ProposalRepository;
+import com.newfit.reservation.repository.dev.ReportRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +41,9 @@ public class UserService {
     private final CreditRepository creditRepository;
     private final OAuthHistoryRepository oAuthHistoryRepository;
     private final TokenProvider tokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final ProposalRepository proposalRepository;
+    private final ReportRepository reportRepository;
 
     public void modify(Long userId, UserUpdateRequest request, HttpServletResponse response) {
         User updateUser = findOneById(userId);
@@ -87,6 +95,14 @@ public class UserService {
     }
 
     public void drop(Long userId) {
+        User user = findOneById(userId);
+        List<Proposal> proposals = proposalRepository.findAllByUser(user);
+        List<Report> reports = reportRepository.findAllByUser(user);
+
+        removeUser(user, proposals, reports);
+        saveModification(proposals, reports);
+
+        refreshTokenRepository.deleteById(userId);
         userRepository.deleteById(userId);
     }
 
@@ -114,5 +130,15 @@ public class UserService {
         if (userRepository.findByNickname(nickname).isPresent()) {
             throw new CustomException(DUPLICATE_NICKNAME);
         }
+    }
+
+    private void removeUser(User user, List<Proposal> proposals, List<Report> reports) {
+        proposals.forEach(Proposal::removeUser);
+        reports.forEach(Report::removeUser);
+    }
+
+    private void saveModification(List<Proposal> proposals, List<Report> reports) {
+        proposalRepository.saveAllAndFlush(proposals);
+        reportRepository.saveAllAndFlush(reports);
     }
 }
