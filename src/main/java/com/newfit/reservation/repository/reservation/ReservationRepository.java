@@ -17,4 +17,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findAllByEquipmentGym(EquipmentGym equipmentGym);
 
     Optional<Reservation> findByAuthorityAndEquipmentGym(Authority authority, EquipmentGym equipmentGym);
+
+    void deleteAllByEquipmentGym(EquipmentGym equipmentGym);
 }
