@@ -22,6 +22,7 @@ import com.newfit.reservation.domains.reservation.dto.request.ReservationUpdateR
 import com.newfit.reservation.domains.reservation.repository.ReservationRepository;
 import com.newfit.reservation.domains.routine.domain.EquipmentRoutine;
 import com.newfit.reservation.domains.routine.domain.Routine;
+import com.newfit.reservation.domains.routine.dto.response.RoutineReservationListResponse;
 import com.newfit.reservation.domains.routine.dto.response.RoutineReservationResponse;
 import com.newfit.reservation.domains.routine.repository.EquipmentRoutineRepository;
 import com.newfit.reservation.domains.routine.repository.RoutineRepository;
@@ -139,7 +140,7 @@ public class ReservationService {
     }
 
     // 루틴을 예약
-    public List<RoutineReservationResponse> reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
+    public RoutineReservationListResponse reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
         List<RoutineReservationResponse> reservedList = new ArrayList<>();
         List<EquipmentRoutine> allInRoutine = equipmentRoutineRepository.findAllByRoutineIdOrderBySequence(routineId);
 
@@ -156,7 +157,8 @@ public class ReservationService {
 
         Routine routine = routineRepository.findById(routineId).orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
         routine.incrementCount();
-        return reservedList;
+
+        return RoutineReservationListResponse.create(reservedList);
     }
 
     public Reservation findById(Long reservationId) {
@@ -282,7 +284,7 @@ public class ReservationService {
         if (checkConditions(reservation, endEquipmentUseAt)) {
             if (authority.getCreditAcquisitionCount() != 10) {
                 Credit credit = creditRepository.findByAuthorityAndYearAndMonth(authority, (short) now.getYear(), (short) now.getMonthValue())
-                        .orElseThrow(() -> new CustomException(CREDIT_NOT_FOUND));
+                        .orElseGet(() -> creditRepository.save(Credit.createCredit(authority)));
                 credit.addAmount();
                 authority.incrementAcquisitionCount();
                 authority.getUser().addBalance(100L);

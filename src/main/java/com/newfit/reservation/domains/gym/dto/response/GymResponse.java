@@ -16,7 +16,7 @@ public class GymResponse {
     private String gymName;
     private String address;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private GymResponse(String gymName, String address) {
         this.gymName = gymName;
         this.address = address;
@@ -27,5 +27,7 @@ public class GymResponse {
     }
 
     // Gym 객체로부터 GymResponseDto를 생성합니다.
-    public GymResponse(Gym gym) { this(gym.getName(), gym.getAddress()); }
+    public GymResponse(Gym gym) {
+        this(gym.getName(), gym.getAddress());
+    }
 }

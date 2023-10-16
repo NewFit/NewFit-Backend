@@ -27,7 +27,7 @@ public class OAuthHistory { // OAuth2 인증을 통해 얻어온 사용자 정�
     @OneToOne(fetch = FetchType.EAGER)
     private User user;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private OAuthHistory(Provider provider, String attributeName) {
         this.provider = provider;
         this.attributeName = attributeName;

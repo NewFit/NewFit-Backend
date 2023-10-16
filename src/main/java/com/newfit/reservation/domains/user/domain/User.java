@@ -103,7 +103,7 @@ public class User extends BaseTimeEntity {
                 .sum();
     }
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private User(UserSignUpRequest userInfo) {
         this.username = userInfo.getUsername();
         this.nickname = userInfo.getNickname();

@@ -27,7 +27,7 @@ public class Report {
     @Column(nullable = false)
     private String content;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Report(User user, String subject, String content) {
         this.user = user;
         this.subject = subject;

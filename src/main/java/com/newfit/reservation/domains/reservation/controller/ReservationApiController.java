@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.http.HttpStatus.CREATED;
 
 
@@ -78,7 +79,8 @@ public class ReservationApiController {
                                                                            @PathVariable Long routineId,
                                                                            @Valid @RequestBody RoutineReservationRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
-        RoutineReservationListResponse response = new RoutineReservationListResponse(reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt()));
+
+        RoutineReservationListResponse response = reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt());
 
         return ResponseEntity
                 .status(CREATED)

@@ -20,7 +20,7 @@ public class UserDetailResponse {
     private Integer authorityGymsCount;
     private List<AuthorityGymResponse> authorityGyms;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private UserDetailResponse(String filePath,
                                String nickname,
                                Long totalCredit,
