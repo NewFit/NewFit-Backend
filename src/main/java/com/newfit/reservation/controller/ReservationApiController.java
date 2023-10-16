@@ -83,8 +83,7 @@ public class ReservationApiController {
                                                                            @Valid @RequestBody RoutineReservationRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
 
-        List<RoutineReservationResponse> result = reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt());
-        RoutineReservationListResponse response = RoutineReservationListResponse.create(result);
+        RoutineReservationListResponse response = reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt());
 
         return ResponseEntity
                 .status(CREATED)
