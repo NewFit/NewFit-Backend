@@ -10,6 +10,7 @@ import com.newfit.reservation.dto.request.StartReservationRequest;
 import com.newfit.reservation.dto.request.routine.RoutineReservationRequest;
 import com.newfit.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.dto.response.RoutineReservationListResponse;
+import com.newfit.reservation.dto.response.RoutineReservationResponse;
 import com.newfit.reservation.service.AuthorityService;
 import com.newfit.reservation.service.reservation.ReservationService;
 import jakarta.validation.Valid;
@@ -18,6 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.CREATED;
 
 
@@ -78,7 +82,8 @@ public class ReservationApiController {
                                                                            @PathVariable Long routineId,
                                                                            @Valid @RequestBody RoutineReservationRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
-        RoutineReservationListResponse response = new RoutineReservationListResponse(reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt()));
+
+        RoutineReservationListResponse response = reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt());
 
         return ResponseEntity
                 .status(CREATED)

@@ -35,8 +35,8 @@ public class Equipment extends BaseTimeEntity {
     @OneToMany(mappedBy = "equipment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EquipmentGym> equipmentGyms = new ArrayList<>();
 
-    @Builder
-    public Equipment(Gym gym, String name, Purpose purpose) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Equipment(Gym gym, String name, Purpose purpose) {
         this.gym = gym;
         this.name = name;
         this.purpose = purpose;

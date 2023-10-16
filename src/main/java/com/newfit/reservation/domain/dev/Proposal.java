@@ -27,7 +27,7 @@ public class Proposal {
     @Column(nullable = false)
     private String content;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Proposal(User user, String name, String content) {
         this.user = user;
         this.name = name;
