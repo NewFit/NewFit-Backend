@@ -135,7 +135,7 @@ public class ReservationService {
     }
 
     // 루틴을 예약
-    public List<RoutineReservationResponse> reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
+    public RoutineReservationListResponse reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
         List<RoutineReservationResponse> reservedList = new ArrayList<>();
         List<EquipmentRoutine> allInRoutine = equipmentRoutineRepository.findAllByRoutineIdOrderBySequence(routineId);
 
@@ -152,7 +152,8 @@ public class ReservationService {
 
         Routine routine = routineRepository.findById(routineId).orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
         routine.incrementCount();
-        return reservedList;
+
+        return RoutineReservationListResponse.create(reservedList);
     }
 
     public Reservation findById(Long reservationId) {
