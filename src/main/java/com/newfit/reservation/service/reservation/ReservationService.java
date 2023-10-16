@@ -15,7 +15,6 @@ import com.newfit.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.dto.response.*;
 import com.newfit.reservation.exception.CustomException;
-import com.newfit.reservation.exception.ErrorCode;
 import com.newfit.reservation.repository.AuthorityRepository;
 import com.newfit.reservation.repository.CreditRepository;
 import com.newfit.reservation.repository.equipment.EquipmentGymRepository;
@@ -279,7 +278,7 @@ public class ReservationService {
         if (checkConditions(reservation, endEquipmentUseAt)) {
             if (authority.getCreditAcquisitionCount() != 10) {
                 Credit credit = creditRepository.findByAuthorityAndYearAndMonth(authority, (short) now.getYear(), (short) now.getMonthValue())
-                        .orElseThrow(() -> new CustomException(CREDIT_NOT_FOUND));
+                        .orElseGet(() -> creditRepository.save(Credit.createCredit(authority)));
                 credit.addAmount();
                 authority.incrementAcquisitionCount();
                 authority.getUser().addBalance(100L);
