@@ -22,4 +22,9 @@ public class RoutineReservationListResponse {
         this.successes = successes;
     }
 
+    public static RoutineReservationListResponse create(List<RoutineReservationResponse> result) {
+        return RoutineReservationListResponse.builder()
+                .successes(result)
+                .build();
+    }
 }
