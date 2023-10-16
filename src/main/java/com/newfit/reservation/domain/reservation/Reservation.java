@@ -47,12 +47,12 @@ public class Reservation extends BaseTimeEntity {
     private LocalDateTime startTagAt;
 
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Reservation(Authority authority,
-                       EquipmentGym equipmentGym,
-                       LocalDateTime startAt,
-                       LocalDateTime endAt,
-                       Long repetitionNumber) {
+                        EquipmentGym equipmentGym,
+                        LocalDateTime startAt,
+                        LocalDateTime endAt,
+                        Long repetitionNumber) {
         this.authority = authority;
         this.equipmentGym = equipmentGym;
         this.startAt = startAt;
