@@ -4,8 +4,6 @@ package com.newfit.reservation.domains.reservation.service;
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
-import com.newfit.reservation.domains.credit.domain.Credit;
-import com.newfit.reservation.domains.credit.repository.CreditRepository;
 import com.newfit.reservation.domains.equipment.domain.Condition;
 import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
 import com.newfit.reservation.domains.equipment.dto.response.EquipmentInfoResponse;
@@ -46,7 +44,6 @@ public class ReservationService {
     private final AuthorityRepository authorityRepository;
     private final EquipmentGymRepository equipmentGymRepository;
     private final EquipmentRoutineRepository equipmentRoutineRepository;
-    private final CreditRepository creditRepository;
     private final RoutineRepository routineRepository;
 
     public void reserve(Long authorityId,
@@ -278,41 +275,9 @@ public class ReservationService {
             return (gymOpenHour < reservationStartHour) || (reservationStartHour < gymCloseHour);
     }
 
-    public void checkConditionAndAddCredit(Reservation reservation, Authority authority, LocalDateTime endEquipmentUseAt) {
-        LocalDateTime now = now();
-
-        if (checkConditions(reservation, endEquipmentUseAt)) {
-            if (authority.getCreditAcquisitionCount() != 10) {
-                Credit credit = creditRepository.findByAuthorityAndYearAndMonth(authority, (short) now.getYear(), (short) now.getMonthValue())
-                        .orElseGet(() -> creditRepository.save(Credit.createCredit(authority)));
-                credit.addAmount();
-                authority.incrementAcquisitionCount();
-                authority.getUser().addBalance(100L);
-            } else {
-                throw new CustomException(MAXIMUM_CREDIT_LIMIT);
-            }
-        } else {
-            throw new CustomException(INVALID_CREDIT_ACQUIRE_REQUEST, "크레딧 획득에 실패했습니다.");
-        }
-    }
-
     public void updateStatusAndCondition(Reservation reservation) {
         reservation.updateStatus(Status.COMPLETED);
         reservation.getEquipmentGym().updateCondition(Condition.AVAILABLE);
-    }
-
-    private boolean checkConditions(Reservation reservation, LocalDateTime endTagAt) {
-        return isStartTagInTime(reservation) && isEndTagInTime(reservation, endTagAt);
-    }
-
-    private boolean isStartTagInTime(Reservation reservation) {
-        return (reservation.getStartTagAt().isBefore(reservation.getStartAt().plusMinutes(5)) && reservation.getStartTagAt().isAfter(reservation.getStartAt()))
-                || reservation.getStartTagAt().isEqual(reservation.getStartAt().plusMinutes(5));
-    }
-
-    private boolean isEndTagInTime(Reservation reservation, LocalDateTime endTagAt) {
-        return (endTagAt.isBefore(reservation.getEndAt().plusMinutes(5)) && endTagAt.isAfter(reservation.getEndAt()))
-                || endTagAt.isEqual(reservation.getEndAt().plusMinutes(5));
     }
 
     private void validateReservationIn2Hours(LocalDateTime startAt, LocalDateTime endAt) {
