@@ -136,63 +136,9 @@ public class ReservationService {
         return new EquipmentInfoResponse(equipmentGym, occupiedTimes);
     }
 
-    // 루틴을 예약
-    public RoutineReservationListResponse reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
-        List<RoutineReservationResponse> reservedList = new ArrayList<>();
-        List<EquipmentRoutine> allInRoutine = equipmentRoutineRepository.findAllByRoutineIdOrderBySequence(routineId);
-
-        for (EquipmentRoutine equipmentRoutine : allInRoutine) { //각 기구에 대해 예약 시도. 성공시 startAt에 duration 더하기.
-            Long equipmentId = equipmentRoutine.getEquipment().getId();
-            LocalDateTime endAt = startAt.plusMinutes(equipmentRoutine.getDuration().toMinutes());
-
-            RoutineReservationResponse result = reserveOneInRoutine(authorityId, equipmentId, startAt, endAt);
-            if (result.isSuccess()) {
-                startAt = result.getStartAt().plusMinutes(equipmentRoutine.getDuration().toMinutes());
-                reservedList.add(result);
-            }
-        }
-
-        Routine routine = routineRepository.findById(routineId).orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
-        routine.incrementCount();
-
-        return RoutineReservationListResponse.create(reservedList);
-    }
-
     public Reservation findById(Long reservationId) {
         return reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(RESERVATION_NOT_FOUND));
-    }
-
-    // 루틴의 특정 기구를 예약
-    private RoutineReservationResponse reserveOneInRoutine(Long authorityId, Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
-        Authority authority = authorityRepository.findById(authorityId)
-                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
-        EquipmentGym equipmentGym = null;
-
-        int attempt = 0;
-        while (attempt != 5) {
-            try {
-                equipmentGym = getOneAvailable(equipmentId, startAt, endAt);
-                Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt, 0L);
-                reservationRepository.save(reservation);
-                return new RoutineReservationResponse(equipmentGym.getId(), true, startAt);
-            } catch (CustomException exception) { // getOneAvailable()에서 발생하는 예외
-                startAt = startAt.plusMinutes(1);
-                endAt = endAt.plusMinutes(1);
-                attempt += 1;
-            }
-        }
-        // 찾지 못한 경우
-        return new RoutineReservationResponse(null, false, null);
-    }
-
-    private EquipmentGym getOneAvailable(Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
-        return equipmentGymRepository.findAvailableByEquipmentId(equipmentId)
-                .stream()
-                .filter(equipmentGym ->
-                        validateReservationOverlap(equipmentGym, startAt, endAt))
-                .findAny()
-                .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND, "예약 가능한 기구가 없습니다."));
     }
 
     private void checkBusinessHour(LocalDateTime startAt, LocalDateTime endAt, Authority authority) {

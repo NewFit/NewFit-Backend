@@ -13,6 +13,7 @@ import com.newfit.reservation.domains.reservation.dto.response.ReservationListRe
 import com.newfit.reservation.domains.reservation.service.ReservationService;
 import com.newfit.reservation.domains.routine.dto.request.RoutineReservationRequest;
 import com.newfit.reservation.domains.routine.dto.response.RoutineReservationListResponse;
+import com.newfit.reservation.domains.routine.service.RoutineService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class ReservationApiController {
     private final AuthorityCheckService authorityCheckService;
     private final CreditService creditService;
     private final ReservationService reservationService;
+    private final RoutineService routineService;
 
     @PostMapping
     public ResponseEntity<Void> reserve(Authentication authentication,
@@ -81,8 +83,7 @@ public class ReservationApiController {
                                                                            @PathVariable Long routineId,
                                                                            @Valid @RequestBody RoutineReservationRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
-
-        RoutineReservationListResponse response = reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt());
+        RoutineReservationListResponse response = routineService.reserveByRoutine(authorityId, routineId, request.getStartAt());
 
         return ResponseEntity
                 .status(CREATED)
