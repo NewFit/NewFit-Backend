@@ -4,6 +4,7 @@ import com.newfit.reservation.common.auth.AuthorityCheckService;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.authority.service.AuthorityService;
 import com.newfit.reservation.domains.credit.dto.request.ObtainCreditRequest;
+import com.newfit.reservation.domains.credit.service.CreditService;
 import com.newfit.reservation.domains.reservation.domain.Reservation;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationUpdateRequest;
@@ -12,6 +13,7 @@ import com.newfit.reservation.domains.reservation.dto.response.ReservationListRe
 import com.newfit.reservation.domains.reservation.service.ReservationService;
 import com.newfit.reservation.domains.routine.dto.request.RoutineReservationRequest;
 import com.newfit.reservation.domains.routine.dto.response.RoutineReservationListResponse;
+import com.newfit.reservation.domains.routine.service.RoutineService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +30,11 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 public class ReservationApiController {
 
-    private final ReservationService reservationService;
     private final AuthorityService authorityService;
     private final AuthorityCheckService authorityCheckService;
+    private final CreditService creditService;
+    private final ReservationService reservationService;
+    private final RoutineService routineService;
 
     @PostMapping
     public ResponseEntity<Void> reserve(Authentication authentication,
@@ -79,8 +83,7 @@ public class ReservationApiController {
                                                                            @PathVariable Long routineId,
                                                                            @Valid @RequestBody RoutineReservationRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
-
-        RoutineReservationListResponse response = reservationService.reserveByRoutine(authorityId, routineId, request.getStartAt());
+        RoutineReservationListResponse response = routineService.reserveByRoutine(authorityId, routineId, request.getStartAt());
 
         return ResponseEntity
                 .status(CREATED)
@@ -108,7 +111,7 @@ public class ReservationApiController {
         Authority authority = authorityService.findById(authorityId);
 
         reservationService.updateStatusAndCondition(reservation);
-        reservationService.checkConditionAndAddCredit(reservation, authority, request.getEndEquipmentUseAt());
+        creditService.checkConditionAndAddCredit(reservation, authority, request.getEndEquipmentUseAt());
 
         return ResponseEntity
                 .noContent()

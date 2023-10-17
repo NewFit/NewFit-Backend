@@ -3,18 +3,22 @@ package com.newfit.reservation.domains.routine.service;
 
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.authority.domain.Authority;
+import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
 import com.newfit.reservation.domains.equipment.domain.Equipment;
+import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
+import com.newfit.reservation.domains.equipment.repository.EquipmentGymRepository;
+import com.newfit.reservation.domains.reservation.domain.Reservation;
+import com.newfit.reservation.domains.reservation.repository.ReservationRepository;
 import com.newfit.reservation.domains.routine.domain.EquipmentRoutine;
 import com.newfit.reservation.domains.routine.domain.Routine;
-import com.newfit.reservation.domains.routine.dto.response.RoutineDetailEquipmentResponse;
-import com.newfit.reservation.domains.routine.dto.response.RoutineDetailResponse;
-import com.newfit.reservation.domains.routine.dto.response.RoutineListResponse;
-import com.newfit.reservation.domains.routine.dto.response.RoutineResponse;
+import com.newfit.reservation.domains.routine.dto.response.*;
 import com.newfit.reservation.domains.routine.repository.EquipmentRoutineRepository;
 import com.newfit.reservation.domains.routine.repository.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.newfit.reservation.common.exception.ErrorCode.*;
@@ -24,7 +28,10 @@ import static com.newfit.reservation.common.exception.ErrorCode.*;
 @Transactional
 public class RoutineService {
 
+    private final AuthorityRepository authorityRepository;
+    private final ReservationRepository reservationRepository;
     private final RoutineRepository routineRepository;
+    private final EquipmentGymRepository equipmentGymRepository;
     private final EquipmentRoutineRepository equipmentRoutineRepository;
 
     /*
@@ -73,8 +80,7 @@ public class RoutineService {
     }
 
     /*
-    Routine id를 받아서 해당 Routine에 묶인 EquipmentRoutine을 조회합니다.
-    조회한 EquipmentRoutine들을 순회하며 Equipment를 조회합니다.
+    Routine id -> EquipmentRoutine -> Equipment를 조회합니다.
     조회한 Equipment들을 RoutineDetailEquipmentResponse Dto로 변환하고 
     Routine 정보와 함께 RoutineDetailResponse를 구성하여 반환합니다.
      */
@@ -95,5 +101,49 @@ public class RoutineService {
     // 해당 User의 Authority가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
     private boolean validateDuplicate(Authority authority, String routineName) {
         return routineRepository.findByAuthorityAndName(authority, routineName).isPresent();
+    }
+
+    public RoutineReservationListResponse reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
+        List<RoutineReservationResponse> reservedList = new ArrayList<>();
+        List<EquipmentRoutine> allInRoutine = equipmentRoutineRepository.findAllByRoutineIdOrderBySequence(routineId);
+
+        for (EquipmentRoutine equipmentRoutine : allInRoutine) { //각 기구에 대해 예약 시도. 성공시 startAt에 duration 더하기.
+            Long equipmentId = equipmentRoutine.getEquipment().getId();
+            LocalDateTime endAt = startAt.plusMinutes(equipmentRoutine.getDuration().toMinutes());
+
+            RoutineReservationResponse result = reserveOneInRoutine(authorityId, equipmentId, startAt, endAt);
+            if (result.isSuccess()) {
+                startAt = result.getStartAt().plusMinutes(equipmentRoutine.getDuration().toMinutes());
+                reservedList.add(result);
+            }
+        }
+
+        Routine routine = routineRepository.findById(routineId).orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
+        routine.incrementCount();
+
+        return RoutineReservationListResponse.create(reservedList);
+    }
+
+    // 루틴의 특정 기구를 예약
+    private RoutineReservationResponse reserveOneInRoutine(Long authorityId, Long equipmentId, LocalDateTime startAt, LocalDateTime endAt) {
+        Authority authority = authorityRepository.findById(authorityId)
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+
+        int attempt = 0;
+        while (attempt != 5) {
+            try {
+                EquipmentGym equipmentGym = equipmentGymRepository.findAvailableByEquipmentIdAndStartAtAndEndAt(equipmentId, startAt, endAt)
+                        .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
+                Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt, 0L);
+                reservationRepository.save(reservation);
+                return new RoutineReservationResponse(equipmentGym.getId(), true, startAt);
+            } catch (CustomException exception) {
+                startAt = startAt.plusMinutes(1);
+                endAt = endAt.plusMinutes(1);
+                attempt += 1;
+            }
+        }
+        // 찾지 못한 경우
+        return new RoutineReservationResponse(null, false, null);
     }
 }
