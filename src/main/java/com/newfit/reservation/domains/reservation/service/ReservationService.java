@@ -4,7 +4,8 @@ package com.newfit.reservation.domains.reservation.service;
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
-import com.newfit.reservation.domains.equipment.domain.Condition;
+import com.newfit.reservation.domains.credit.domain.Credit;
+import com.newfit.reservation.domains.credit.repository.CreditRepository;
 import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
 import com.newfit.reservation.domains.equipment.dto.response.EquipmentInfoResponse;
 import com.newfit.reservation.domains.equipment.dto.response.OccupiedTime;
@@ -214,7 +215,7 @@ public class ReservationService {
 
     public void updateStatusAndCondition(Reservation reservation) {
         reservation.updateStatus(Status.COMPLETED);
-        reservation.getEquipmentGym().updateCondition(Condition.AVAILABLE);
+        reservation.getEquipmentGym().restore();
     }
 
     private void validateReservationIn2Hours(LocalDateTime startAt, LocalDateTime endAt) {
@@ -259,7 +260,7 @@ public class ReservationService {
         validateTagAt(tagAt, reservation.getStartAt()); // 요청 시각과 현재 시각을 비교
 
         updateReservation(reservation, tagAt);
-        equipmentGym.updateCondition(Condition.OCCUPIED);
+        equipmentGym.use();
         authority.updateTagAt(tagAt);
     }
 
