@@ -18,18 +18,11 @@ import com.newfit.reservation.domains.reservation.dto.response.ReservationListRe
 import com.newfit.reservation.domains.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.domains.reservation.repository.ReservationRepository;
-import com.newfit.reservation.domains.routine.domain.EquipmentRoutine;
-import com.newfit.reservation.domains.routine.domain.Routine;
-import com.newfit.reservation.domains.routine.dto.response.RoutineReservationListResponse;
-import com.newfit.reservation.domains.routine.dto.response.RoutineReservationResponse;
-import com.newfit.reservation.domains.routine.repository.EquipmentRoutineRepository;
-import com.newfit.reservation.domains.routine.repository.RoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.LocalDateTime.*;
@@ -43,8 +36,6 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final AuthorityRepository authorityRepository;
     private final EquipmentGymRepository equipmentGymRepository;
-    private final EquipmentRoutineRepository equipmentRoutineRepository;
-    private final RoutineRepository routineRepository;
 
     public void reserve(Long authorityId,
                         Long equipmentId,
@@ -59,9 +50,8 @@ public class ReservationService {
         checkBusinessHour(request.getStartAt(), request.getEndAt(), authority);
 
         // 사용 가능한 기구 하나를 가져옴
-        EquipmentGym usedEquipment = getOneAvailable(equipmentId, request.getStartAt(), request.getEndAt());
-
-
+        EquipmentGym usedEquipment = equipmentGymRepository.findAvailableByEquipmentIdAndStartAtAndEndAt(equipmentId, request.getStartAt(), request.getEndAt())
+                .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
         Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt(), request.getRepetitionNumber());
 
         reservationRepository.save(reservation);
@@ -114,7 +104,8 @@ public class ReservationService {
         if (!validateReservationOverlap(targetReservation.getEquipmentGym(), request.getStartAt(), request.getEndAt())) {
             Long targetEquipmentId = targetReservation.getEquipmentGym().getEquipment().getId();
             EquipmentGym anotherEquipmentGym =
-                    getOneAvailable(targetEquipmentId, request.getStartAt(), request.getEndAt());
+                    equipmentGymRepository.findAvailableByEquipmentIdAndStartAtAndEndAt(targetEquipmentId, request.getStartAt(), request.getEndAt())
+                            .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
             targetReservation.updateEquipmentGym(anotherEquipmentGym);
         }
     }
