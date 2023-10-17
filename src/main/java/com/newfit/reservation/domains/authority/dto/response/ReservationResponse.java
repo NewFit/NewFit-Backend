@@ -1,0 +1,19 @@
+package com.newfit.reservation.domains.authority.dto.response;
+
+
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ReservationResponse {
+    private Long id;
+
+    public ReservationResponse(Long id) {
+        this.id = id;
+    }
+}

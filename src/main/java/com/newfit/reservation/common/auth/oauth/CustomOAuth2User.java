@@ -1,6 +1,6 @@
 package com.newfit.reservation.common.auth.oauth;
 
-import com.newfit.reservation.domain.auth.OAuthHistory;
+import com.newfit.reservation.domains.auth.domain.OAuthHistory;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
