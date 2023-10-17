@@ -368,13 +368,12 @@ public class ReservationService {
 
 
     private void validateTagAt(LocalDateTime tagAt, LocalDateTime reservationStartAt) {
-        // TODO: 시간은 기배님의 의견에 따라 결정
-        if (tagAt.isBefore(now().minusMinutes(3))) {
+        if (tagAt.isBefore(now().minusMinutes(5))) {
             throw new CustomException(INVALID_TAG_REQUEST, "요청 시각이 현재 시간과 맞지 않습니다.");
         }
 
-        if (tagAt.isBefore(reservationStartAt.minusMinutes(3))) {
-            throw new CustomException(INVALID_TAG_REQUEST, "예약 시작 3분 전에 태그할 수 있습니다.");
+        if (tagAt.isBefore(reservationStartAt.minusMinutes(5))) {
+            throw new CustomException(INVALID_TAG_REQUEST, "예약 시작 5분 전부터 태그할 수 있습니다.");
         }
     }
 }
