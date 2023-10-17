@@ -61,7 +61,7 @@ Newfit은 헬스기구 예약 관리 시스템을 제공하는 모바일 어플�
 ## 💻 Developers
 <table >
     <tr align="center">
-        <td><B>Lead•Backend</B></td>
+        <td><B>Lead • Backend</B></td>
         <td><B>Backend</B></td>
         <td><B>Backend</B></td>
     </tr>
