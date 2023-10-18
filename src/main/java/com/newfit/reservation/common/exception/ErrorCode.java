@@ -35,6 +35,7 @@ public enum ErrorCode {
     ALREADY_ACCEPTED_AUTHORITY(HttpStatus.CONFLICT, "이미 승인된 사용자입니다."),
     DUPLICATE_ROUTINE_NAME(HttpStatus.CONFLICT, "중복된 루틴 이름입니다."),
     ALREADY_TAGGED_RESERVATION(HttpStatus.CONFLICT, "이미 태그하였습니다."),
+    ALREADY_EXISTING_EQUIPMENT(HttpStatus.CONFLICT, "이미 존재하는 기구입니다."),
     MAXIMUM_CREDIT_LIMIT(HttpStatus.CONFLICT, "일일 크레딧 획득량을 모두 채웠습니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "중복된 닉네임입니다."),
 
