@@ -35,6 +35,7 @@ import static com.newfit.reservation.common.exception.ErrorCode.*;
 public class ReservationService {
     private final long MAX_HOUR_TERM = 2L;
     private final long MAX_MINUTE = 30L;
+
     private final ReservationRepository reservationRepository;
     private final AuthorityRepository authorityRepository;
     private final EquipmentGymRepository equipmentGymRepository;
