@@ -26,6 +26,12 @@ public class EquipmentService {
                     .orElseGet(() -> equipmentRepository.save(Equipment.createEquipment(gym, name, purpose)));
     }
 
+    private void checkExistingEquipment(Gym gym, String name, Purpose purpose) {
+        if (equipmentRepository.findByGymAndNameAndPurpose(gym, name, purpose).isPresent()) {
+            throw new CustomException(ALREADY_EXISTING_EQUIPMENT);
+        }
+    }
+
     /*
     equipment 삭제
      */
