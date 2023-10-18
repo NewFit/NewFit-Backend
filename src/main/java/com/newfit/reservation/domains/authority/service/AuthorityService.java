@@ -21,8 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.newfit.reservation.common.exception.ErrorCode.*;
 
@@ -99,23 +100,13 @@ public class AuthorityService {
      */
     public UserAndPendingListResponse getUserAndAcceptRequestList(Long authorityId) {
         Gym gym = getGymByAuthorityId(authorityId);
-        String gymName = gym.getName();
 
         List<Authority> authorities = authorityRepository.findAllAuthorityByGym(gym);
+        Map<Boolean, List<UserAndPendingResponse>> classifyByAccepted = authorities.stream()
+                .collect(Collectors.groupingBy(Authority::getAccepted,
+                        Collectors.mapping(UserAndPendingResponse::new, Collectors.toList())));
 
-        List<UserAndPendingResponse> requests = new ArrayList<>();
-        List<UserAndPendingResponse> users = new ArrayList<>();
-
-        for (Authority authority : authorities) {
-            UserAndPendingResponse response = new UserAndPendingResponse(authority);
-
-            if (authority.getAccepted())
-                users.add(response);
-            else
-                requests.add(response);
-        }
-
-        return UserAndPendingListResponse.createResponse(gymName, requests, users);
+        return UserAndPendingListResponse.createResponse(gym.getName(), classifyByAccepted);
     }
 
     public Authority findById(Long authorityId) {
@@ -144,7 +135,7 @@ public class AuthorityService {
     public EquipmentGymListResponse findAllInGym(Gym gym) {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
 
-        List<com.newfit.reservation.domains.authority.dto.response.EquipmentResponse> equipmentResponses = allByGym.stream()
+        List<EquipmentResponse> equipmentResponses = allByGym.stream()
                 .map(EquipmentResponse::new).toList();
 
         return new EquipmentGymListResponse(gym.getName(), allByGym.size(), equipmentResponses);
