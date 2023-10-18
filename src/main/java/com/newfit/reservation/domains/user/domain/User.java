@@ -76,11 +76,15 @@ public class User extends BaseTimeEntity {
     /* =========== update method  =========== */
 
     public void updateEmail(String email) {
-        this.email = email;
+        if (email != null) {
+            this.email = email;
+        }
     }
 
     public void updateTel(String tel) {
-        this.tel = tel;
+        if (tel != null) {
+            this.tel = tel;
+        }
     }
 
     public void updateNickname(String nickname) {
@@ -88,7 +92,9 @@ public class User extends BaseTimeEntity {
     }
 
     public void updateFilePath(String filePath) {
-        this.filePath = filePath;
+        if (filePath != null) {
+            this.filePath = filePath;
+        }
     }
 
     public void addBalance(Long balance) {

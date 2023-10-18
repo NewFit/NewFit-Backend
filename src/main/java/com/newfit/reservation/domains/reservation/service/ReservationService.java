@@ -85,20 +85,14 @@ public class ReservationService {
         validateLastTagAt(authority);
 
         // 예약 세트 횟수 변경
-        if (request.getRepetitionNumber() != null) {
-            targetReservation.updateRepetitionNumber(request.getRepetitionNumber());
-        }
+        targetReservation.updateRepetitionNumber(request.getRepetitionNumber());
 
         // 예약 시간 변경
         validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
-        Gym gym = authority.getGym();
-        gym.checkBusinessHour(request.getStartAt(), request.getEndAt());
-
-        if (request.getStartAt() != null)
-            targetReservation.updateStartTime(request.getStartAt());
-
-        if (request.getEndAt() != null)
-            targetReservation.updateEndTime(request.getEndAt());
+        checkBusinessHour(request.getStartAt(), request.getEndAt(), targetReservation.getAuthority());
+      
+        targetReservation.updateStartTime(request.getStartAt());
+        targetReservation.updateEndTime(request.getEndAt());
 
 
         // 다른 기구로 예약 변경

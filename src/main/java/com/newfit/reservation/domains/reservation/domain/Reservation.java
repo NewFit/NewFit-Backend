@@ -69,15 +69,21 @@ public class Reservation extends BaseTimeEntity {
 
 
     public void updateStartTime(LocalDateTime startAt) {
-        this.startAt = startAt;
+        if (startAt != null) {
+            this.startAt = startAt;
+        }
     }
 
     public void updateEndTime(LocalDateTime endAt) {
-        this.endAt = endAt;
+        if (endAt != null) {
+            this.endAt = endAt;
+        }
     }
 
     public void updateRepetitionNumber(Long repetitionNumber) {
-        this.repetitionNumber = repetitionNumber;
+        if (repetitionNumber != null) {
+            this.repetitionNumber = repetitionNumber;
+        }
     }
 
     public void updateStartTagAt(LocalDateTime startTagAt) {
