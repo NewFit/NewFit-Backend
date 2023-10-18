@@ -99,8 +99,9 @@ public class RoutineService {
 
     // 해당 User의 Authority가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
     private void validateDuplicate(Authority authority, String routineName) {
-        routineRepository.findByAuthorityAndName(authority, routineName)
-                .orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
+        if (routineRepository.findByAuthorityAndName(authority, routineName).isPresent()) {
+            throw new CustomException(DUPLICATE_ROUTINE_NAME);
+        }
     }
 
     public RoutineReservationListResponse reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
