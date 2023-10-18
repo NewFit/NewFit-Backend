@@ -55,8 +55,12 @@ public class RoutineService {
     Routine의 이름을 업데이트하는 메소드입니다.
      */
     public void updateRoutine(Long routineId, String routineName) {
-        Routine findRoutine = findById(routineId);
-        findRoutine.updateName(routineName);
+        Routine routine = findById(routineId);
+
+        if (validateDuplicate(routine.getAuthority(), routineName)) {
+            throw new CustomException(DUPLICATE_ROUTINE_NAME);
+        }
+        routine.updateName(routineName);
     }
 
     // 특정 User의 Authority가 생성한 모든 Routine을 조회하고 Dto로 변환하여 반환합니다.
