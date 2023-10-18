@@ -144,7 +144,7 @@ public class AuthorityService {
     public EquipmentGymListResponse findAllInGym(Gym gym) {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
 
-        List<com.newfit.reservation.domains.authority.dto.response.EquipmentResponse> equipmentResponses = allByGym.stream()
+        List<EquipmentResponse> equipmentResponses = allByGym.stream()
                 .map(EquipmentResponse::new).toList();
 
         return new EquipmentGymListResponse(gym.getName(), allByGym.size(), equipmentResponses);
