@@ -6,8 +6,8 @@ import com.newfit.reservation.common.auth.oauth.OAuth2AuthorizationRequestCookie
 import com.newfit.reservation.common.auth.oauth.handler.OAuth2FailureHandler;
 import com.newfit.reservation.common.auth.oauth.handler.OAuth2SuccessHandler;
 import com.newfit.reservation.common.auth.oauth.OAuth2UserCustomService;
-import com.newfit.reservation.repository.UserRepository;
-import com.newfit.reservation.repository.auth.RefreshTokenRepository;
+import com.newfit.reservation.domains.auth.repository.RefreshTokenRepository;
+import com.newfit.reservation.domains.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

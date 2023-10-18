@@ -1,8 +1,8 @@
 package com.newfit.reservation.common.auth.oauth;
 
-import com.newfit.reservation.domain.auth.OAuthHistory;
-import com.newfit.reservation.domain.Provider;
-import com.newfit.reservation.repository.auth.OAuthHistoryRepository;
+import com.newfit.reservation.domains.auth.domain.OAuthHistory;
+import com.newfit.reservation.domains.auth.domain.Provider;
+import com.newfit.reservation.domains.auth.repository.OAuthHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

@@ -1,10 +1,10 @@
 package com.newfit.reservation.common.auth.jwt;
 
-import com.newfit.reservation.domain.User;
-import com.newfit.reservation.domain.auth.RefreshToken;
-import com.newfit.reservation.exception.CustomException;
-import com.newfit.reservation.repository.UserRepository;
-import com.newfit.reservation.repository.auth.RefreshTokenRepository;
+import com.newfit.reservation.common.exception.CustomException;
+import com.newfit.reservation.domains.auth.domain.RefreshToken;
+import com.newfit.reservation.domains.auth.repository.RefreshTokenRepository;
+import com.newfit.reservation.domains.user.domain.User;
+import com.newfit.reservation.domains.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
-import static com.newfit.reservation.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCode.*;
 
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {

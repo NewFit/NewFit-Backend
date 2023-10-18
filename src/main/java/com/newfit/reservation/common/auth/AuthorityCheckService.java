@@ -1,15 +1,15 @@
 package com.newfit.reservation.common.auth;
 
-import com.newfit.reservation.domain.Authority;
-import com.newfit.reservation.exception.CustomException;
-import com.newfit.reservation.repository.AuthorityRepository;
-import com.newfit.reservation.repository.UserRepository;
+import com.newfit.reservation.common.exception.CustomException;
+import com.newfit.reservation.domains.authority.domain.Authority;
+import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
+import com.newfit.reservation.domains.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
-import static com.newfit.reservation.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class AuthorityCheckService {
 
     public void validateByUserId(Authentication authentication, Long userId) {
         User principal = (User) authentication.getPrincipal();
-        com.newfit.reservation.domain.User user = userRepository.findById(userId)
+        com.newfit.reservation.domains.user.domain.User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         String nickname = principal.getUsername();

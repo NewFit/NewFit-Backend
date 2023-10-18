@@ -1,12 +1,12 @@
 package com.newfit.reservation.common.auth.jwt;
 
-import com.newfit.reservation.domain.Authority;
-import com.newfit.reservation.domain.Role;
-import com.newfit.reservation.domain.User;
-import com.newfit.reservation.domain.auth.RefreshToken;
-import com.newfit.reservation.exception.CustomException;
-import com.newfit.reservation.repository.AuthorityRepository;
-import com.newfit.reservation.repository.auth.RefreshTokenRepository;
+import com.newfit.reservation.common.exception.CustomException;
+import com.newfit.reservation.domains.auth.domain.RefreshToken;
+import com.newfit.reservation.domains.auth.repository.RefreshTokenRepository;
+import com.newfit.reservation.domains.authority.domain.Authority;
+import com.newfit.reservation.domains.authority.domain.Role;
+import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
+import com.newfit.reservation.domains.user.domain.User;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import static com.newfit.reservation.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
