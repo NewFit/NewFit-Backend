@@ -22,8 +22,8 @@ public class EquipmentService {
     이미 존재한다면 등록없이 반환.
      */
     public Equipment registerEquipment(Gym gym, String name, Purpose purpose) {
-        return equipmentRepository.findByGymAndNameAndPurpose(gym, name, purpose)
-                    .orElseGet(() -> equipmentRepository.save(Equipment.createEquipment(gym, name, purpose)));
+        checkExistingEquipment(gym, name, purpose);
+        return equipmentRepository.save(Equipment.createEquipment(gym, name, purpose));
     }
 
     private void checkExistingEquipment(Gym gym, String name, Purpose purpose) {
