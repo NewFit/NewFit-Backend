@@ -74,7 +74,6 @@ public class EquipmentGymService {
 
     public EquipmentGymListResponse findAllInGymByEquipment(Gym gym, Equipment equipment) {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGymAndEquipment(gym, equipment);
-
         List<EquipmentResponse> equipmentResponses = allByGym.stream()
                 .map(EquipmentResponse::new).toList();
 
