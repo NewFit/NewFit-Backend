@@ -8,8 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
+
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)  // AccessLevel을 PROTECTED로 제한합니다.
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserAndPendingListResponse {
 
@@ -31,12 +33,11 @@ public class UserAndPendingListResponse {
     }
 
     public static UserAndPendingListResponse createResponse(String gymName,
-                                                            List<UserAndPendingResponse> requests,
-                                                            List<UserAndPendingResponse> users) {
+                                                            Map<Boolean, List<UserAndPendingResponse>> usersMap) {
         return UserAndPendingListResponse.builder()
                 .gymName(gymName)
-                .requests(requests)
-                .users(users)
+                .requests(usersMap.get(false))
+                .users(usersMap.get(true))
                 .build();
     }
 }
