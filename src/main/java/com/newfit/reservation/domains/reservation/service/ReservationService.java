@@ -33,7 +33,8 @@ import static com.newfit.reservation.common.exception.ErrorCode.*;
 @RequiredArgsConstructor
 @Transactional
 public class ReservationService {
-
+    private final long MAX_HOUR_TERM = 2L;
+    private final long MAX_MINUTE = 30L;
     private final ReservationRepository reservationRepository;
     private final AuthorityRepository authorityRepository;
     private final EquipmentGymRepository equipmentGymRepository;
@@ -219,10 +220,6 @@ public class ReservationService {
     }
 
     private void validateReservationIn2Hours(LocalDateTime startAt, LocalDateTime endAt) {
-
-        final long MAX_HOUR_TERM = 2L;
-        final long MAX_MINUTE = 30L;
-
         LocalDateTime twoHourLater = now().plusHours(MAX_HOUR_TERM);
 
         if (startAt.isAfter(twoHourLater)) {
