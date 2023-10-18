@@ -89,8 +89,9 @@ public class ReservationService {
 
         // 예약 시간 변경
         validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
-        checkBusinessHour(request.getStartAt(), request.getEndAt(), targetReservation.getAuthority());
-      
+        Gym gym = authority.getGym();
+        gym.checkBusinessHour(request.getStartAt(), request.getEndAt());
+
         targetReservation.updateStartTime(request.getStartAt());
         targetReservation.updateEndTime(request.getEndAt());
 
