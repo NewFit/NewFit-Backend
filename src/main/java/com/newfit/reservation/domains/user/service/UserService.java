@@ -40,15 +40,9 @@ public class UserService {
     public void modify(Long userId, UserUpdateRequest request, HttpServletResponse response) {
         User updateUser = findOneById(userId);
 
-        if (request.getEmail() != null)
-            updateUser.updateEmail(request.getEmail());
-
-        if (request.getTel() != null)
-            updateUser.updateTel(request.getTel());
-
-        if (request.getUserProfileImage() != null)
-            updateUser.updateFilePath(request.getUserProfileImage());
-
+        updateUser.updateEmail(request.getEmail());
+        updateUser.updateTel(request.getTel());
+        updateUser.updateFilePath(request.getUserProfileImage());
         if (request.getNickname() != null) {
             String nickname = request.getNickname();
             validateDuplicateNickname(nickname);
