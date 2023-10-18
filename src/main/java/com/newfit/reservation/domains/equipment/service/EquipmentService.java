@@ -22,19 +22,8 @@ public class EquipmentService {
     이미 존재한다면 등록없이 반환.
      */
     public Equipment registerEquipment(Gym gym, String name, Purpose purpose) {
-        if (doesExists(gym, name, purpose)) {
-            return equipmentRepository.findByGymAndNameAndPurpose(gym, name, purpose)
-                    .orElseThrow(() -> new CustomException(EQUIPMENT_NOT_FOUND));
-        }
-        return equipmentRepository.save(Equipment.createEquipment(gym, name, purpose));
-    }
-
-    /*
-    registerEquipment 메서드에서 이미 존재하는 메서드인지 확인하기 위해 호출
-     */
-    public boolean doesExists(Gym gym, String name, Purpose purpose) {
-        // pk를 제외한 모든 것이 일치하는지 boolean으로 반환
-        return equipmentRepository.findByGymAndNameAndPurpose(gym, name, purpose).isPresent();
+        return equipmentRepository.findByGymAndNameAndPurpose(gym, name, purpose)
+                    .orElseGet(() -> equipmentRepository.save(Equipment.createEquipment(gym, name, purpose)));
     }
 
     /*
