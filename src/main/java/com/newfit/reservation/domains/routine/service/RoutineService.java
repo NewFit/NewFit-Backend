@@ -39,9 +39,7 @@ public class RoutineService {
     아니라면 새로운 Routine을 등록하고 그 Routine을 반환합니다.
      */
     public Routine registerRoutine(Authority authority, String routineName) {
-        if (validateDuplicate(authority, routineName))
-            throw new CustomException(DUPLICATE_ROUTINE_NAME);
-
+        validateDuplicate(authority, routineName);
         return routineRepository.save(Routine.createRoutine(authority, routineName));
     }
 
@@ -55,8 +53,9 @@ public class RoutineService {
     Routine의 이름을 업데이트하는 메소드입니다.
      */
     public void updateRoutine(Long routineId, String routineName) {
-        Routine findRoutine = findById(routineId);
-        findRoutine.updateName(routineName);
+        Routine routine = findById(routineId);
+        validateDuplicate(routine.getAuthority(), routineName);
+        routine.updateName(routineName);
     }
 
     // 특정 User의 Authority가 생성한 모든 Routine을 조회하고 Dto로 변환하여 반환합니다.
@@ -99,8 +98,10 @@ public class RoutineService {
     }
 
     // 해당 User의 Authority가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
-    private boolean validateDuplicate(Authority authority, String routineName) {
-        return routineRepository.findByAuthorityAndName(authority, routineName).isPresent();
+    private void validateDuplicate(Authority authority, String routineName) {
+        if (routineRepository.findByAuthorityAndName(authority, routineName).isPresent()) {
+            throw new CustomException(DUPLICATE_ROUTINE_NAME);
+        }
     }
 
     public RoutineReservationListResponse reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
