@@ -12,6 +12,7 @@ import com.newfit.reservation.domains.gym.domain.Gym;
 import com.newfit.reservation.domains.reservation.domain.Reservation;
 import com.newfit.reservation.domains.reservation.domain.Status;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationDetailResponse;
+import com.newfit.reservation.domains.reservation.dto.response.ReservationInfoResponse;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationUpdateRequest;
@@ -189,5 +190,14 @@ public class ReservationService {
         if (tagAt.isBefore(reservationStartAt.minusMinutes(5))) {
             throw new CustomException(INVALID_TAG_REQUEST, "예약 시작 5분 전부터 태그할 수 있습니다.");
         }
+    }
+
+    public ReservationInfoResponse getReservationInfo(Long reservationId) {
+        Reservation reservation = findById(reservationId);
+        Authority authority = reservation.getAuthority();
+        Gym gym = authority.getGym();
+        String gymName = gym.getName();
+
+        return ReservationInfoResponse.createResponse(gymName, reservation);
     }
 }
