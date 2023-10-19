@@ -79,24 +79,34 @@ public class ReservationService {
     public void update(Long reservationId, ReservationUpdateRequest request) {
         Reservation targetReservation = findById(reservationId);
         Authority authority = targetReservation.getAuthority();
+        Long equipmentGymId = request.getEquipmentGymId();
         LocalDateTime startAt = request.getStartAt();
         LocalDateTime endAt = request.getEndAt();
 
-        if (request.getEquipmentGymId() == null) {
-            validateTime(startAt, endAt, authority);
+        validateTime(startAt, endAt, authority);
+
+        if (equipmentGymId == null) {
             targetReservation.updateTime(startAt, endAt);
         } else {
-            equipmentGymChangeCase(request.getEquipmentGymId(), targetReservation, authority, startAt, endAt);
+            equipmentGymChangeCase(equipmentGymId, targetReservation, startAt, endAt);
         }
     }
 
-    private void equipmentGymChangeCase(Long equipmentGymId, Reservation targetReservation, Authority authority,
+    private void equipmentGymChangeCase(Long equipmentGymId, Reservation targetReservation,
                                         LocalDateTime startAt, LocalDateTime endAt) {
         EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId)
                 .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
-        reservationRepository.delete(targetReservation);
-        validateTime(startAt, endAt, authority);
-        Reservation.create(authority, equipmentGym, startAt, endAt);
+
+        validateUpdateTime(equipmentGymId, startAt, endAt);
+        targetReservation.updateEquipmentGym(equipmentGym);
+        targetReservation.updateTime(startAt, endAt);
+    }
+
+    private void validateUpdateTime(Long equipmentGymId, LocalDateTime startAt, LocalDateTime endAt) {
+        List<Reservation> reservations = reservationRepository.findAllByEquipmentGymIdIdAndStartAtAndEndAt(equipmentGymId, startAt, endAt);
+        if (!reservations.isEmpty()) {
+            throw new CustomException(INVALID_RESERVATION_REQUEST);
+        }
     }
 
     private void validateTime(LocalDateTime startAt, LocalDateTime endAt, Authority authority) {

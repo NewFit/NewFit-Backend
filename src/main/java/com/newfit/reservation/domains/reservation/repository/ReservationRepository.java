@@ -19,14 +19,25 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     Optional<Reservation> findByAuthorityAndEquipmentGym(Authority authority, EquipmentGym equipmentGym);
 
-    @Query(value = "select r from Reservation r " +
+    @Query(value = "select r.* from Reservation r " +
             "join authority a " +
             "on a.id=:authorityId " +
             "where ( " +
             "(:startAt BETWEEN r.start_at AND r.end_at) " +
             "OR (:endAt BETWEEN r.start_at AND r.end_at) " +
             "OR (:startAt <= r.start_at AND r.end_at <= :endAt));", nativeQuery = true)
-    List<Reservation> findAllByAuthorityIdAndStartAtAndEndAt(@Param("authorityId")Long authorityId,
+    List<Reservation> findAllByAuthorityIdAndStartAtAndEndAt(@Param("authorityId") Long authorityId,
+                                                             @Param("startAt") LocalDateTime startAt,
+                                                             @Param("endAt") LocalDateTime endAt);
+
+    @Query(value = "select r.* from Reservation r " +
+            "join equipment_gym eg " +
+            "on eg.id=:equipmentGymId " +
+            "where ( " +
+            "(:startAt BETWEEN r.start_at AND r.end_at) " +
+            "OR (:endAt BETWEEN r.start_at AND r.end_at) " +
+            "OR (:startAt <= r.start_at AND r.end_at <= :endAt));", nativeQuery = true)
+    List<Reservation> findAllByEquipmentGymIdIdAndStartAtAndEndAt(@Param("equipmentGymId") Long equipmentGymId,
                                                              @Param("startAt") LocalDateTime startAt,
                                                              @Param("endAt") LocalDateTime endAt);
 }
