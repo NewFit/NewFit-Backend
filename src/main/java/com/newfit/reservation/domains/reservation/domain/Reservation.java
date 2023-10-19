@@ -37,9 +37,6 @@ public class Reservation extends BaseTimeEntity {
     private LocalDateTime endAt;
 
     @Column(nullable = false)
-    private Long repetitionNumber;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -51,13 +48,11 @@ public class Reservation extends BaseTimeEntity {
     private Reservation(Authority authority,
                         EquipmentGym equipmentGym,
                         LocalDateTime startAt,
-                        LocalDateTime endAt,
-                        Long repetitionNumber) {
+                        LocalDateTime endAt) {
         this.authority = authority;
         this.equipmentGym = equipmentGym;
         this.startAt = startAt;
         this.endAt = endAt;
-        this.repetitionNumber = repetitionNumber;
         this.status = Status.WAITING;
         this.startTagAt = null;
     }
@@ -85,12 +80,6 @@ public class Reservation extends BaseTimeEntity {
         }
     }
 
-    public void updateRepetitionNumber(Long repetitionNumber) {
-        if (repetitionNumber != null) {
-            this.repetitionNumber = repetitionNumber;
-        }
-    }
-
     public void updateStartTagAt(LocalDateTime startTagAt) {
         if (this.startTagAt != null) {
             throw new CustomException(ALREADY_TAGGED_RESERVATION);
@@ -105,14 +94,12 @@ public class Reservation extends BaseTimeEntity {
     public static Reservation create(Authority authority,
                                      EquipmentGym equipmentGym,
                                      LocalDateTime startAt,
-                                     LocalDateTime endAt,
-                                     Long repetitionNumber) {
+                                     LocalDateTime endAt) {
         return Reservation.builder()
                 .authority(authority)
                 .equipmentGym(equipmentGym)
                 .startAt(startAt)
                 .endAt(endAt)
-                .repetitionNumber(repetitionNumber)
                 .build();
     }
 }

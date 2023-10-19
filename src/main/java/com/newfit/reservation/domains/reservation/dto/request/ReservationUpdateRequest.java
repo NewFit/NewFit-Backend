@@ -21,7 +21,4 @@ public class ReservationUpdateRequest {
     private LocalDateTime startAt;
     @Future
     private LocalDateTime endAt;
-
-    @Min(1)
-    private Long repetitionNumber;
 }

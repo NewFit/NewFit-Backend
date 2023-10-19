@@ -135,7 +135,7 @@ public class RoutineService {
             try {
                 EquipmentGym equipmentGym = equipmentGymRepository.findAvailableByEquipmentIdAndStartAtAndEndAt(equipmentId, startAt, endAt)
                         .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
-                Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt, 0L);
+                Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt);
                 reservationRepository.save(reservation);
                 return new RoutineReservationResponse(equipmentGym.getId(), true, startAt);
             } catch (CustomException exception) {

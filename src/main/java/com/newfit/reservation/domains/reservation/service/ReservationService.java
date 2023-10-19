@@ -50,7 +50,7 @@ public class ReservationService {
         // 사용 가능한 기구 하나를 가져옴
         EquipmentGym usedEquipment = equipmentGymRepository.findAvailableByEquipmentIdAndStartAtAndEndAt(equipmentId, request.getStartAt(), request.getEndAt())
                 .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
-        Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt(), request.getRepetitionNumber());
+        Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt());
 
         reservationRepository.save(reservation);
     }
