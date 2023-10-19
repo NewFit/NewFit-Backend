@@ -147,23 +147,6 @@ public class ReservationService {
         }
     }
 
-    /**
-     * 대상 기구의 예약 현황에 요청 시간이 중복되면 false 를 반환함
-     *
-     * @param equipmentGym 대상 특정 기구
-     * @param start        시작 시간
-     * @param end          종료 시간
-     */
-    private boolean validateReservationOverlap(EquipmentGym equipmentGym, LocalDateTime start, LocalDateTime end) {
-        return reservationRepository.findAllByEquipmentGym(equipmentGym)
-                .stream()
-                .filter(reservation ->
-                        reservation.overlapped(start, end)
-                )
-                .findAny()
-                .isEmpty();
-    }
-
     public void startUse(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
 
         Authority authority = authorityRepository.findById(authorityId).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
