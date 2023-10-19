@@ -67,14 +67,19 @@ public class Reservation extends BaseTimeEntity {
         this.equipmentGym = equipmentGym;
     }
 
+    public void updateTime(LocalDateTime startAt, LocalDateTime endAt) {
+        updateStartTime(startAt);
+        updateEndTime(endAt);
 
-    public void updateStartTime(LocalDateTime startAt) {
+    }
+
+    private void updateStartTime(LocalDateTime startAt) {
         if (startAt != null) {
             this.startAt = startAt;
         }
     }
 
-    public void updateEndTime(LocalDateTime endAt) {
+    private void updateEndTime(LocalDateTime endAt) {
         if (endAt != null) {
             this.endAt = endAt;
         }

@@ -6,6 +6,7 @@ import com.newfit.reservation.domains.reservation.domain.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,4 +18,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findAllByEquipmentGym(EquipmentGym equipmentGym);
 
     Optional<Reservation> findByAuthorityAndEquipmentGym(Authority authority, EquipmentGym equipmentGym);
+
+    @Query(value = "select r from Reservation r " +
+            "join authority a " +
+            "on a.id=:authorityId " +
+            "where ( " +
+            "(:startAt BETWEEN r.start_at AND r.end_at) " +
+            "OR (:endAt BETWEEN r.start_at AND r.end_at) " +
+            "OR (:startAt <= r.start_at AND r.end_at <= :endAt));", nativeQuery = true)
+    List<Reservation> findAllByAuthorityIdAndStartAtAndEndAt(@Param("authorityId")Long authorityId,
+                                                             @Param("startAt") LocalDateTime startAt,
+                                                             @Param("endAt") LocalDateTime endAt);
 }

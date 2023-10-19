@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ReservationUpdateRequest {
+    @Min(1)
+    private Long equipmentGymId;
     @Future
     private LocalDateTime startAt;
     @Future
