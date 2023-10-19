@@ -52,7 +52,7 @@ public class ReservationService {
         // 사용 가능한 기구 하나를 가져옴
         EquipmentGym usedEquipment = equipmentGymRepository.findAvailableByEquipmentIdAndStartAtAndEndAt(equipmentId, request.getStartAt(), request.getEndAt())
                 .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
-        Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt(), request.getRepetitionNumber());
+        Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt());
 
         reservationRepository.save(reservation);
     }
@@ -83,9 +83,6 @@ public class ReservationService {
         Authority authority = targetReservation.getAuthority();
 
         validateLastTagAt(authority);
-
-        // 예약 세트 횟수 변경
-        targetReservation.updateRepetitionNumber(request.getRepetitionNumber());
 
         // 예약 시간 변경
         validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
