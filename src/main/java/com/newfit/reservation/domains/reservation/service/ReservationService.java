@@ -11,6 +11,7 @@ import com.newfit.reservation.domains.equipment.repository.EquipmentGymRepositor
 import com.newfit.reservation.domains.gym.domain.Gym;
 import com.newfit.reservation.domains.reservation.domain.Reservation;
 import com.newfit.reservation.domains.reservation.domain.Status;
+import com.newfit.reservation.domains.reservation.dto.response.EquipmentGymsListResponse;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationDetailResponse;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationInfoResponse;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationListResponse;
@@ -199,5 +200,14 @@ public class ReservationService {
         String gymName = gym.getName();
 
         return ReservationInfoResponse.createResponse(gymName, reservation);
+    }
+
+    public EquipmentGymsListResponse getEquipmentsInfo(Long equipmentId) {
+        List<EquipmentGym> allByEquipment = equipmentGymRepository.findAllByEquipment(equipmentId);
+        List<EquipmentInfoResponse> equipmentGyms = allByEquipment.stream()
+                .map(this::getAllOccupiedTimes)
+                .toList();
+
+        return EquipmentGymsListResponse.createResponse(equipmentGyms);
     }
 }
