@@ -26,7 +26,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/reservation")
+@RequestMapping("/api/v1/reservations")
 @RequiredArgsConstructor
 public class ReservationApiController {
 
