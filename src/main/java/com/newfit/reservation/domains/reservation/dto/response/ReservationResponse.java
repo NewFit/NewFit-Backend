@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReservationResponse {
-    private Long id;
+    private Long reservationId;
 
-    public ReservationResponse(Long id) {
-        this.id = id;
+    public ReservationResponse(Long reservationId) {
+        this.reservationId = reservationId;
     }
 }
