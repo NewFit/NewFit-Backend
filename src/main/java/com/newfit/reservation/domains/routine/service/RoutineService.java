@@ -43,12 +43,6 @@ public class RoutineService {
         return routineRepository.save(Routine.createRoutine(authority, routineName));
     }
 
-    // id를 통해 Routine 객체를 조회합니다.
-    public Routine findById(Long routineId) {
-        return routineRepository.findById(routineId)
-                .orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
-    }
-
     /*
     Routine의 이름을 업데이트하는 메소드입니다.
      */
@@ -56,6 +50,13 @@ public class RoutineService {
         Routine routine = findById(routineId);
         validateDuplicate(routine.getAuthority(), routineName);
         routine.updateName(routineName);
+    }
+
+    // 해당 User의 Authority가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
+    private void validateDuplicate(Authority authority, String routineName) {
+        if (routineRepository.findByAuthorityAndName(authority, routineName).isPresent()) {
+            throw new CustomException(DUPLICATE_ROUTINE_NAME);
+        }
     }
 
     // 특정 User의 Authority가 생성한 모든 Routine을 조회하고 Dto로 변환하여 반환합니다.
@@ -95,13 +96,6 @@ public class RoutineService {
                 .map(RoutineDetailEquipmentResponse::new).toList();
 
         return RoutineDetailResponse.createResponse(findRoutine.getId(), findRoutine.getName(), equipments);
-    }
-
-    // 해당 User의 Authority가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
-    private void validateDuplicate(Authority authority, String routineName) {
-        if (routineRepository.findByAuthorityAndName(authority, routineName).isPresent()) {
-            throw new CustomException(DUPLICATE_ROUTINE_NAME);
-        }
     }
 
     public RoutineReservationListResponse reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
@@ -146,5 +140,11 @@ public class RoutineService {
         }
         // 찾지 못한 경우
         return new RoutineReservationResponse(null, false, null);
+    }
+
+    // id를 통해 Routine 객체를 조회합니다.
+    public Routine findById(Long routineId) {
+        return routineRepository.findById(routineId)
+                .orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
     }
 }
