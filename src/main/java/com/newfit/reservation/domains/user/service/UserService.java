@@ -64,7 +64,7 @@ public class UserService {
 
         // current Authority를 제외한 나머지 Authority들만 추출
         List<AuthorityGymResponse> authorityGyms = authorities.stream()
-                .filter(authorityIter -> !(authorityIter.getId().equals(authorityId)))
+                .filter(authorityIter -> !(authorityIter.equals(authority)))
                 .map(AuthorityGymResponse::new).toList();
 
         LocalDateTime now = LocalDateTime.now();
