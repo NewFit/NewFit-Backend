@@ -52,10 +52,14 @@ public class EquipmentRoutine {
     }
 
     public void updateSequence(Short sequence) {
-        this.sequence = sequence;
+        if (sequence != null) {
+            this.sequence = sequence;
+        }
     }
 
     public void updateDuration(Duration duration) {
-        this.duration = duration;
+        if (duration != null) {
+            this.duration = duration;
+        }
     }
 }
