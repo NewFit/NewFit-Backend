@@ -9,6 +9,8 @@ import com.newfit.reservation.domains.reservation.domain.Reservation;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.domains.reservation.dto.request.StartReservationRequest;
+import com.newfit.reservation.domains.reservation.dto.response.EquipmentGymsListResponse;
+import com.newfit.reservation.domains.reservation.dto.response.ReservationInfoResponse;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.domains.reservation.service.ReservationService;
 import com.newfit.reservation.domains.routine.dto.request.RoutineReservationRequest;
@@ -116,5 +118,21 @@ public class ReservationApiController {
         return ResponseEntity
                 .noContent()
                 .build();
+    }
+
+    @GetMapping("/{reservationId}")
+    public ResponseEntity<ReservationInfoResponse> getReservation(@PathVariable Long reservationId) {
+        ReservationInfoResponse reservationInfo = reservationService.getReservationInfo(reservationId);
+
+        return ResponseEntity
+                .ok(reservationInfo);
+    }
+
+    @GetMapping("/equipments/{equipmentId}")
+    public ResponseEntity<EquipmentGymsListResponse> getEquipmentsInfo(@PathVariable Long equipmentId) {
+        EquipmentGymsListResponse response = reservationService.getEquipmentsInfo(equipmentId);
+
+        return ResponseEntity
+                .ok(response);
     }
 }

@@ -62,14 +62,19 @@ public class Reservation extends BaseTimeEntity {
         this.equipmentGym = equipmentGym;
     }
 
+    public void updateTime(LocalDateTime startAt, LocalDateTime endAt) {
+        updateStartTime(startAt);
+        updateEndTime(endAt);
 
-    public void updateStartTime(LocalDateTime startAt) {
+    }
+
+    private void updateStartTime(LocalDateTime startAt) {
         if (startAt != null) {
             this.startAt = startAt;
         }
     }
 
-    public void updateEndTime(LocalDateTime endAt) {
+    private void updateEndTime(LocalDateTime endAt) {
         if (endAt != null) {
             this.endAt = endAt;
         }
@@ -85,17 +90,6 @@ public class Reservation extends BaseTimeEntity {
     public void updateStatus(Status status) {
         this.status = status;
     }
-
-    public boolean overlapped(LocalDateTime start, LocalDateTime end) {
-        boolean startBeforeEnd = this.startAt.isBefore(this.endAt)
-                && start.isBefore(end);
-
-        boolean isBefore = this.endAt.isBefore(start);
-        boolean isAfter = this.startAt.isAfter(end);
-
-        return !(startBeforeEnd && (isBefore || isAfter));
-    }
-
 
     public static Reservation create(Authority authority,
                                      EquipmentGym equipmentGym,
