@@ -204,7 +204,7 @@ public class ReservationService {
     }
 
     public EquipmentGymsListResponse getEquipmentsInfo(Long equipmentId) {
-        List<EquipmentGym> allByEquipment = equipmentGymRepository.findAllByEquipment(equipmentId);
+        List<EquipmentGym> allByEquipment = equipmentGymRepository.findAllByEquipment_Id(equipmentId);
         List<EquipmentInfoResponse> equipmentGyms = allByEquipment.stream()
                 .map(this::getAllOccupiedTimes)
                 .toList();

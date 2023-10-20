@@ -16,8 +16,7 @@ public interface EquipmentGymRepository extends JpaRepository<EquipmentGym, Long
 
     List<EquipmentGym> findAllByGymAndEquipment(Gym gym, Equipment equipment);
 
-    @Query("select e from EquipmentGym e where e.equipment.id=:equipmentId")
-    List<EquipmentGym> findAllByEquipment(@Param("equipmentId") Long equipmentId);
+    List<EquipmentGym> findAllByEquipment_Id(Long equipmentId);
 
     @Query(value = "select eg.* from Equipment_Gym eg " +
             "join Equipment e on eg.equipment_id=e.id " +
