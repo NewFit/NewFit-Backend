@@ -56,15 +56,13 @@ public class UserService {
         }
     }
 
-    public UserInfoResponse userDetail(String headerUserId, String headerAuthorityId) {
-        if (headerUserId != null) {
-            Long userId = Long.parseLong(headerUserId);
+    public UserInfoResponse userDetail(Long userId, Long authorityId) {
+        if (userId != null) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
             return UserInfoResponse.createResponse(user, 0L);
         }
 
-        Long authorityId = Long.parseLong(headerAuthorityId);
         Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         User user = authority.getUser();
