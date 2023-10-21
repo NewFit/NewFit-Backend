@@ -79,7 +79,7 @@ public class UserService {
 
         Long monthCredit = getMonthCredit(authority, now());
 
-        return UserAuthorityInfoResponse.createUserDetailResponse(user, monthCredit, current, authorityGyms);
+        return UserAuthorityInfoResponse.createResponse(user, monthCredit, current, authorityGyms);
     }
 
     private Long getMonthCredit(Authority authority, LocalDateTime now) {

@@ -29,10 +29,10 @@ public class UserAuthorityInfoResponse extends UserInfoResponse{
         this.authorityGymsCount = authorityGyms.size();
     }
 
-    public static UserAuthorityInfoResponse createUserDetailResponse(User user,
-                                                                     Long monthCredit,
-                                                                     AuthorityGymResponse current,
-                                                                     List<AuthorityGymResponse> authorityGyms) {
+    public static UserAuthorityInfoResponse createResponse(User user,
+                                                           Long monthCredit,
+                                                           AuthorityGymResponse current,
+                                                           List<AuthorityGymResponse> authorityGyms) {
         return UserAuthorityInfoResponse.builder()
                 .filePath(user.getFilePath())
                 .nickname(user.getNickname())
