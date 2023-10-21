@@ -5,7 +5,6 @@ import com.newfit.reservation.domains.user.dto.request.UserSignUpRequest;
 import com.newfit.reservation.domains.user.dto.request.UserUpdateRequest;
 import com.newfit.reservation.domains.user.dto.response.UserInfoResponse;
 import com.newfit.reservation.domains.user.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +35,9 @@ public class UserApiController {
     }
 
     @GetMapping
-    public ResponseEntity<UserInfoResponse> userDetail(HttpServletRequest request) {
-        UserInfoResponse response = userService.userDetail(request.getHeader("user-id"),
-                request.getHeader("authority-id"));
+    public ResponseEntity<UserInfoResponse> userDetail(@RequestHeader(value = "user-id", required = false) Long userId,
+                                                       @RequestHeader(value = "authority-id", required = false) Long authorityId) {
+        UserInfoResponse response = userService.userDetail(userId, authorityId);
         return ResponseEntity
                 .ok(response);
     }
