@@ -40,7 +40,7 @@ public class ManagerApiController {
                                                   @Valid @RequestBody RegisterEquipmentRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
         Gym gym = authorityService.getGymByAuthorityId(authorityId);
-        Equipment equipment = equipmentService.registerEquipment(gym, request.getName(), request.getPurposeType());
+        Equipment equipment = equipmentService.registerEquipment(gym, request.getName(), request.getPurpose());
         equipmentGymService.registerEquipmentInGym(equipment, gym, request.getCount(), request.getEquipmentGymNames());
 
         return ResponseEntity
@@ -68,7 +68,7 @@ public class ManagerApiController {
                                                          @PathVariable Long equipmentGymId,
                                                          @Valid @RequestBody UpdateConditionRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
-        equipmentGymService.updateCondition(equipmentGymId, request.getConditionType());
+        equipmentGymService.updateCondition(equipmentGymId, request.getCondition());
         return ResponseEntity
                 .noContent()
                 .build();

@@ -15,7 +15,7 @@ public class RoutineDetailEquipmentResponse {
 
     private final Long equipmentId;
     private final String name;
-    private final PurposeType purposeType;
+    private final PurposeType purpose;
 
     public RoutineDetailEquipmentResponse(Equipment equipment) {
         this(equipment.getId(), equipment.getName(), equipment.getPurposeType());

@@ -15,14 +15,14 @@ public class EquipmentResponse {
     private final Long equipmentId;
     private final Long equipmentGymId;
     private final String equipmentGymName;
-    private final PurposeType purposeType;
-    private final ConditionType conditionType;
+    private final PurposeType purpose;
+    private final ConditionType condition;
 
     public EquipmentResponse(EquipmentGym equipmentGym) {
         this.equipmentId = equipmentGym.getEquipment().getId();
         this.equipmentGymId = equipmentGym.getId();
         this.equipmentGymName = equipmentGym.getName();
-        this.purposeType = equipmentGym.getEquipment().getPurposeType();
-        this.conditionType = equipmentGym.getConditionType();
+        this.purpose = equipmentGym.getEquipment().getPurposeType();
+        this.condition = equipmentGym.getConditionType();
     }
 }

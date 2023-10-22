@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateConditionRequest {
     @NotNull
-    private ConditionType conditionType;
+    private ConditionType condition;
 }

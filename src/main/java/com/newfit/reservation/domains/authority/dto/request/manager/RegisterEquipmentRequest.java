@@ -19,7 +19,7 @@ public class RegisterEquipmentRequest {
     @NotBlank
     private String name;
 
-    private PurposeType purposeType;
+    private PurposeType purpose;
 
     @NotNull
     @Min(value = 1, message = "1개 이상의 기구를 등록해야 합니다.")
