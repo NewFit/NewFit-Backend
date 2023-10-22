@@ -13,7 +13,8 @@ import com.newfit.reservation.domains.user.domain.User;
 import com.newfit.reservation.domains.user.dto.request.UserSignUpRequest;
 import com.newfit.reservation.domains.user.dto.request.UserUpdateRequest;
 import com.newfit.reservation.domains.user.dto.response.AuthorityGymResponse;
-import com.newfit.reservation.domains.user.dto.response.UserDetailResponse;
+import com.newfit.reservation.domains.user.dto.response.UserAuthorityInfoResponse;
+import com.newfit.reservation.domains.user.dto.response.UserInfoResponse;
 import com.newfit.reservation.domains.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static java.time.LocalDateTime.now;
 
 @Slf4j
 @Service
@@ -54,12 +56,18 @@ public class UserService {
         }
     }
 
-    public UserDetailResponse userDetail(Long authorityId) {
+    public UserInfoResponse userDetail(Long userId, Long authorityId) {
+        if (userId != null) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+            return UserInfoResponse.createResponse(user, 0L);
+        }
+
         Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         User user = authority.getUser();
-        AuthorityGymResponse current = new AuthorityGymResponse(authority);
 
+        AuthorityGymResponse current = new AuthorityGymResponse(authority);
         List<Authority> authorities = user.getAuthorityList();
 
         // current Authority를 제외한 나머지 Authority들만 추출
@@ -67,17 +75,19 @@ public class UserService {
                 .filter(authorityIter -> !(authorityIter.equals(authority)))
                 .map(AuthorityGymResponse::new).toList();
 
-        LocalDateTime now = LocalDateTime.now();
+        Long monthCredit = getMonthCredit(authority, now());
 
-        Long monthCredit = creditRepository.findAllByAuthorityAndYearAndMonth(authority,
+        return UserAuthorityInfoResponse.createResponse(user, monthCredit, current, authorityGyms);
+    }
+
+    private Long getMonthCredit(Authority authority, LocalDateTime now) {
+        return creditRepository.findAllByAuthorityAndYearAndMonth(authority,
                         (short) now.getYear(),
                         (short) now.getMonthValue())
                 .stream()
                 .map(Credit::getAmount)
                 .findAny()
                 .orElse(0L);
-
-        return UserDetailResponse.createUserDetailResponse(user, monthCredit, current, authorityGyms);
     }
 
     public void drop(Long userId) {
