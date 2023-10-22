@@ -103,21 +103,11 @@ public class EquipmentRoutineService {
 
         List<UpdateEquipmentRequest> updateEquipments = request.getUpdateEquipments();
 
-        for (UpdateEquipmentRequest updateEquipment : updateEquipments) {
-
-            // 수정 사항을 반영할 EquipmentRoutine 객체를 allByRoutine에서 추출합니다.
+        updateEquipments.forEach(updateEquipment -> {
             EquipmentRoutine equipmentRoutine = extractUpdateTarget(updateEquipment, allByRoutine);
-
-            // 순서를 수정 시 실행.
-            if (updateEquipment.getSequence() != null) {
-                equipmentRoutine.updateSequence(updateEquipment.getSequence());
-            }
-
-            // 운동시간을 수정 시 실행.
-            if (updateEquipment.getDuration() != null) {
-                equipmentRoutine.updateDuration(Duration.ofMinutes(updateEquipment.getDuration()));
-            }
-        }
+            equipmentRoutine.updateSequence(updateEquipment.getSequence());
+            equipmentRoutine.updateDuration(Duration.ofMinutes(updateEquipment.getDuration()));
+        });
     }
 
     private void removeEquipmentRoutineInRoutine(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {
