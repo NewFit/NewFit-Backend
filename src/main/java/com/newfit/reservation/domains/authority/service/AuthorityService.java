@@ -3,7 +3,7 @@ package com.newfit.reservation.domains.authority.service;
 import com.newfit.reservation.common.auth.jwt.TokenProvider;
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.authority.domain.Authority;
-import com.newfit.reservation.domains.authority.domain.Role;
+import com.newfit.reservation.domains.authority.domain.RoleType;
 import com.newfit.reservation.domains.authority.dto.request.EntryRequest;
 import com.newfit.reservation.domains.authority.dto.response.*;
 import com.newfit.reservation.domains.authority.dto.response.manager.UserAndPendingListResponse;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Slf4j
 @Service
@@ -84,7 +84,7 @@ public class AuthorityService {
     accepted 컬럼값을 true로 업데이트 합니다. 그 다음에 업데이트 결과를 반환할 Dto를 생성후 반환합니다.
      */
     public void acceptUser(Long userId, Long gymId) {
-        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, Role.USER);
+        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, RoleType.USER);
         if (authority == null)
             throw new CustomException(AUTHORITY_NOT_FOUND);
         if (authority.getAccepted())

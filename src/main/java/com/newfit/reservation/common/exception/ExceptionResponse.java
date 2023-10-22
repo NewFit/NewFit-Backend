@@ -21,9 +21,9 @@ public class ExceptionResponse {
     @Builder(access = AccessLevel.PRIVATE)
     private ExceptionResponse(CustomException exception) {
         this.timestamp = LocalDateTime.now();
-        this.code = exception.getErrorCode().getStatusCode();
-        this.error = exception.getErrorCode().name();
-        this.message = exception.getErrorCode().getMessage();
+        this.code = exception.getErrorCodeType().getStatusCode();
+        this.error = exception.getErrorCodeType().name();
+        this.message = exception.getErrorCodeType().getMessage();
         this.notice = exception.getNotice();
     }
 

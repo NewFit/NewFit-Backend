@@ -10,7 +10,7 @@ import com.newfit.reservation.domains.equipment.dto.response.OccupiedTime;
 import com.newfit.reservation.domains.equipment.repository.EquipmentGymRepository;
 import com.newfit.reservation.domains.gym.domain.Gym;
 import com.newfit.reservation.domains.reservation.domain.Reservation;
-import com.newfit.reservation.domains.reservation.domain.Status;
+import com.newfit.reservation.domains.reservation.domain.StatusType;
 import com.newfit.reservation.domains.reservation.dto.response.EquipmentGymsListResponse;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationDetailResponse;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationInfoResponse;
@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.time.LocalDateTime.*;
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -149,7 +149,7 @@ public class ReservationService {
     }
 
     public void updateStatusAndCondition(Reservation reservation) {
-        reservation.updateStatus(Status.COMPLETED);
+        reservation.updateStatus(StatusType.COMPLETED);
         reservation.getEquipmentGym().restore();
     }
 
@@ -180,7 +180,7 @@ public class ReservationService {
 
     private void updateReservation(Reservation reservation, LocalDateTime tagAt) {
         reservation.updateStartTagAt(tagAt);
-        reservation.updateStatus(Status.PROCESSING);
+        reservation.updateStatus(StatusType.PROCESSING);
     }
 
 

@@ -1,6 +1,6 @@
 package com.newfit.reservation.domains.reservation.domain;
 
-public enum Status {
+public enum StatusType {
     WAITING,
     PROCESSING,
     COMPLETED,

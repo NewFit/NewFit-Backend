@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Purpose {
+public enum PurposeType {
     AEROBIC("유산소"),
     ARM("팔"),
     BACK("등"),

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static com.newfit.reservation.common.exception.ErrorCode.INVALID_RESERVATION_REQUEST;
+import static com.newfit.reservation.common.exception.ErrorCodeType.INVALID_RESERVATION_REQUEST;
 
 @Entity
 @Getter

@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
-import static com.newfit.reservation.common.exception.ErrorCode.ALREADY_TAGGED_RESERVATION;
+import static com.newfit.reservation.common.exception.ErrorCodeType.ALREADY_TAGGED_RESERVATION;
 
 @Getter
 @Entity
@@ -38,7 +38,7 @@ public class Reservation extends BaseTimeEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private StatusType statusType;
 
     @Column(name = "start_tag_at")
     private LocalDateTime startTagAt;
@@ -53,7 +53,7 @@ public class Reservation extends BaseTimeEntity {
         this.equipmentGym = equipmentGym;
         this.startAt = startAt;
         this.endAt = endAt;
-        this.status = Status.WAITING;
+        this.statusType = StatusType.WAITING;
         this.startTagAt = null;
     }
 
@@ -87,8 +87,8 @@ public class Reservation extends BaseTimeEntity {
         this.startTagAt = startTagAt;
     }
 
-    public void updateStatus(Status status) {
-        this.status = status;
+    public void updateStatus(StatusType statusType) {
+        this.statusType = statusType;
     }
 
     public static Reservation create(Authority authority,
