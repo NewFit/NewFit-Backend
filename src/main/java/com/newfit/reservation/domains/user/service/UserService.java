@@ -92,9 +92,7 @@ public class UserService {
 
     public void drop(Long userId, String email) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
-        if (!user.getEmail().equals(email)) {
-            throw new CustomException(USER_EMAIL_VERIFICATION_FAIL);
-        }
+        user.verifyByEmail(email);
         userRepository.delete(user);
     }
 
