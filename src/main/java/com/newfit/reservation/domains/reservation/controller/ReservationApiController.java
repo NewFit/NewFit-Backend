@@ -38,10 +38,10 @@ public class ReservationApiController {
     private final ReservationService reservationService;
     private final RoutineService routineService;
 
-    @PostMapping
+    @PostMapping("/{equipmentId}")
     public ResponseEntity<Void> reserve(Authentication authentication,
                                         @RequestHeader("authority-id") Long authorityId,
-                                        @RequestParam(value = "equipment_id") Long equipmentId,
+                                        @PathVariable("equipmentId") Long equipmentId,
                                         @Valid @RequestBody ReservationRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
         reservationService.reserve(authorityId, equipmentId, request);
