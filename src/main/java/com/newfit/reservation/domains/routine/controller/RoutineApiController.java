@@ -102,8 +102,8 @@ public class RoutineApiController {
     특정 Routine에 대한 세부사항을 반환하는 메소드
      */
     @GetMapping("/{routineId}")
-    public ResponseEntity<RoutineDetailResponse> findRoutineDetail(@PathVariable("routineId") Long id) {
-        RoutineDetailResponse routineDetail = routineService.findRoutineDetail(id);
+    public ResponseEntity<RoutineDetailResponse> findRoutineDetail(@PathVariable("routineId") Long routineId) {
+        RoutineDetailResponse routineDetail = routineService.findRoutineDetail(routineId);
         return ResponseEntity
                 .ok(routineDetail);
     }
