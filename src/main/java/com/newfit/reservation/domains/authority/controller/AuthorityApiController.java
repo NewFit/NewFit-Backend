@@ -54,7 +54,7 @@ public class AuthorityApiController {
                 .build();
     }
 
-    @GetMapping("/reservation")
+    @GetMapping("/reservations")
     public ResponseEntity<ReservationListResponse> listReservation(@RequestHeader("authority-id") Long authorityId) {
 
         ReservationListResponse reservationListResponse = authorityService.listAuthorityReservation(authorityId);
