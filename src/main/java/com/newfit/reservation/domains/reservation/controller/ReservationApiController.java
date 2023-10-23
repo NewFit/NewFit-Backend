@@ -58,10 +58,10 @@ public class ReservationApiController {
                 .ok(reservationListResponse);
     }
 
-    @PatchMapping
+    @PatchMapping("/{reservationId}")
     public ResponseEntity<Void> updateReservation(Authentication authentication,
                                                   @RequestHeader("authority-id") Long authorityId,
-                                                  @RequestParam("reservation_id") Long reservationId,
+                                                  @PathVariable("reservationId") Long reservationId,
                                                   @Valid @RequestBody ReservationUpdateRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
         reservationService.update(reservationId, request);
