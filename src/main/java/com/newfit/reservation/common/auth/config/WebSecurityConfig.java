@@ -3,10 +3,11 @@ package com.newfit.reservation.common.auth.config;
 import com.newfit.reservation.common.auth.jwt.TokenAuthenticationFilter;
 import com.newfit.reservation.common.auth.jwt.TokenProvider;
 import com.newfit.reservation.common.auth.oauth.OAuth2AuthorizationRequestCookieRepository;
+import com.newfit.reservation.common.auth.oauth.OAuth2UserCustomService;
 import com.newfit.reservation.common.auth.oauth.handler.OAuth2FailureHandler;
 import com.newfit.reservation.common.auth.oauth.handler.OAuth2SuccessHandler;
-import com.newfit.reservation.common.auth.oauth.OAuth2UserCustomService;
 import com.newfit.reservation.domains.auth.repository.RefreshTokenRepository;
+import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
 import com.newfit.reservation.domains.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class WebSecurityConfig {
 
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
+    private final AuthorityRepository authorityRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuth2UserCustomService oAuth2UserCustomService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
@@ -79,7 +81,7 @@ public class WebSecurityConfig {
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
-        return new TokenAuthenticationFilter(tokenProvider, refreshTokenRepository, userRepository);
+        return new TokenAuthenticationFilter(tokenProvider, refreshTokenRepository, userRepository, authorityRepository);
     }
 
     @Bean
