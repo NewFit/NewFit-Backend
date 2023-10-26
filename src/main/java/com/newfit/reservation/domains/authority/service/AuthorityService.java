@@ -49,7 +49,7 @@ public class AuthorityService {
 
         Authority authority = authorityRepository.save(Authority.createAuthority(user, gym));
 
-        response.setHeader("authority-id", authority.getId().toString());
+        response.setHeader("authority-id", String.valueOf(authority.getId()));
     }
 
     public void delete(Long authorityId, HttpServletResponse response) {
