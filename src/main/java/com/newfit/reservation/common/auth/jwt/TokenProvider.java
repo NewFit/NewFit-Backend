@@ -89,7 +89,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
                 .getToken();
     }
 
-    public void validAccessToken(String token, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void validAccessToken(String token, HttpServletRequest request, HttpServletResponse response) {
         validToken(token);
         try {
             checkAuthorityIdList(token, request);
