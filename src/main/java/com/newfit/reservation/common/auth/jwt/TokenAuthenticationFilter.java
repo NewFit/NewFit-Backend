@@ -24,6 +24,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     // 수신한 JWT가 Bearer 타입인지 체크하기 위한 필드
     private final static String BEARER = "Bearer ";
+
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
@@ -39,7 +40,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = reIssueAccessToken(token);
             response.setHeader("access-token", accessToken);
         } else if (request.getHeader("authority-id") != null) {
-            tokenProvider.validAccessToken(token, request);
+            tokenProvider.validAccessToken(token, request, response);
             Authentication authentication = tokenProvider.getAuthentication(token, request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
