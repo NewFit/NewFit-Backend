@@ -1,6 +1,7 @@
 package com.newfit.reservation.domains.user.controller;
 
 import com.newfit.reservation.common.auth.AuthorityCheckService;
+import com.newfit.reservation.domains.user.dto.request.UserDropRequest;
 import com.newfit.reservation.domains.user.dto.request.UserSignUpRequest;
 import com.newfit.reservation.domains.user.dto.request.UserUpdateRequest;
 import com.newfit.reservation.domains.user.dto.response.UserInfoResponse;
@@ -44,9 +45,10 @@ public class UserApiController {
 
     @DeleteMapping
     public ResponseEntity<Void> drop(Authentication authentication,
-                                     @RequestHeader(value = "user-id") Long userId) {
+                                     @RequestHeader(value = "user-id") Long userId,
+                                     @Valid @RequestBody UserDropRequest request) {
         authorityCheckService.validateByUserId(authentication, userId);
-        userService.drop(userId);
+        userService.drop(userId, request.getEmail());
         return ResponseEntity
                 .noContent()
                 .build();

@@ -38,6 +38,9 @@ public enum ErrorCodeType {
     ALREADY_EXISTING_EQUIPMENT(HttpStatus.CONFLICT, "이미 존재하는 기구입니다."),
     MAXIMUM_CREDIT_LIMIT(HttpStatus.CONFLICT, "일일 크레딧 획득량을 모두 채웠습니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "중복된 닉네임입니다."),
+    AUTHORITY_ID_LIST_OUTDATED(HttpStatus.CONFLICT, "토큰의 AuthorityIdList에 변경 사항이 있습니다"),
+    USER_EMAIL_VERIFICATION_FAIL(HttpStatus.CONFLICT, "이메일이 일치하지 않습니다."),
+
 
     // 500 INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러입니다.");

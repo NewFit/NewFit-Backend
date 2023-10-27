@@ -90,8 +90,10 @@ public class UserService {
                 .orElse(0L);
     }
 
-    public void drop(Long userId) {
-        userRepository.deleteById(userId);
+    public void drop(Long userId, String email) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        user.verifyByEmail(email);
+        userRepository.delete(user);
     }
 
     public User findOneById(Long userId) {

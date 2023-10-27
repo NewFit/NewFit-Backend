@@ -48,11 +48,8 @@ public class AuthorityService {
                 .orElseThrow(() -> new CustomException(GYM_NOT_FOUND));
 
         Authority authority = authorityRepository.save(Authority.createAuthority(user, gym));
-        user.getAuthorityList().add(authority);
 
-        String accessToken = tokenProvider.generateAccessToken(user);
-        log.info("AuthorityRegister.accessToken = {}", accessToken);
-        response.setHeader("access-token", accessToken);
+        response.setHeader("authority-id", String.valueOf(authority.getId()));
     }
 
     public void delete(Long authorityId, HttpServletResponse response) {

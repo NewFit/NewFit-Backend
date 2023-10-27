@@ -38,10 +38,10 @@ public class ReservationApiController {
     private final ReservationService reservationService;
     private final RoutineService routineService;
 
-    @PostMapping
+    @PostMapping("/{equipmentId}")
     public ResponseEntity<Void> reserve(Authentication authentication,
                                         @RequestHeader("authority-id") Long authorityId,
-                                        @RequestParam(value = "equipment_id") Long equipmentId,
+                                        @PathVariable("equipmentId") Long equipmentId,
                                         @Valid @RequestBody ReservationRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
         reservationService.reserve(authorityId, equipmentId, request);
@@ -58,10 +58,10 @@ public class ReservationApiController {
                 .ok(reservationListResponse);
     }
 
-    @PatchMapping
+    @PatchMapping("/{reservationId}")
     public ResponseEntity<Void> updateReservation(Authentication authentication,
                                                   @RequestHeader("authority-id") Long authorityId,
-                                                  @RequestParam("reservation_id") Long reservationId,
+                                                  @PathVariable("reservationId") Long reservationId,
                                                   @Valid @RequestBody ReservationUpdateRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
         reservationService.update(reservationId, request);
