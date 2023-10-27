@@ -1,6 +1,6 @@
 package com.newfit.reservation.domains.equipment.domain;
 
-public enum Condition {
+public enum ConditionType {
     AVAILABLE,
     OCCUPIED,
     DISABLED

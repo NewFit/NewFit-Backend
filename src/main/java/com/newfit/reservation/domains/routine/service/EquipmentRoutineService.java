@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Service
 @RequiredArgsConstructor

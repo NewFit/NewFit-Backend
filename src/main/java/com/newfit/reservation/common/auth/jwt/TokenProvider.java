@@ -4,7 +4,7 @@ import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.auth.domain.RefreshToken;
 import com.newfit.reservation.domains.auth.repository.RefreshTokenRepository;
 import com.newfit.reservation.domains.authority.domain.Authority;
-import com.newfit.reservation.domains.authority.domain.Role;
+import com.newfit.reservation.domains.authority.domain.RoleType;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
 import com.newfit.reservation.domains.user.domain.User;
 import com.newfit.reservation.domains.user.repository.UserRepository;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.*;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Slf4j
 @Service
@@ -98,7 +98,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
     }
 
     private void checkExceptionAndProceed(HttpServletResponse response, CustomException exception, Long userId){
-        if (!exception.getErrorCode().equals(AUTHORITY_ID_LIST_OUTDATED)) {
+        if (!exception.getErrorCodeType().equals(AUTHORITY_ID_LIST_OUTDATED)) {
             throw exception;
         }
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
@@ -151,7 +151,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
         Claims claims = getClaims(token);
         Authority authority = authorityRepository.findById(extractAuthorityId(request))
                 .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
-        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(authority.getRole().getDescription()));
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(authority.getRoleType().getDescription()));
 
         return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
     }
@@ -162,7 +162,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
      */
     public Authentication getAnonymousAuthentication(String token) {
         Claims claims = getClaims(token);
-        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.GUEST.getDescription()));
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(RoleType.GUEST.getDescription()));
 
         if (claims.getSubject() != null) {
             return new UsernamePasswordAuthenticationToken(

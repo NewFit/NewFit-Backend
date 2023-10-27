@@ -21,7 +21,7 @@ public class CustomExceptionHandlingFilter extends OncePerRequestFilter {
         } catch (CustomException exception) {
             ExceptionResponse exceptionResponse = ExceptionResponse.create(exception);
             response.setContentType("application/json;charset=utf-8");
-            response.setStatus(exception.getErrorCode().getStatusCode());
+            response.setStatus(exception.getErrorCodeType().getStatusCode());
             objectMapper.writeValue(response.getWriter(), exceptionResponse);
         }
     }

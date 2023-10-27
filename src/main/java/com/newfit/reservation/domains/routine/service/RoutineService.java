@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Service
 @RequiredArgsConstructor

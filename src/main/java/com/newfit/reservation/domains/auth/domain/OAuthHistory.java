@@ -15,7 +15,7 @@ public class OAuthHistory { // OAuth2 인증을 통해 얻어온 사용자 정�
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Provider provider;
+    private ProviderType providerType;
 
     // Google의 경우 sub값, Kakao의 경우 id값을 담는 필드
     @Column(nullable = false)
@@ -28,16 +28,16 @@ public class OAuthHistory { // OAuth2 인증을 통해 얻어온 사용자 정�
     private User user;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private OAuthHistory(Provider provider, String attributeName) {
-        this.provider = provider;
+    private OAuthHistory(ProviderType providerType, String attributeName) {
+        this.providerType = providerType;
         this.attributeName = attributeName;
         this.signup = false;
         this.user = null;
     }
 
-    public static OAuthHistory createOAuthHistory(Provider provider, String attributeName) {
+    public static OAuthHistory createOAuthHistory(ProviderType providerType, String attributeName) {
         return OAuthHistory.builder()
-                .provider(provider)
+                .providerType(providerType)
                 .attributeName(attributeName)
                 .build();
     }
@@ -46,8 +46,8 @@ public class OAuthHistory { // OAuth2 인증을 통해 얻어온 사용자 정�
         return id;
     }
 
-    public Provider getProvider() {
-        return provider;
+    public ProviderType getProviderType() {
+        return providerType;
     }
 
     public String getAttributeName() {

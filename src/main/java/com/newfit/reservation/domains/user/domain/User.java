@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.newfit.reservation.common.exception.ErrorCode.USER_EMAIL_VERIFICATION_FAIL;
+import static com.newfit.reservation.common.exception.ErrorCodeType.USER_EMAIL_VERIFICATION_FAIL;
 
 @Entity
 @Getter

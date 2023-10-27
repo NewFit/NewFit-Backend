@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 import static java.time.LocalDateTime.now;
 
 @Service

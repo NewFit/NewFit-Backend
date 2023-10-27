@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum ErrorCode {
+public enum ErrorCodeType {
 
 
     // 400 BAD_REQUEST
@@ -49,7 +49,7 @@ public enum ErrorCode {
     private final int statusCode;
     private final String message;
 
-    ErrorCode(HttpStatus status, String message) {
+    ErrorCodeType(HttpStatus status, String message) {
         this.name = status.name();
         this.statusCode = status.value();
         this.message = message;

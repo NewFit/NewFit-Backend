@@ -2,14 +2,14 @@ package com.newfit.reservation.domains.equipment.service;
 
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.equipment.domain.Equipment;
-import com.newfit.reservation.domains.equipment.domain.Purpose;
+import com.newfit.reservation.domains.equipment.domain.PurposeType;
 import com.newfit.reservation.domains.equipment.repository.EquipmentRepository;
 import com.newfit.reservation.domains.gym.domain.Gym;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +21,13 @@ public class EquipmentService {
     Equipment를 새로 등록.
     이미 존재한다면 등록없이 반환.
      */
-    public Equipment registerEquipment(Gym gym, String name, Purpose purpose) {
-        checkExistingEquipment(gym, name, purpose);
-        return equipmentRepository.save(Equipment.createEquipment(gym, name, purpose));
+    public Equipment registerEquipment(Gym gym, String name, PurposeType purposeType) {
+        checkExistingEquipment(gym, name, purposeType);
+        return equipmentRepository.save(Equipment.createEquipment(gym, name, purposeType));
     }
 
-    private void checkExistingEquipment(Gym gym, String name, Purpose purpose) {
-        if (equipmentRepository.findByGymAndNameAndPurpose(gym, name, purpose).isPresent()) {
+    private void checkExistingEquipment(Gym gym, String name, PurposeType purposeType) {
+        if (equipmentRepository.findByGymAndNameAndPurposeType(gym, name, purposeType).isPresent()) {
             throw new CustomException(ALREADY_EXISTING_EQUIPMENT);
         }
     }

@@ -39,7 +39,7 @@ public class Authority extends BaseTimeEntity {
     // Role 이라는 Enum 을 새로 정의했습니다.
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private RoleType roleType;
 
     // 해당 사용자의 승인 여부를 나타냅니다.
     @Column(nullable = false)
@@ -94,7 +94,7 @@ public class Authority extends BaseTimeEntity {
         this.user = user;
         this.gym = gym;
         this.accepted = false;
-        this.role = Role.USER;
+        this.roleType = RoleType.USER;
         this.creditAcquisitionCount = 0;
     }
 

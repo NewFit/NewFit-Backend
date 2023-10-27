@@ -1,10 +1,10 @@
 package com.newfit.reservation.domains.equipment.service;
 
 import com.newfit.reservation.common.exception.CustomException;
-import com.newfit.reservation.domains.equipment.domain.Condition;
+import com.newfit.reservation.domains.equipment.domain.ConditionType;
 import com.newfit.reservation.domains.equipment.domain.Equipment;
 import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
-import com.newfit.reservation.domains.equipment.domain.Purpose;
+import com.newfit.reservation.domains.equipment.domain.PurposeType;
 import com.newfit.reservation.domains.equipment.dto.response.EquipmentGymListResponse;
 import com.newfit.reservation.domains.equipment.dto.response.EquipmentResponse;
 import com.newfit.reservation.domains.equipment.repository.EquipmentGymRepository;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,9 +52,9 @@ public class EquipmentGymService {
     /*
     EquipmentGym의 Condition을 수정
      */
-    public void updateCondition(Long equipmentGymId, Condition condition) {
+    public void updateCondition(Long equipmentGymId, ConditionType conditionType) {
         EquipmentGym equipmentGym = findOneById(equipmentGymId);
-        equipmentGym.updateCondition(condition);
+        equipmentGym.updateCondition(conditionType);
     }
 
     /*
@@ -64,8 +64,8 @@ public class EquipmentGymService {
         equipmentGymRepository.deleteById(equipmentGymId);
     }
 
-    public EquipmentGymListResponse findAllInGymByPurpose(Gym gym, Purpose purpose) {
-        List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGymAndPurpose(gym.getId(), purpose.toString());
+    public EquipmentGymListResponse findAllInGymByPurpose(Gym gym, PurposeType purposeType) {
+        List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGymAndPurpose(gym.getId(), purposeType.toString());
         List<EquipmentResponse> equipmentResponses = allByGym.stream()
                 .map(EquipmentResponse::new).toList();
 
