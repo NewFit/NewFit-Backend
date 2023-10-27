@@ -1,5 +1,6 @@
 package com.newfit.reservation.domains.user.domain;
 
+import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.common.model.BaseTimeEntity;
 import com.newfit.reservation.domains.auth.domain.OAuthHistory;
 import com.newfit.reservation.domains.authority.domain.Authority;
@@ -15,6 +16,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.newfit.reservation.common.exception.ErrorCode.USER_EMAIL_VERIFICATION_FAIL;
 
 @Entity
 @Getter
@@ -107,6 +110,12 @@ public class User extends BaseTimeEntity {
                 .map(authority -> authority.getTermCredit(term))
                 .mapToLong(Long::longValue)
                 .sum();
+    }
+
+    public void verifyByEmail(String email) {
+        if (!email.equals(this.email)) {
+            throw new CustomException(USER_EMAIL_VERIFICATION_FAIL);
+        }
     }
 
     @Builder(access = AccessLevel.PRIVATE)

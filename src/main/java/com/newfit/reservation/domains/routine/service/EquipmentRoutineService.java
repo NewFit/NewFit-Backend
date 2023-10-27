@@ -80,10 +80,10 @@ public class EquipmentRoutineService {
         // patch 로직 실행 => 삭제, 수정, 새로운 기구 등록 순
         removeEquipmentRoutineInRoutine(request, allByRoutine);
         modifyEquipmentRoutineInRoutine(request, allByRoutine);
-        addEquipRoutineInRoutine(routine, request);
+        addEquipmentRoutineInRoutine(routine, request);
     }
 
-    private void addEquipRoutineInRoutine(Routine routine, UpdateRoutineRequest request) {
+    private void addEquipmentRoutineInRoutine(Routine routine, UpdateRoutineRequest request) {
         if (!request.getAddEquipments().isEmpty()) {
             List<AddEquipmentRequest> addEquipments = request.getAddEquipments();
 
