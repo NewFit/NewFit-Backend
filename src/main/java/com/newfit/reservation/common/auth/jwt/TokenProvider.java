@@ -98,7 +98,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
     }
 
     private void checkExceptionAndProceed(HttpServletResponse response, CustomException exception, Long userId){
-        if (!exception.getErrorCode().equals(AUTHORITY_ID_LIST_OUTDATED)) {
+        if (!exception.getErrorCodeType().equals(AUTHORITY_ID_LIST_OUTDATED)) {
             throw exception;
         }
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
