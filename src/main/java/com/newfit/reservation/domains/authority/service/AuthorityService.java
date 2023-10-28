@@ -13,7 +13,10 @@ import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
 import com.newfit.reservation.domains.equipment.repository.EquipmentGymRepository;
 import com.newfit.reservation.domains.gym.domain.Gym;
 import com.newfit.reservation.domains.gym.repository.GymRepository;
+import com.newfit.reservation.domains.reservation.domain.Reservation;
 import com.newfit.reservation.domains.reservation.repository.ReservationRepository;
+import com.newfit.reservation.domains.routine.domain.Routine;
+import com.newfit.reservation.domains.routine.repository.RoutineRepository;
 import com.newfit.reservation.domains.user.domain.User;
 import com.newfit.reservation.domains.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,6 +42,7 @@ public class AuthorityService {
     private final ReservationRepository reservationRepository;
     private final TokenProvider tokenProvider;
     private final EquipmentGymRepository equipmentGymRepository;
+    private final RoutineRepository routineRepository;
 
     public void register(Long userId, Long gymId, HttpServletResponse response) {
 
@@ -55,13 +59,27 @@ public class AuthorityService {
     public void delete(Long authorityId, HttpServletResponse response) {
         Authority authority = authorityRepository.findById(authorityId).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         User user = authority.getUser();
-
         user.getAuthorityList().remove(authority);
+
+        deleteRelatedRoutines(authority);
+        deleteRelationWithReservation(authorityId);
+
         authorityRepository.delete(authority);
 
         String accessToken = tokenProvider.generateAccessToken(user);
         log.info("AuthorityDelete.accessToken = {}", accessToken);
         response.setHeader("access-token", accessToken);
+    }
+
+    private void deleteRelationWithReservation(Long authorityId) {
+        List<Reservation> reservations = reservationRepository.findAllByAuthorityId(authorityId);
+        reservations.forEach(Reservation::removeAuthority);
+        reservationRepository.saveAllAndFlush(reservations);
+    }
+
+    private void deleteRelatedRoutines(Authority authority) {
+        List<Routine> routines = routineRepository.findAllByAuthority(authority);
+        routineRepository.deleteAll(routines);
     }
 
     public GymListResponse listRegistration(Long authorityId) {
