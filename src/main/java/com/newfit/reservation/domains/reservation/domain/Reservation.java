@@ -57,6 +57,9 @@ public class Reservation extends BaseTimeEntity {
         this.startTagAt = null;
     }
 
+    public void removeAuthority() {
+        this.authority = null;
+    }
 
     public void updateEquipmentGym(EquipmentGym equipmentGym) {
         this.equipmentGym = equipmentGym;
