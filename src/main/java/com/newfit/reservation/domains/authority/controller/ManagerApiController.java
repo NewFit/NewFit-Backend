@@ -93,11 +93,11 @@ public class ManagerApiController {
     특정 EquipmentGym 삭제
      */
     @DeleteMapping("/equipment-gym")
-    public ResponseEntity<Void> deleteEquipmentGym(Authentication authentication,
+    public ResponseEntity<Void> deactivateEquipmentGym(Authentication authentication,
                                                    @RequestHeader("authority-id") Long authorityId,
                                                    @Valid @RequestBody DeleteEquipmentGymRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
-        equipmentGymService.deleteEquipmentGym(request.getEquipmentGymId());
+        equipmentGymService.deactivateEquipmentGym(request.getEquipmentGymId());
         return ResponseEntity
                 .noContent()
                 .build();
