@@ -42,6 +42,10 @@ public class Report {
                 .build();
     }
 
+    public void removeUser() {
+        this.user = null;
+    }
+
     // 연관관계 편의 메소드입니다.
     public void setUserRelation(User user) {
         this.user = user;
