@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,6 +30,9 @@ public class Equipment extends BaseTimeEntity {
     @Column(nullable = false)
     private PurposeType purposeType;
 
+    @Column(nullable = false)
+    private Boolean deactivated;
+
     @OneToMany(mappedBy = "equipment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EquipmentGym> equipmentGyms = new ArrayList<>();
 
@@ -39,6 +41,7 @@ public class Equipment extends BaseTimeEntity {
         this.gym = gym;
         this.name = name;
         this.purposeType = purposeType;
+        this.deactivated = false;
     }
 
     public static Equipment createEquipment(Gym gym, String name, PurposeType purposeType) {
@@ -47,5 +50,9 @@ public class Equipment extends BaseTimeEntity {
                 .name(name)
                 .purposeType(purposeType)
                 .build();
+    }
+
+    public void deactivate() {
+        this.deactivated = true;
     }
 }
