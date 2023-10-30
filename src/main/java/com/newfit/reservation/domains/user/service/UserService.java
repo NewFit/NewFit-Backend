@@ -16,6 +16,7 @@ import com.newfit.reservation.domains.dev.repository.ReportRepository;
 import com.newfit.reservation.domains.reservation.domain.Reservation;
 import com.newfit.reservation.domains.reservation.repository.ReservationRepository;
 import com.newfit.reservation.domains.routine.domain.Routine;
+import com.newfit.reservation.domains.routine.repository.EquipmentRoutineRepository;
 import com.newfit.reservation.domains.routine.repository.RoutineRepository;
 import com.newfit.reservation.domains.user.domain.User;
 import com.newfit.reservation.domains.user.dto.request.UserSignUpRequest;
@@ -50,6 +51,7 @@ public class UserService {
     private final ReportRepository reportRepository;
     private final ProposalRepository proposalRepository;
     private final RoutineRepository routineRepository;
+    private final EquipmentRoutineRepository equipmentRoutineRepository;
     private final ReservationRepository reservationRepository;
 
     public void modify(Long userId, UserUpdateRequest request, HttpServletResponse response) {
@@ -146,7 +148,10 @@ public class UserService {
 
     private void deleteRelatedRoutines(Authority authority) {
         List<Routine> routines = routineRepository.findAllByAuthority(authority);
-        routineRepository.deleteAll(routines);
+        routines.forEach(routine -> {
+            equipmentRoutineRepository.deleteAllByRoutine(routine);
+            routineRepository.delete(routine);
+        });
     }
 
     public User findOneById(Long userId) {
