@@ -74,18 +74,18 @@ public class AuthorityService {
         response.setHeader("access-token", accessToken);
     }
 
-    private void deleteRelationWithReservation(Long authorityId) {
-        List<Reservation> reservations = reservationRepository.findAllByAuthorityId(authorityId);
-        reservations.forEach(Reservation::removeAuthority);
-        reservationRepository.saveAllAndFlush(reservations);
-    }
-
     private void deleteRelatedRoutines(Authority authority) {
         List<Routine> routines = routineRepository.findAllByAuthority(authority);
         routines.forEach(routine -> {
             equipmentRoutineRepository.deleteAllByRoutine(routine);
             routineRepository.delete(routine);
         });
+    }
+
+    private void deleteRelationWithReservation(Long authorityId) {
+        List<Reservation> reservations = reservationRepository.findAllByAuthorityId(authorityId);
+        reservations.forEach(Reservation::removeAuthority);
+        reservationRepository.saveAllAndFlush(reservations);
     }
 
     public GymListResponse listRegistration(Long authorityId) {
