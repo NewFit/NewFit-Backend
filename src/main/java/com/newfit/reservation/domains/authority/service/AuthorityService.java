@@ -16,6 +16,7 @@ import com.newfit.reservation.domains.gym.repository.GymRepository;
 import com.newfit.reservation.domains.reservation.domain.Reservation;
 import com.newfit.reservation.domains.reservation.repository.ReservationRepository;
 import com.newfit.reservation.domains.routine.domain.Routine;
+import com.newfit.reservation.domains.routine.repository.EquipmentRoutineRepository;
 import com.newfit.reservation.domains.routine.repository.RoutineRepository;
 import com.newfit.reservation.domains.user.domain.User;
 import com.newfit.reservation.domains.user.repository.UserRepository;
@@ -43,6 +44,7 @@ public class AuthorityService {
     private final TokenProvider tokenProvider;
     private final EquipmentGymRepository equipmentGymRepository;
     private final RoutineRepository routineRepository;
+    private final EquipmentRoutineRepository equipmentRoutineRepository;
 
     public void register(Long userId, Long gymId, HttpServletResponse response) {
 
@@ -57,7 +59,8 @@ public class AuthorityService {
     }
 
     public void delete(Long authorityId, HttpServletResponse response) {
-        Authority authority = authorityRepository.findById(authorityId).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+        Authority authority = authorityRepository.findById(authorityId)
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         User user = authority.getUser();
         user.getAuthorityList().remove(authority);
 
@@ -79,7 +82,10 @@ public class AuthorityService {
 
     private void deleteRelatedRoutines(Authority authority) {
         List<Routine> routines = routineRepository.findAllByAuthority(authority);
-        routineRepository.deleteAll(routines);
+        routines.forEach(routine -> {
+            equipmentRoutineRepository.deleteAllByRoutine(routine);
+            routineRepository.delete(routine);
+        });
     }
 
     public GymListResponse listRegistration(Long authorityId) {
