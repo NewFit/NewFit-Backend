@@ -1,14 +1,22 @@
 package com.newfit.reservation.domains.user.service;
 
-
 import com.newfit.reservation.common.auth.jwt.TokenProvider;
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.auth.domain.OAuthHistory;
 import com.newfit.reservation.domains.auth.repository.OAuthHistoryRepository;
+import com.newfit.reservation.domains.auth.repository.RefreshTokenRepository;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
 import com.newfit.reservation.domains.credit.domain.Credit;
 import com.newfit.reservation.domains.credit.repository.CreditRepository;
+import com.newfit.reservation.domains.dev.domain.Proposal;
+import com.newfit.reservation.domains.dev.domain.Report;
+import com.newfit.reservation.domains.dev.repository.ProposalRepository;
+import com.newfit.reservation.domains.dev.repository.ReportRepository;
+import com.newfit.reservation.domains.reservation.domain.Reservation;
+import com.newfit.reservation.domains.reservation.repository.ReservationRepository;
+import com.newfit.reservation.domains.routine.domain.Routine;
+import com.newfit.reservation.domains.routine.repository.RoutineRepository;
 import com.newfit.reservation.domains.user.domain.User;
 import com.newfit.reservation.domains.user.dto.request.UserSignUpRequest;
 import com.newfit.reservation.domains.user.dto.request.UserUpdateRequest;
@@ -38,6 +46,11 @@ public class UserService {
     private final CreditRepository creditRepository;
     private final OAuthHistoryRepository oAuthHistoryRepository;
     private final TokenProvider tokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final ReportRepository reportRepository;
+    private final ProposalRepository proposalRepository;
+    private final RoutineRepository routineRepository;
+    private final ReservationRepository reservationRepository;
 
     public void modify(Long userId, UserUpdateRequest request, HttpServletResponse response) {
         User updateUser = findOneById(userId);
@@ -93,7 +106,47 @@ public class UserService {
     public void drop(Long userId, String email) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         user.verifyByEmail(email);
+
+        deleteRelatedAuthorities(userId);
+
+        deleteRelationWithReport(user);
+        deleteRelationWithProposal(user);
+
+        refreshTokenRepository.deleteById(userId);
+
         userRepository.delete(user);
+    }
+
+    private void deleteRelationWithProposal(User user) {
+        List<Proposal> proposals = proposalRepository.findAllByUser(user);
+        proposals.forEach(Proposal::removeUser);
+        proposalRepository.saveAllAndFlush(proposals);
+    }
+
+    private void deleteRelationWithReport(User user) {
+        List<Report> reports = reportRepository.findAllByUser(user);
+        reports.forEach(Report::removeUser);
+        reportRepository.saveAllAndFlush(reports);
+    }
+
+    private void deleteRelatedAuthorities(Long userId) {
+        List<Authority> authorities = authorityRepository.findAllAuthorityByUserId(userId);
+        authorities.forEach(authority -> {
+            deleteRelatedRoutines(authority);
+            deleteRelationWithReservation(authority.getId());
+            authorityRepository.delete(authority);
+        });
+    }
+
+    private void deleteRelationWithReservation(Long authorityId) {
+        List<Reservation> reservations = reservationRepository.findAllByAuthorityId(authorityId);
+        reservations.forEach(Reservation::removeAuthority);
+        reservationRepository.saveAllAndFlush(reservations);
+    }
+
+    private void deleteRelatedRoutines(Authority authority) {
+        List<Routine> routines = routineRepository.findAllByAuthority(authority);
+        routineRepository.deleteAll(routines);
     }
 
     public User findOneById(Long userId) {
