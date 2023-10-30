@@ -61,7 +61,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "file_path", nullable = false)
     private String filePath;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
     private OAuthHistory oAuthHistory;
 
     // 양방향 연관관계를 나타냅니다.
@@ -73,7 +73,7 @@ public class User extends BaseTimeEntity {
     private List<Proposal> proposalList = new ArrayList<>();
 
     // 양방향 연관관계를 나타냅니다.
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Authority> authorityList = new ArrayList<>();
 
     /* =========== update method  =========== */
