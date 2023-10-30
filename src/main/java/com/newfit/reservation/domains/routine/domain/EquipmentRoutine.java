@@ -32,7 +32,7 @@ public class EquipmentRoutine {
     private Short sequence;
 
     @Column(nullable = false)
-    private Boolean deactivated;
+    private Boolean active;
 
     @Builder(access = AccessLevel.PRIVATE)
     private EquipmentRoutine(Equipment equipment, Routine routine, Duration duration, Short sequence) {
@@ -40,7 +40,7 @@ public class EquipmentRoutine {
         this.routine = routine;
         this.duration = duration;
         this.sequence = sequence;
-        this.deactivated = false;
+        this.active = true;
     }
 
     public static EquipmentRoutine createEquipmentRoutine(Equipment equipment, Routine routine,
@@ -66,6 +66,6 @@ public class EquipmentRoutine {
     }
 
     public void deactivate() {
-        this.deactivated = true;
+        this.active = false;
     }
 }

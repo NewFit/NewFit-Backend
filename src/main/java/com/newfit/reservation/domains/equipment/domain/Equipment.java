@@ -31,7 +31,7 @@ public class Equipment extends BaseTimeEntity {
     private PurposeType purposeType;
 
     @Column(nullable = false)
-    private Boolean deactivated;
+    private Boolean active;
 
     @OneToMany(mappedBy = "equipment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EquipmentGym> equipmentGyms = new ArrayList<>();
@@ -41,7 +41,7 @@ public class Equipment extends BaseTimeEntity {
         this.gym = gym;
         this.name = name;
         this.purposeType = purposeType;
-        this.deactivated = false;
+        this.active = true;
     }
 
     public static Equipment createEquipment(Gym gym, String name, PurposeType purposeType) {
@@ -53,6 +53,6 @@ public class Equipment extends BaseTimeEntity {
     }
 
     public void deactivate() {
-        this.deactivated = true;
+        this.active = false;
     }
 }
