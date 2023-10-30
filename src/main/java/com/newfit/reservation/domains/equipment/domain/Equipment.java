@@ -33,7 +33,7 @@ public class Equipment extends BaseTimeEntity {
     @Column(nullable = false)
     private Boolean active;
 
-    @OneToMany(mappedBy = "equipment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "equipment")
     private List<EquipmentGym> equipmentGyms = new ArrayList<>();
 
     @Builder(access = AccessLevel.PRIVATE)

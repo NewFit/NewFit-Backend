@@ -4,7 +4,6 @@ import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.equipment.domain.Equipment;
 import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
 import com.newfit.reservation.domains.equipment.domain.PurposeType;
-import com.newfit.reservation.domains.equipment.repository.EquipmentGymRepository;
 import com.newfit.reservation.domains.equipment.repository.EquipmentRepository;
 import com.newfit.reservation.domains.gym.domain.Gym;
 import com.newfit.reservation.domains.routine.domain.EquipmentRoutine;
@@ -12,7 +11,6 @@ import com.newfit.reservation.domains.routine.repository.EquipmentRoutineReposit
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 import static com.newfit.reservation.common.exception.ErrorCodeType.*;
@@ -23,7 +21,6 @@ import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 public class EquipmentService {
 
     private final EquipmentRepository equipmentRepository;
-    private final EquipmentGymRepository equipmentGymRepository;
     private final EquipmentRoutineRepository equipmentRoutineRepository;
 
     /*
@@ -48,7 +45,7 @@ public class EquipmentService {
         Equipment equipment = findById(equipmentId);
         equipment.deactivate();
 
-        List<EquipmentGym> equipmentGyms = equipmentGymRepository.findAllByEquipment_Id(equipmentId);
+        List<EquipmentGym> equipmentGyms = equipment.getEquipmentGyms();
         equipmentGyms.forEach(EquipmentGym::deactivate);
 
         List<EquipmentRoutine> equipmentRoutines = equipmentRoutineRepository.findAllByEquipment_Id(equipmentId);
