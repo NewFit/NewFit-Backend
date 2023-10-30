@@ -79,11 +79,11 @@ public class ManagerApiController {
     cascade 설정에 따라 연관된 EquipmentGym도 삭제
      */
     @DeleteMapping("/equipments")
-    public ResponseEntity<Void> deleteEquipment( Authentication authentication,
+    public ResponseEntity<Void> deactivateEquipment( Authentication authentication,
                                                  @RequestHeader("authority-id") Long authorityId,
                                                  @Valid @RequestBody DeleteEquipmentRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
-        equipmentService.deleteEquipment(request.getEquipmentId());
+        equipmentService.deactivateEquipment(request.getEquipmentId());
         return ResponseEntity
                 .noContent()
                 .build();

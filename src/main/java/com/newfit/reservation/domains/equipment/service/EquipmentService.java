@@ -44,7 +44,7 @@ public class EquipmentService {
     /*
     equipment 삭제
      */
-    public void deleteEquipment(Long equipmentId) {
+    public void deactivateEquipment(Long equipmentId) {
         Equipment equipment = findById(equipmentId);
         equipment.deactivate();
 
