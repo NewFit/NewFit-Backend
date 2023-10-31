@@ -2,12 +2,16 @@ package com.newfit.reservation.domains.equipment.service;
 
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.equipment.domain.Equipment;
+import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
 import com.newfit.reservation.domains.equipment.domain.PurposeType;
 import com.newfit.reservation.domains.equipment.repository.EquipmentRepository;
 import com.newfit.reservation.domains.gym.domain.Gym;
+import com.newfit.reservation.domains.routine.domain.EquipmentRoutine;
+import com.newfit.reservation.domains.routine.repository.EquipmentRoutineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
@@ -15,7 +19,9 @@ import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 @RequiredArgsConstructor
 @Transactional
 public class EquipmentService {
+
     private final EquipmentRepository equipmentRepository;
+    private final EquipmentRoutineRepository equipmentRoutineRepository;
 
     /*
     Equipment를 새로 등록.
@@ -35,8 +41,15 @@ public class EquipmentService {
     /*
     equipment 삭제
      */
-    public void deleteEquipment(Long equipmentId) {
-        equipmentRepository.deleteById(equipmentId);
+    public void deactivateEquipment(Long equipmentId) {
+        Equipment equipment = findById(equipmentId);
+        equipment.deactivate();
+
+        List<EquipmentGym> equipmentGyms = equipment.getEquipmentGyms();
+        equipmentGyms.forEach(EquipmentGym::deactivate);
+
+        List<EquipmentRoutine> equipmentRoutines = equipmentRoutineRepository.findAllByEquipment_Id(equipmentId);
+        equipmentRoutines.forEach(EquipmentRoutine::deactivate);
     }
 
     /*

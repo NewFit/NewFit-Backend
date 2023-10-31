@@ -23,7 +23,7 @@ public class Reservation extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "authority_id", nullable = false)
+    @JoinColumn(name = "authority_id")
     private Authority authority;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,6 +57,9 @@ public class Reservation extends BaseTimeEntity {
         this.startTagAt = null;
     }
 
+    public void removeAuthority() {
+        this.authority = null;
+    }
 
     public void updateEquipmentGym(EquipmentGym equipmentGym) {
         this.equipmentGym = equipmentGym;

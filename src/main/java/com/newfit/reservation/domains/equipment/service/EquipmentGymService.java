@@ -60,8 +60,9 @@ public class EquipmentGymService {
     /*
     equipmentGym 삭제
      */
-    public void deleteEquipmentGym(Long equipmentGymId) {
-        equipmentGymRepository.deleteById(equipmentGymId);
+    public void deactivateEquipmentGym(Long equipmentGymId) {
+        EquipmentGym equipmentGym = findOneById(equipmentGymId);
+        equipmentGym.deactivate();
     }
 
     public EquipmentGymListResponse findAllInGymByPurpose(Gym gym, PurposeType purposeType) {

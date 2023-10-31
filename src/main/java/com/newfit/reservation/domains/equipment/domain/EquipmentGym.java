@@ -32,12 +32,16 @@ public class EquipmentGym extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private Boolean active;
+
     @Builder(access = AccessLevel.PRIVATE)
     private EquipmentGym(Equipment equipment, Gym gym, String name) {
         this.equipment = equipment;
         this.gym = gym;
         this.conditionType = ConditionType.AVAILABLE;
         this.name = name;
+        this.active = true;
     }
 
     public static EquipmentGym createEquipmentGym(Equipment equipment, Gym gym, String name) {
@@ -58,5 +62,9 @@ public class EquipmentGym extends BaseTimeEntity {
 
     public void restore() {
         this.conditionType = ConditionType.AVAILABLE;
+    }
+
+    public void deactivate() {
+        this.active = false;
     }
 }
