@@ -39,18 +39,18 @@ public class ReservationService {
     private final EquipmentGymRepository equipmentGymRepository;
 
     public void reserve(Long authorityId,
-                        Long equipmentId,
+                        Long equipmentGymId,
                         ReservationRequest request) {
-
         Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+        LocalDateTime startAt = request.getStartAt();
+        LocalDateTime endAt = request.getEndAt();
 
-        validateTime(request.getStartAt(), request.getEndAt(), authority);
+        validateTime(startAt, endAt, authority);
 
-        // 사용 가능한 기구 하나를 가져옴
-        EquipmentGym usedEquipment = equipmentGymRepository.findAvailableByEquipmentIdAndStartAtAndEndAt(equipmentId, request.getStartAt(), request.getEndAt())
-                .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
-        Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt());
+        EquipmentGym equipmentGym = equipmentGymRepository.findAvailableByEquipmentGymIdAndStartAtAndEndAt(equipmentGymId, startAt, endAt)
+                .orElseThrow(() -> new CustomException(ALREADY_RESERVED_EQUIPMENT_GYM));
+        Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt);
 
         reservationRepository.save(reservation);
     }
