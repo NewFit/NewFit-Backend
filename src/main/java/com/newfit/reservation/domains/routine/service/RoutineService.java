@@ -73,8 +73,8 @@ public class RoutineService {
     특정 Routine 객체를 삭제하는 경우 해당 Routine에 묶여있는 EquipmentRoutine 객체들도 모두 삭제합니다.
      */
     public void deleteRoutine(Long routineId) {
-        Routine findRoutine = findById(routineId);
-        routineRepository.delete(findRoutine);
+        Routine routine = findById(routineId);
+        routineRepository.delete(routine);
     }
 
     /*
