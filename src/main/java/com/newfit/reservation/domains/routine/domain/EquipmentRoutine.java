@@ -1,13 +1,11 @@
 package com.newfit.reservation.domains.routine.domain;
 
-
 import com.newfit.reservation.domains.equipment.domain.Equipment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.Duration;
 
 @Getter
@@ -33,12 +31,16 @@ public class EquipmentRoutine {
     @Column(nullable = false)
     private Short sequence;
 
+    @Column(nullable = false)
+    private Boolean active;
+
     @Builder(access = AccessLevel.PRIVATE)
     private EquipmentRoutine(Equipment equipment, Routine routine, Duration duration, Short sequence) {
         this.equipment = equipment;
         this.routine = routine;
         this.duration = duration;
         this.sequence = sequence;
+        this.active = true;
     }
 
     public static EquipmentRoutine createEquipmentRoutine(Equipment equipment, Routine routine,
@@ -52,10 +54,18 @@ public class EquipmentRoutine {
     }
 
     public void updateSequence(Short sequence) {
-        this.sequence = sequence;
+        if (sequence != null) {
+            this.sequence = sequence;
+        }
     }
 
     public void updateDuration(Duration duration) {
-        this.duration = duration;
+        if (duration != null) {
+            this.duration = duration;
+        }
+    }
+
+    public void deactivate() {
+        this.active = false;
     }
 }

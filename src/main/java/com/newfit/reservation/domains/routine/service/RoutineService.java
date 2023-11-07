@@ -1,6 +1,5 @@
 package com.newfit.reservation.domains.routine.service;
 
-
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
@@ -21,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,24 +38,24 @@ public class RoutineService {
     아니라면 새로운 Routine을 등록하고 그 Routine을 반환합니다.
      */
     public Routine registerRoutine(Authority authority, String routineName) {
-        if (validateDuplicate(authority, routineName))
-            throw new CustomException(DUPLICATE_ROUTINE_NAME);
-
+        validateDuplicate(authority, routineName);
         return routineRepository.save(Routine.createRoutine(authority, routineName));
-    }
-
-    // id를 통해 Routine 객체를 조회합니다.
-    public Routine findById(Long routineId) {
-        return routineRepository.findById(routineId)
-                .orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
     }
 
     /*
     Routine의 이름을 업데이트하는 메소드입니다.
      */
     public void updateRoutine(Long routineId, String routineName) {
-        Routine findRoutine = findById(routineId);
-        findRoutine.updateName(routineName);
+        Routine routine = findById(routineId);
+        validateDuplicate(routine.getAuthority(), routineName);
+        routine.updateName(routineName);
+    }
+
+    // 해당 User의 Authority가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
+    private void validateDuplicate(Authority authority, String routineName) {
+        if (routineRepository.findByAuthorityAndName(authority, routineName).isPresent()) {
+            throw new CustomException(DUPLICATE_ROUTINE_NAME);
+        }
     }
 
     // 특정 User의 Authority가 생성한 모든 Routine을 조회하고 Dto로 변환하여 반환합니다.
@@ -74,9 +73,8 @@ public class RoutineService {
     특정 Routine 객체를 삭제하는 경우 해당 Routine에 묶여있는 EquipmentRoutine 객체들도 모두 삭제합니다.
      */
     public void deleteRoutine(Long routineId) {
-        Routine findRoutine = findById(routineId);
-        equipmentRoutineRepository.deleteAllByRoutine(findRoutine);
-        routineRepository.deleteById(routineId);
+        Routine routine = findById(routineId);
+        routineRepository.delete(routine);
     }
 
     /*
@@ -96,11 +94,6 @@ public class RoutineService {
                 .map(RoutineDetailEquipmentResponse::new).toList();
 
         return RoutineDetailResponse.createResponse(findRoutine.getId(), findRoutine.getName(), equipments);
-    }
-
-    // 해당 User의 Authority가 이전에 등록한 Routine중에 동일한 이름이 있는지 확인합니다.
-    private boolean validateDuplicate(Authority authority, String routineName) {
-        return routineRepository.findByAuthorityAndName(authority, routineName).isPresent();
     }
 
     public RoutineReservationListResponse reserveByRoutine(Long authorityId, Long routineId, LocalDateTime startAt) {
@@ -134,7 +127,7 @@ public class RoutineService {
             try {
                 EquipmentGym equipmentGym = equipmentGymRepository.findAvailableByEquipmentIdAndStartAtAndEndAt(equipmentId, startAt, endAt)
                         .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
-                Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt, 0L);
+                Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt);
                 reservationRepository.save(reservation);
                 return new RoutineReservationResponse(equipmentGym.getId(), true, startAt);
             } catch (CustomException exception) {
@@ -145,5 +138,11 @@ public class RoutineService {
         }
         // 찾지 못한 경우
         return new RoutineReservationResponse(null, false, null);
+    }
+
+    // id를 통해 Routine 객체를 조회합니다.
+    public Routine findById(Long routineId) {
+        return routineRepository.findById(routineId)
+                .orElseThrow(() -> new CustomException(ROUTINE_NOT_FOUND));
     }
 }

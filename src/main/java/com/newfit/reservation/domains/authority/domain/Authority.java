@@ -39,7 +39,7 @@ public class Authority extends BaseTimeEntity {
     // Role 이라는 Enum 을 새로 정의했습니다.
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private RoleType roleType;
 
     // 해당 사용자의 승인 여부를 나타냅니다.
     @Column(nullable = false)
@@ -53,10 +53,10 @@ public class Authority extends BaseTimeEntity {
     private LocalDateTime tagAt;
 
     // 양방향 연관관계를 나타냅니다.
-    @OneToMany(mappedBy = "authority", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "authority", cascade = CascadeType.REMOVE)
     private List<Credit> creditList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "authority", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "authority")
     private List<Reservation> reservationList = new ArrayList<>();
 
     // accepted 필드값을 true로 업데이트하는 메소드입니다.
@@ -94,7 +94,7 @@ public class Authority extends BaseTimeEntity {
         this.user = user;
         this.gym = gym;
         this.accepted = false;
-        this.role = Role.USER;
+        this.roleType = RoleType.USER;
         this.creditAcquisitionCount = 0;
     }
 

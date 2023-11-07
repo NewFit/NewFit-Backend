@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -80,10 +80,10 @@ public class EquipmentRoutineService {
         // patch 로직 실행 => 삭제, 수정, 새로운 기구 등록 순
         removeEquipmentRoutineInRoutine(request, allByRoutine);
         modifyEquipmentRoutineInRoutine(request, allByRoutine);
-        addEquipRoutineInRoutine(routine, request);
+        addEquipmentRoutineInRoutine(routine, request);
     }
 
-    private void addEquipRoutineInRoutine(Routine routine, UpdateRoutineRequest request) {
+    private void addEquipmentRoutineInRoutine(Routine routine, UpdateRoutineRequest request) {
         if (!request.getAddEquipments().isEmpty()) {
             List<AddEquipmentRequest> addEquipments = request.getAddEquipments();
 
@@ -103,21 +103,11 @@ public class EquipmentRoutineService {
 
         List<UpdateEquipmentRequest> updateEquipments = request.getUpdateEquipments();
 
-        for (UpdateEquipmentRequest updateEquipment : updateEquipments) {
-
-            // 수정 사항을 반영할 EquipmentRoutine 객체를 allByRoutine에서 추출합니다.
+        updateEquipments.forEach(updateEquipment -> {
             EquipmentRoutine equipmentRoutine = extractUpdateTarget(updateEquipment, allByRoutine);
-
-            // 순서를 수정 시 실행.
-            if (updateEquipment.getSequence() != null) {
-                equipmentRoutine.updateSequence(updateEquipment.getSequence());
-            }
-
-            // 운동시간을 수정 시 실행.
-            if (updateEquipment.getDuration() != null) {
-                equipmentRoutine.updateDuration(Duration.ofMinutes(updateEquipment.getDuration()));
-            }
-        }
+            equipmentRoutine.updateSequence(updateEquipment.getSequence());
+            equipmentRoutine.updateDuration(Duration.ofMinutes(updateEquipment.getDuration()));
+        });
     }
 
     private void removeEquipmentRoutineInRoutine(UpdateRoutineRequest request, List<EquipmentRoutine> allByRoutine) {

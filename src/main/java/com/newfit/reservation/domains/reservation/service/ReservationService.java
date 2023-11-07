@@ -4,17 +4,16 @@ package com.newfit.reservation.domains.reservation.service;
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
-import com.newfit.reservation.domains.credit.domain.Credit;
-import com.newfit.reservation.domains.credit.repository.CreditRepository;
 import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
 import com.newfit.reservation.domains.equipment.dto.response.EquipmentInfoResponse;
 import com.newfit.reservation.domains.equipment.dto.response.OccupiedTime;
 import com.newfit.reservation.domains.equipment.repository.EquipmentGymRepository;
-import com.newfit.reservation.domains.gym.domain.BusinessTime;
 import com.newfit.reservation.domains.gym.domain.Gym;
 import com.newfit.reservation.domains.reservation.domain.Reservation;
-import com.newfit.reservation.domains.reservation.domain.Status;
+import com.newfit.reservation.domains.reservation.domain.StatusType;
+import com.newfit.reservation.domains.reservation.dto.response.EquipmentGymsListResponse;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationDetailResponse;
+import com.newfit.reservation.domains.reservation.dto.response.ReservationInfoResponse;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationUpdateRequest;
@@ -23,37 +22,35 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 import static java.time.LocalDateTime.*;
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ReservationService {
+    private final long MAX_HOUR_TERM = 2L;
+    private final long MAX_MINUTE = 30L;
 
     private final ReservationRepository reservationRepository;
     private final AuthorityRepository authorityRepository;
     private final EquipmentGymRepository equipmentGymRepository;
 
     public void reserve(Long authorityId,
-                        Long equipmentId,
+                        Long equipmentGymId,
                         ReservationRequest request) {
-
         Authority authority = authorityRepository.findById(authorityId)
                 .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+        LocalDateTime startAt = request.getStartAt();
+        LocalDateTime endAt = request.getEndAt();
 
-        validateLastTagAt(authority);
-        validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
+        validateTime(startAt, endAt, authority);
 
-        checkBusinessHour(request.getStartAt(), request.getEndAt(), authority);
-
-        // 사용 가능한 기구 하나를 가져옴
-        EquipmentGym usedEquipment = equipmentGymRepository.findAvailableByEquipmentIdAndStartAtAndEndAt(equipmentId, request.getStartAt(), request.getEndAt())
-                .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
-        Reservation reservation = Reservation.create(authority, usedEquipment, request.getStartAt(), request.getEndAt(), request.getRepetitionNumber());
+        EquipmentGym equipmentGym = equipmentGymRepository.findAvailableByEquipmentGymIdAndStartAtAndEndAt(equipmentGymId, startAt, endAt)
+                .orElseThrow(() -> new CustomException(ALREADY_RESERVED_EQUIPMENT_GYM));
+        Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt);
 
         reservationRepository.save(reservation);
     }
@@ -63,7 +60,6 @@ public class ReservationService {
         if (tagAt.isBefore(now().minusHours(2)))
             throw new CustomException(EXPIRED_TAG);
     }
-
 
     @Transactional(readOnly = true)
     public ReservationListResponse listReservation(Long equipmentGymId) {
@@ -82,32 +78,51 @@ public class ReservationService {
 
     public void update(Long reservationId, ReservationUpdateRequest request) {
         Reservation targetReservation = findById(reservationId);
+        Authority authority = targetReservation.getAuthority();
+        Long equipmentGymId = request.getEquipmentGymId();
+        LocalDateTime startAt = request.getStartAt();
+        LocalDateTime endAt = request.getEndAt();
 
-        validateLastTagAt(targetReservation.getAuthority());
+        validateTime(startAt, endAt, authority);
 
-        // 예약 세트 횟수 변경
-        if (request.getRepetitionNumber() != null) {
-            targetReservation.updateRepetitionNumber(request.getRepetitionNumber());
+        if (equipmentGymId == null) {
+            targetReservation.updateTime(startAt, endAt);
+        } else {
+            equipmentGymChangeCase(equipmentGymId, targetReservation, startAt, endAt);
         }
+    }
 
-        // 예약 시간 변경
-        validateReservationIn2Hours(request.getStartAt(), request.getEndAt());
-        checkBusinessHour(request.getStartAt(), request.getEndAt(), targetReservation.getAuthority());
+    private void equipmentGymChangeCase(Long equipmentGymId, Reservation targetReservation,
+                                        LocalDateTime startAt, LocalDateTime endAt) {
+        EquipmentGym equipmentGym = equipmentGymRepository.findById(equipmentGymId)
+                .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
 
-        if (request.getStartAt() != null)
-            targetReservation.updateStartTime(request.getStartAt());
+        validateUpdateTime(equipmentGymId, startAt, endAt);
+        targetReservation.updateEquipmentGym(equipmentGym);
+        targetReservation.updateTime(startAt, endAt);
+    }
 
-        if (request.getEndAt() != null)
-            targetReservation.updateEndTime(request.getEndAt());
+    private void validateUpdateTime(Long equipmentGymId, LocalDateTime startAt, LocalDateTime endAt) {
+        List<Reservation> reservations = reservationRepository.findAllByEquipmentGymIdIdAndStartAtAndEndAt(equipmentGymId, startAt, endAt);
+        if (!reservations.isEmpty()) {
+            throw new CustomException(INVALID_RESERVATION_REQUEST);
+        }
+    }
 
+    private void validateTime(LocalDateTime startAt, LocalDateTime endAt, Authority authority) {
+        validateLastTagAt(authority);
+        validateReservationIn2Hours(startAt, endAt);
 
-        // 다른 기구로 예약 변경
-        if (!validateReservationOverlap(targetReservation.getEquipmentGym(), request.getStartAt(), request.getEndAt())) {
-            Long targetEquipmentId = targetReservation.getEquipmentGym().getEquipment().getId();
-            EquipmentGym anotherEquipmentGym =
-                    equipmentGymRepository.findAvailableByEquipmentIdAndStartAtAndEndAt(targetEquipmentId, request.getStartAt(), request.getEndAt())
-                            .orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
-            targetReservation.updateEquipmentGym(anotherEquipmentGym);
+        Gym gym = authority.getGym();
+        gym.checkBusinessHour(startAt, endAt);
+
+        validateMyReservationOverlap(authority, startAt, endAt);
+    }
+
+    private void validateMyReservationOverlap(Authority authority, LocalDateTime startAt, LocalDateTime endAt) {
+        List<Reservation> reservations = reservationRepository.findAllByAuthorityIdAndStartAtAndEndAt(authority.getId(), startAt, endAt);
+        if (!reservations.isEmpty()) {
+            throw new CustomException(INVALID_RESERVATION_REQUEST);
         }
     }
 
@@ -133,96 +148,12 @@ public class ReservationService {
                 .orElseThrow(() -> new CustomException(RESERVATION_NOT_FOUND));
     }
 
-    private void checkBusinessHour(LocalDateTime startAt, LocalDateTime endAt, Authority authority) {
-
-        /*
-         예약의 시작 시간이 종료 시간보다 선행되는지 체크
-         exception이 발생 안하면 예약 시작 시간이 종료 시간보다 선행됨을 보장
-         */
-        if (startAt.isAfter(endAt))
-            throw new CustomException(INVALID_RESERVATION_REQUEST);
-
-        Gym gym = authority.getGym();
-        BusinessTime businessTime = gym.getBusinessTime();
-
-        // 헬스장이 24시간 운영이면 true 리턴
-        if (businessTime.isAllDay())
-            return;
-
-        // 헬스장 오픈 시각(ex. 6 : 30)
-        LocalTime gymOpenAt = businessTime.getOpenAt();
-        // 헬스장 종료 시각(ex. 23 : 45)
-        LocalTime gymCloseAt = businessTime.getCloseAt();
-
-        // 헬스장 오픈 및 종료 시각에서 '시' 정보만 추출
-        int gymOpenHour = gymOpenAt.getHour();
-        int gymCloseHour = gymCloseAt.getHour();
-
-        /*
-        openHour < closeHour 이면 (openHour < 예약의 시작 시간) && (예약 종료 시간 < closeHour) 인지만 확인
-        openHour > closeHour 이면 예약의 시작과 종료 시간 둘 다 헬스장 운영 시간 내에 속하는지 확인
-         */
-        boolean result = checkStartAtInBusinessHour(startAt, gymOpenHour, gymCloseHour, businessTime) &&
-                checkEndAtInBusinessHour(endAt, gymOpenHour, gymCloseHour, businessTime);
-
-        if (!result)
-            throw new CustomException(INVALID_RESERVATION_REQUEST, "요청이 헬스장 운영 시간과 맞지 않습니다.");
-    }
-
-    private boolean checkEndAtInBusinessHour(LocalDateTime endAt, int gymOpenHour, int gymCloseHour,
-                                             BusinessTime businessTime) {
-        int reservationEndHour = endAt.getHour();
-        int reservationEndMinute = endAt.getMinute();
-
-        // 헬스장 종료 '시'와 예약의 종료 '시'가 같다면 '분' 비교
-        if (reservationEndHour == gymCloseHour)
-            return reservationEndMinute <= businessTime.getCloseAt().getMinute();
-        // 헬스장 오픈 '시'와 예약의 종료 '시'가 같다면 '분' 비교
-        if (reservationEndHour == gymOpenHour)
-            return businessTime.getOpenAt().getMinute() < reservationEndMinute;
-
-        /*
-        openHour < closeHour (ex. 6AM ~ 23PM)이면 예약 종료 시간이 closeHour보다 앞서는지만 확인
-        openHour > closeHour (ex. 4AM ~ 1AM)이면 예약 종료 시간이 헬스장 운영시간 안에 속하는지 확인
-         */
-        if (gymOpenHour < gymCloseHour)
-            return reservationEndHour < gymCloseHour;
-        else
-            return (gymOpenHour < reservationEndHour) || (reservationEndHour < gymCloseHour);
-    }
-
-    private boolean checkStartAtInBusinessHour(LocalDateTime startAt, int gymOpenHour, int gymCloseHour,
-                                               BusinessTime businessTime) {
-        int reservationStartHour = startAt.getHour();
-        int reservationStartMinute = startAt.getMinute();
-
-        // 헬스장 오픈 '시'와 예약의 시작 '시'가 같다면 '분' 비교
-        if (reservationStartHour == gymOpenHour)
-            return businessTime.getOpenAt().getMinute() <= reservationStartMinute;
-        // 헬스장 종료 '시'와 예약의 시작 '시'가 같다면 '분' 비교
-        if (reservationStartHour == gymCloseHour)
-            return reservationStartMinute < businessTime.getCloseAt().getMinute();
-
-        /*
-        openHour < closeHour (ex. 6AM ~ 23PM)이면 예약 시작 시간이 openHour보다 더 늦은지만 확인
-        openHour > closeHour (ex. 4AM ~ 1AM)이면 예약 시작 시간이 헬스장 운영시간 안에 속하는지 확인
-         */
-        if (gymOpenHour < gymCloseHour)
-            return gymOpenHour < reservationStartHour;
-        else
-            return (gymOpenHour < reservationStartHour) || (reservationStartHour < gymCloseHour);
-    }
-
     public void updateStatusAndCondition(Reservation reservation) {
-        reservation.updateStatus(Status.COMPLETED);
+        reservation.updateStatus(StatusType.COMPLETED);
         reservation.getEquipmentGym().restore();
     }
 
     private void validateReservationIn2Hours(LocalDateTime startAt, LocalDateTime endAt) {
-
-        final long MAX_HOUR_TERM = 2L;
-        final long MAX_MINUTE = 30L;
-
         LocalDateTime twoHourLater = now().plusHours(MAX_HOUR_TERM);
 
         if (startAt.isAfter(twoHourLater)) {
@@ -232,23 +163,6 @@ public class ReservationService {
         if (endAt.isAfter(twoHourLater.plusMinutes(MAX_MINUTE))) {
             throw new CustomException(INVALID_RESERVATION_REQUEST, "예약 종료 시간을 확인해주세요.");
         }
-    }
-
-    /**
-     * 대상 기구의 예약 현황에 요청 시간이 중복되면 false 를 반환함
-     *
-     * @param equipmentGym 대상 특정 기구
-     * @param start        시작 시간
-     * @param end          종료 시간
-     */
-    private boolean validateReservationOverlap(EquipmentGym equipmentGym, LocalDateTime start, LocalDateTime end) {
-        return reservationRepository.findAllByEquipmentGym(equipmentGym)
-                .stream()
-                .filter(reservation ->
-                        reservation.overlapped(start, end)
-                )
-                .findAny()
-                .isEmpty();
     }
 
     public void startUse(Long authorityId, Long equipmentGymId, LocalDateTime tagAt) {
@@ -266,7 +180,7 @@ public class ReservationService {
 
     private void updateReservation(Reservation reservation, LocalDateTime tagAt) {
         reservation.updateStartTagAt(tagAt);
-        reservation.updateStatus(Status.PROCESSING);
+        reservation.updateStatus(StatusType.PROCESSING);
     }
 
 
@@ -278,5 +192,23 @@ public class ReservationService {
         if (tagAt.isBefore(reservationStartAt.minusMinutes(5))) {
             throw new CustomException(INVALID_TAG_REQUEST, "예약 시작 5분 전부터 태그할 수 있습니다.");
         }
+    }
+
+    public ReservationInfoResponse getReservationInfo(Long reservationId) {
+        Reservation reservation = findById(reservationId);
+        Authority authority = reservation.getAuthority();
+        Gym gym = authority.getGym();
+        String gymName = gym.getName();
+
+        return ReservationInfoResponse.createResponse(gymName, reservation);
+    }
+
+    public EquipmentGymsListResponse getEquipmentsInfo(Long equipmentId) {
+        List<EquipmentGym> allByEquipment = equipmentGymRepository.findAllByEquipment_Id(equipmentId);
+        List<EquipmentInfoResponse> equipmentGyms = allByEquipment.stream()
+                .map(this::getAllOccupiedTimes)
+                .toList();
+
+        return EquipmentGymsListResponse.createResponse(equipmentGyms);
     }
 }

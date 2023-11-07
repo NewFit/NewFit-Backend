@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -24,7 +26,11 @@ public class Routine extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    private Long count = 0L;
+    @Column(nullable = false)
+    private Long count;
+
+    @OneToMany(mappedBy = "routine", cascade = CascadeType.REMOVE)
+    private List<EquipmentRoutine> equipmentRoutineList = new ArrayList<>();
 
     public void updateName(String name) {
         this.name = name;
@@ -38,6 +44,7 @@ public class Routine extends BaseTimeEntity {
     private Routine(Authority authority, String name) {
         this.authority = authority;
         this.name = name;
+        this.count = 0L;
     }
 
     public static Routine createRoutine(Authority authority, String name) {

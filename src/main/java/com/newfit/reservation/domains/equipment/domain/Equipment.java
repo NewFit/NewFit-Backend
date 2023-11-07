@@ -7,10 +7,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Getter
 @Entity
@@ -30,23 +28,31 @@ public class Equipment extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Purpose purpose;
+    private PurposeType purposeType;
 
-    @OneToMany(mappedBy = "equipment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @Column(nullable = false)
+    private Boolean active;
+
+    @OneToMany(mappedBy = "equipment")
     private List<EquipmentGym> equipmentGyms = new ArrayList<>();
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Equipment(Gym gym, String name, Purpose purpose) {
+    private Equipment(Gym gym, String name, PurposeType purposeType) {
         this.gym = gym;
         this.name = name;
-        this.purpose = purpose;
+        this.purposeType = purposeType;
+        this.active = true;
     }
 
-    public static Equipment createEquipment(Gym gym, String name, Purpose purpose) {
+    public static Equipment createEquipment(Gym gym, String name, PurposeType purposeType) {
         return Equipment.builder()
                 .gym(gym)
                 .name(name)
-                .purpose(purpose)
+                .purposeType(purposeType)
                 .build();
+    }
+
+    public void deactivate() {
+        this.active = false;
     }
 }

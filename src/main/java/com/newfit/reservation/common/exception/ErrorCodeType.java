@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum ErrorCode {
+public enum ErrorCodeType {
 
 
     // 400 BAD_REQUEST
@@ -35,8 +35,13 @@ public enum ErrorCode {
     ALREADY_ACCEPTED_AUTHORITY(HttpStatus.CONFLICT, "이미 승인된 사용자입니다."),
     DUPLICATE_ROUTINE_NAME(HttpStatus.CONFLICT, "중복된 루틴 이름입니다."),
     ALREADY_TAGGED_RESERVATION(HttpStatus.CONFLICT, "이미 태그하였습니다."),
+    ALREADY_RESERVED_EQUIPMENT_GYM(HttpStatus.CONFLICT, "이미 다른 사용자가 해당 시간에 예약했습니다."),
+    ALREADY_EXISTING_EQUIPMENT(HttpStatus.CONFLICT, "이미 존재하는 기구입니다."),
     MAXIMUM_CREDIT_LIMIT(HttpStatus.CONFLICT, "일일 크레딧 획득량을 모두 채웠습니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "중복된 닉네임입니다."),
+    AUTHORITY_ID_LIST_OUTDATED(HttpStatus.CONFLICT, "토큰의 AuthorityIdList에 변경 사항이 있습니다"),
+    USER_EMAIL_VERIFICATION_FAIL(HttpStatus.CONFLICT, "이메일이 일치하지 않습니다."),
+
 
     // 500 INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러입니다.");
@@ -45,7 +50,7 @@ public enum ErrorCode {
     private final int statusCode;
     private final String message;
 
-    ErrorCode(HttpStatus status, String message) {
+    ErrorCodeType(HttpStatus status, String message) {
         this.name = status.name();
         this.statusCode = status.value();
         this.message = message;

@@ -4,24 +4,28 @@ import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.auth.domain.RefreshToken;
 import com.newfit.reservation.domains.auth.repository.RefreshTokenRepository;
 import com.newfit.reservation.domains.authority.domain.Authority;
-import com.newfit.reservation.domains.authority.domain.Role;
+import com.newfit.reservation.domains.authority.domain.RoleType;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
 import com.newfit.reservation.domains.user.domain.User;
-import io.jsonwebtoken.*;
+import com.newfit.reservation.domains.user.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래스
@@ -32,6 +36,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
     private final JwtProperties jwtProperties;
     private final AuthorityRepository authorityRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
 
     public String generateAccessToken(User user) {
         Date now = new Date();
@@ -83,9 +88,24 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
                 .getToken();
     }
 
-    public void validAccessToken(String token, HttpServletRequest request) {
+    public void validAccessToken(String token, HttpServletRequest request, HttpServletResponse response) {
         validToken(token);
-        checkAuthorityIdList(token, request);
+        try {
+            checkAuthorityIdList(token, request);
+        } catch (CustomException exception) {
+            checkExceptionAndProceed(response, exception, getUserId(token));
+        }
+    }
+
+    private void checkExceptionAndProceed(HttpServletResponse response, CustomException exception, Long userId){
+        if (!exception.getErrorCodeType().equals(AUTHORITY_ID_LIST_OUTDATED)) {
+            throw exception;
+        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        String accessToken = generateAccessToken(user);
+        log.info("AcceptedUser.accessToken = {}", accessToken);
+        response.setHeader("access-token", accessToken);
     }
 
     public void validToken(String token) {
@@ -100,19 +120,38 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
      */
     private void checkAuthorityIdList(String token, HttpServletRequest request) {
         List<Integer> authorityIdList = getAuthorityIdList(token);
-        Integer authorityId = authorityRepository.findById(Long.parseLong(request.getHeader("authority-id"))).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND)).getId().intValue();
-        authorityIdList
-                .stream()
-                .filter(authority -> authority.equals(authorityId))
-                .findAny()
-                .orElseThrow(() -> new CustomException(UNAUTHORIZED_REQUEST));
+        Long authorityId = extractAuthorityId(request);
+
+        if (!authorityIdList.contains(authorityId.intValue())) {
+            // token에 있는 userId로 User 조회
+            User user = userRepository.findById(getUserId(token))
+                    .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+            // findAny로 찾지 못함 == 아직 accept 되지 않음 or 헤더에 넣은 것이 자신의 authority-id가 아님
+            user.getAuthorityList().stream()
+                    .filter(authority -> authority.getId().equals(authorityId) && authority.getAccepted())
+                    .findAny()
+                    .orElseThrow(() -> new CustomException(UNAUTHORIZED_REQUEST));
+
+            // JWT 새로 발급해야 하는 경우
+            throw new CustomException(AUTHORITY_ID_LIST_OUTDATED);
+        }
+    }
+
+    private Long getUserId(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("id", Long.class);
+    }
+
+    private Long extractAuthorityId(HttpServletRequest request) {
+        return Long.parseLong(request.getHeader("authority-id"));
     }
 
     public Authentication getAuthentication(String token, HttpServletRequest request) {
         Claims claims = getClaims(token);
-        Authority authority = authorityRepository.findById(Long.parseLong(request.getHeader("authority-id")))
+        Authority authority = authorityRepository.findById(extractAuthorityId(request))
                 .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
-        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(authority.getRole().getDescription()));
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(authority.getRoleType().getDescription()));
 
         return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
     }
@@ -123,7 +162,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
      */
     public Authentication getAnonymousAuthentication(String token) {
         Claims claims = getClaims(token);
-        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(Role.GUEST.getDescription()));
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(RoleType.GUEST.getDescription()));
 
         if (claims.getSubject() != null) {
             return new UsernamePasswordAuthenticationToken(

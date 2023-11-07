@@ -9,6 +9,8 @@ import com.newfit.reservation.domains.reservation.domain.Reservation;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationRequest;
 import com.newfit.reservation.domains.reservation.dto.request.ReservationUpdateRequest;
 import com.newfit.reservation.domains.reservation.dto.request.StartReservationRequest;
+import com.newfit.reservation.domains.reservation.dto.response.EquipmentGymsListResponse;
+import com.newfit.reservation.domains.reservation.dto.response.ReservationInfoResponse;
 import com.newfit.reservation.domains.reservation.dto.response.ReservationListResponse;
 import com.newfit.reservation.domains.reservation.service.ReservationService;
 import com.newfit.reservation.domains.routine.dto.request.RoutineReservationRequest;
@@ -26,7 +28,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/reservation")
+@RequestMapping("/api/v1/reservations")
 @RequiredArgsConstructor
 public class ReservationApiController {
 
@@ -36,13 +38,13 @@ public class ReservationApiController {
     private final ReservationService reservationService;
     private final RoutineService routineService;
 
-    @PostMapping
+    @PostMapping("/{equipmentGymId}")
     public ResponseEntity<Void> reserve(Authentication authentication,
                                         @RequestHeader("authority-id") Long authorityId,
-                                        @RequestParam(value = "equipment_id") Long equipmentId,
+                                        @PathVariable("equipmentGymId") Long equipmentGymId,
                                         @Valid @RequestBody ReservationRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
-        reservationService.reserve(authorityId, equipmentId, request);
+        reservationService.reserve(authorityId, equipmentGymId, request);
         return ResponseEntity
                 .status(CREATED)
                 .build();
@@ -56,10 +58,10 @@ public class ReservationApiController {
                 .ok(reservationListResponse);
     }
 
-    @PatchMapping
+    @PatchMapping("/{reservationId}")
     public ResponseEntity<Void> updateReservation(Authentication authentication,
                                                   @RequestHeader("authority-id") Long authorityId,
-                                                  @RequestParam("reservation_id") Long reservationId,
+                                                  @PathVariable("reservationId") Long reservationId,
                                                   @Valid @RequestBody ReservationUpdateRequest request) {
         authorityCheckService.validateByAuthorityId(authentication, authorityId);
         reservationService.update(reservationId, request);
@@ -116,5 +118,21 @@ public class ReservationApiController {
         return ResponseEntity
                 .noContent()
                 .build();
+    }
+
+    @GetMapping("/{reservationId}")
+    public ResponseEntity<ReservationInfoResponse> getReservation(@PathVariable Long reservationId) {
+        ReservationInfoResponse reservationInfo = reservationService.getReservationInfo(reservationId);
+
+        return ResponseEntity
+                .ok(reservationInfo);
+    }
+
+    @GetMapping("/equipments/{equipmentId}")
+    public ResponseEntity<EquipmentGymsListResponse> getEquipmentsInfo(@PathVariable Long equipmentId) {
+        EquipmentGymsListResponse response = reservationService.getEquipmentsInfo(equipmentId);
+
+        return ResponseEntity
+                .ok(response);
     }
 }

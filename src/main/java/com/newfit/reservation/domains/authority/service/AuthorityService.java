@@ -3,7 +3,7 @@ package com.newfit.reservation.domains.authority.service;
 import com.newfit.reservation.common.auth.jwt.TokenProvider;
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.authority.domain.Authority;
-import com.newfit.reservation.domains.authority.domain.Role;
+import com.newfit.reservation.domains.authority.domain.RoleType;
 import com.newfit.reservation.domains.authority.dto.request.EntryRequest;
 import com.newfit.reservation.domains.authority.dto.response.*;
 import com.newfit.reservation.domains.authority.dto.response.manager.UserAndPendingListResponse;
@@ -13,7 +13,11 @@ import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
 import com.newfit.reservation.domains.equipment.repository.EquipmentGymRepository;
 import com.newfit.reservation.domains.gym.domain.Gym;
 import com.newfit.reservation.domains.gym.repository.GymRepository;
+import com.newfit.reservation.domains.reservation.domain.Reservation;
 import com.newfit.reservation.domains.reservation.repository.ReservationRepository;
+import com.newfit.reservation.domains.routine.domain.Routine;
+import com.newfit.reservation.domains.routine.repository.EquipmentRoutineRepository;
+import com.newfit.reservation.domains.routine.repository.RoutineRepository;
 import com.newfit.reservation.domains.user.domain.User;
 import com.newfit.reservation.domains.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,10 +25,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import static com.newfit.reservation.common.exception.ErrorCode.*;
+import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
 @Slf4j
 @Service
@@ -38,6 +43,8 @@ public class AuthorityService {
     private final ReservationRepository reservationRepository;
     private final TokenProvider tokenProvider;
     private final EquipmentGymRepository equipmentGymRepository;
+    private final RoutineRepository routineRepository;
+    private final EquipmentRoutineRepository equipmentRoutineRepository;
 
     public void register(Long userId, Long gymId, HttpServletResponse response) {
 
@@ -47,23 +54,34 @@ public class AuthorityService {
                 .orElseThrow(() -> new CustomException(GYM_NOT_FOUND));
 
         Authority authority = authorityRepository.save(Authority.createAuthority(user, gym));
-        user.getAuthorityList().add(authority);
 
-        String accessToken = tokenProvider.generateAccessToken(user);
-        log.info("AuthorityRegister.accessToken = {}", accessToken);
-        response.setHeader("access-token", accessToken);
+        response.setHeader("authority-id", String.valueOf(authority.getId()));
     }
 
     public void delete(Long authorityId, HttpServletResponse response) {
-        Authority authority = authorityRepository.findById(authorityId).orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+        Authority authority = findById(authorityId);
         User user = authority.getUser();
-
         user.getAuthorityList().remove(authority);
+
+        deleteRelatedRoutines(authority);
+        deleteRelationWithReservation(authorityId);
+
         authorityRepository.delete(authority);
 
         String accessToken = tokenProvider.generateAccessToken(user);
         log.info("AuthorityDelete.accessToken = {}", accessToken);
         response.setHeader("access-token", accessToken);
+    }
+
+    private void deleteRelatedRoutines(Authority authority) {
+        List<Routine> routines = routineRepository.findAllByAuthority(authority);
+        routineRepository.deleteAll(routines);
+    }
+
+    private void deleteRelationWithReservation(Long authorityId) {
+        List<Reservation> reservations = reservationRepository.findAllByAuthorityId(authorityId);
+        reservations.forEach(Reservation::removeAuthority);
+        reservationRepository.saveAllAndFlush(reservations);
     }
 
     public GymListResponse listRegistration(Long authorityId) {
@@ -83,7 +101,7 @@ public class AuthorityService {
     accepted 컬럼값을 true로 업데이트 합니다. 그 다음에 업데이트 결과를 반환할 Dto를 생성후 반환합니다.
      */
     public void acceptUser(Long userId, Long gymId) {
-        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRole(userId, gymId, Role.USER);
+        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, RoleType.USER);
         if (authority == null)
             throw new CustomException(AUTHORITY_NOT_FOUND);
         if (authority.getAccepted())
@@ -99,23 +117,13 @@ public class AuthorityService {
      */
     public UserAndPendingListResponse getUserAndAcceptRequestList(Long authorityId) {
         Gym gym = getGymByAuthorityId(authorityId);
-        String gymName = gym.getName();
 
         List<Authority> authorities = authorityRepository.findAllAuthorityByGym(gym);
+        Map<Boolean, List<UserAndPendingResponse>> classifyByAccepted = authorities.stream()
+                .collect(Collectors.groupingBy(Authority::getAccepted,
+                        Collectors.mapping(UserAndPendingResponse::new, Collectors.toList())));
 
-        List<UserAndPendingResponse> requests = new ArrayList<>();
-        List<UserAndPendingResponse> users = new ArrayList<>();
-
-        for (Authority authority : authorities) {
-            UserAndPendingResponse response = new UserAndPendingResponse(authority);
-
-            if (authority.getAccepted())
-                users.add(response);
-            else
-                requests.add(response);
-        }
-
-        return UserAndPendingListResponse.createResponse(gymName, requests, users);
+        return UserAndPendingListResponse.createResponse(gym.getName(), classifyByAccepted);
     }
 
     public Authority findById(Long authorityId) {
@@ -144,7 +152,7 @@ public class AuthorityService {
     public EquipmentGymListResponse findAllInGym(Gym gym) {
         List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
 
-        List<com.newfit.reservation.domains.authority.dto.response.EquipmentResponse> equipmentResponses = allByGym.stream()
+        List<EquipmentResponse> equipmentResponses = allByGym.stream()
                 .map(EquipmentResponse::new).toList();
 
         return new EquipmentGymListResponse(gym.getName(), allByGym.size(), equipmentResponses);

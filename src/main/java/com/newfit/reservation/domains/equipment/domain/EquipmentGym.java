@@ -27,17 +27,21 @@ public class EquipmentGym extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Condition condition;
+    private ConditionType conditionType;
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private Boolean active;
 
     @Builder(access = AccessLevel.PRIVATE)
     private EquipmentGym(Equipment equipment, Gym gym, String name) {
         this.equipment = equipment;
         this.gym = gym;
-        this.condition = Condition.AVAILABLE;
+        this.conditionType = ConditionType.AVAILABLE;
         this.name = name;
+        this.active = true;
     }
 
     public static EquipmentGym createEquipmentGym(Equipment equipment, Gym gym, String name) {
@@ -48,15 +52,19 @@ public class EquipmentGym extends BaseTimeEntity {
                 .build();
     }
 
-    public void updateCondition(Condition condition) {
-        this.condition = condition;
+    public void updateCondition(ConditionType conditionType) {
+        this.conditionType = conditionType;
     }
 
     public void use() {
-        this.condition = Condition.OCCUPIED;
+        this.conditionType = ConditionType.OCCUPIED;
     }
 
     public void restore() {
-        this.condition = Condition.AVAILABLE;
+        this.conditionType = ConditionType.AVAILABLE;
+    }
+
+    public void deactivate() {
+        this.active = false;
     }
 }

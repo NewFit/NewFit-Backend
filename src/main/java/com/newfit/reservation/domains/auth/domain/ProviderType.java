@@ -5,14 +5,14 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Provider {
+public enum ProviderType {
     GOOGLE("google"), KAKAO("kakao");
 
     private final String description;
-    public static Provider getProvider(String description) {
-        if (description.equals(Provider.GOOGLE.description)) {
-            return Provider.GOOGLE;
+    public static ProviderType getProviderType(String description) {
+        if (description.equals(ProviderType.GOOGLE.description)) {
+            return ProviderType.GOOGLE;
         }
-        return Provider.KAKAO;
+        return ProviderType.KAKAO;
     }
 }

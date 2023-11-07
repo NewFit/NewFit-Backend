@@ -1,7 +1,7 @@
 package com.newfit.reservation.common.auth.oauth;
 
 import com.newfit.reservation.domains.auth.domain.OAuthHistory;
-import com.newfit.reservation.domains.auth.domain.Provider;
+import com.newfit.reservation.domains.auth.domain.ProviderType;
 import com.newfit.reservation.domains.auth.repository.OAuthHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -19,18 +19,18 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        Provider provider = Provider.getProvider(userRequest.getClientRegistration().getRegistrationId());
+        ProviderType providerType = ProviderType.getProviderType(userRequest.getClientRegistration().getRegistrationId());
         OAuth2User oAuth2User = super.loadUser(userRequest);
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String nameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
         // OAuth2 인증을 통해 얻어온 사용자 정보로 OAuthHistory 객체 생성
-        OAuthHistory oAuthHistory = findOAuthHistory(provider, String.valueOf(attributes.get(nameAttributeName)));
+        OAuthHistory oAuthHistory = findOAuthHistory(providerType, String.valueOf(attributes.get(nameAttributeName)));
         return new CustomOAuth2User(null, attributes, nameAttributeName, oAuthHistory);
     }
 
-    private OAuthHistory findOAuthHistory(Provider provider, String attributeName) {
-        Optional<OAuthHistory> oAuthHistory = oAuthHistoryRepository.findByProviderAndAttributeName(provider, attributeName);
-        return oAuthHistory.orElseGet(() -> oAuthHistoryRepository.save(OAuthHistory.createOAuthHistory(provider, attributeName)));
+    private OAuthHistory findOAuthHistory(ProviderType providerType, String attributeName) {
+        Optional<OAuthHistory> oAuthHistory = oAuthHistoryRepository.findByProviderTypeAndAttributeName(providerType, attributeName);
+        return oAuthHistory.orElseGet(() -> oAuthHistoryRepository.save(OAuthHistory.createOAuthHistory(providerType, attributeName)));
     }
 }

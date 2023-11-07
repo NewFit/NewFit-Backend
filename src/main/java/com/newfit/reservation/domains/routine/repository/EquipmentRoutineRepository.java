@@ -8,9 +8,6 @@ import java.util.Optional;
 
 public interface EquipmentRoutineRepository extends JpaRepository<EquipmentRoutine, Long> {
 
-    // Routine의 모든 EquipmentRoutine 객체를 삭제
-    void deleteAllByRoutine(Routine routine);
-
     // Routine의 모든 EquipmentRoutine 객체를 조회
     List<EquipmentRoutine> findAllByRoutine(Routine routine);
 
@@ -19,4 +16,6 @@ public interface EquipmentRoutineRepository extends JpaRepository<EquipmentRouti
 
     // sequence로 정렬된 Routine의 모든 EquipmentRoutine 객체를 조회
     List<EquipmentRoutine> findAllByRoutineIdOrderBySequence(Long routineId);
+
+    List<EquipmentRoutine> findAllByEquipment_Id(Long equipmentId);
 }

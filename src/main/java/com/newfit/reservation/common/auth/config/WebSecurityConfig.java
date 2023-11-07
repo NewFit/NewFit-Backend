@@ -1,11 +1,13 @@
 package com.newfit.reservation.common.auth.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newfit.reservation.common.auth.jwt.TokenAuthenticationFilter;
 import com.newfit.reservation.common.auth.jwt.TokenProvider;
 import com.newfit.reservation.common.auth.oauth.OAuth2AuthorizationRequestCookieRepository;
+import com.newfit.reservation.common.auth.oauth.OAuth2UserCustomService;
 import com.newfit.reservation.common.auth.oauth.handler.OAuth2FailureHandler;
 import com.newfit.reservation.common.auth.oauth.handler.OAuth2SuccessHandler;
-import com.newfit.reservation.common.auth.oauth.OAuth2UserCustomService;
+import com.newfit.reservation.common.exception.CustomExceptionHandlingFilter;
 import com.newfit.reservation.domains.auth.repository.RefreshTokenRepository;
 import com.newfit.reservation.domains.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +37,7 @@ public class WebSecurityConfig {
     private final OAuth2UserCustomService oAuth2UserCustomService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
+    private final ObjectMapper objectMapper;
 
     // 누구나 접근할 수 있는 URI 패턴을 정의
     private static final String[] PERMIT_ALL_PATTERNS = new String[] {
@@ -62,6 +65,7 @@ public class WebSecurityConfig {
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/api/**")).authenticated()
                     .anyRequest().permitAll())
                 .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(customExceptionHandlingFilter(), TokenAuthenticationFilter.class)
                 .oauth2Login(oauth -> oauth
                     .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
                     .successHandler(oAuth2SuccessHandler)
@@ -85,6 +89,11 @@ public class WebSecurityConfig {
     @Bean
     public OAuth2AuthorizationRequestCookieRepository oAuth2AuthorizationRequestCookieRepository() {
         return new OAuth2AuthorizationRequestCookieRepository();
+    }
+
+    @Bean
+    public CustomExceptionHandlingFilter customExceptionHandlingFilter() {
+        return new CustomExceptionHandlingFilter(objectMapper);
     }
 
     private String getToken(HttpServletRequest request) {

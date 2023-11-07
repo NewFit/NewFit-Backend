@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
-import static com.newfit.reservation.common.exception.ErrorCode.ALREADY_TAGGED_RESERVATION;
+import static com.newfit.reservation.common.exception.ErrorCodeType.ALREADY_TAGGED_RESERVATION;
 
 @Getter
 @Entity
@@ -23,7 +23,7 @@ public class Reservation extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "authority_id", nullable = false)
+    @JoinColumn(name = "authority_id")
     private Authority authority;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,11 +37,8 @@ public class Reservation extends BaseTimeEntity {
     private LocalDateTime endAt;
 
     @Column(nullable = false)
-    private Long repetitionNumber;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private StatusType statusType;
 
     @Column(name = "start_tag_at")
     private LocalDateTime startTagAt;
@@ -51,33 +48,39 @@ public class Reservation extends BaseTimeEntity {
     private Reservation(Authority authority,
                         EquipmentGym equipmentGym,
                         LocalDateTime startAt,
-                        LocalDateTime endAt,
-                        Long repetitionNumber) {
+                        LocalDateTime endAt) {
         this.authority = authority;
         this.equipmentGym = equipmentGym;
         this.startAt = startAt;
         this.endAt = endAt;
-        this.repetitionNumber = repetitionNumber;
-        this.status = Status.WAITING;
+        this.statusType = StatusType.WAITING;
         this.startTagAt = null;
     }
 
+    public void removeAuthority() {
+        this.authority = null;
+    }
 
     public void updateEquipmentGym(EquipmentGym equipmentGym) {
         this.equipmentGym = equipmentGym;
     }
 
+    public void updateTime(LocalDateTime startAt, LocalDateTime endAt) {
+        updateStartTime(startAt);
+        updateEndTime(endAt);
 
-    public void updateStartTime(LocalDateTime startAt) {
-        this.startAt = startAt;
     }
 
-    public void updateEndTime(LocalDateTime endAt) {
-        this.endAt = endAt;
+    private void updateStartTime(LocalDateTime startAt) {
+        if (startAt != null) {
+            this.startAt = startAt;
+        }
     }
 
-    public void updateRepetitionNumber(Long repetitionNumber) {
-        this.repetitionNumber = repetitionNumber;
+    private void updateEndTime(LocalDateTime endAt) {
+        if (endAt != null) {
+            this.endAt = endAt;
+        }
     }
 
     public void updateStartTagAt(LocalDateTime startTagAt) {
@@ -87,32 +90,19 @@ public class Reservation extends BaseTimeEntity {
         this.startTagAt = startTagAt;
     }
 
-    public void updateStatus(Status status) {
-        this.status = status;
+    public void updateStatus(StatusType statusType) {
+        this.statusType = statusType;
     }
-
-    public boolean overlapped(LocalDateTime start, LocalDateTime end) {
-        boolean startBeforeEnd = this.startAt.isBefore(this.endAt)
-                && start.isBefore(end);
-
-        boolean isBefore = this.endAt.isBefore(start);
-        boolean isAfter = this.startAt.isAfter(end);
-
-        return !(startBeforeEnd && (isBefore || isAfter));
-    }
-
 
     public static Reservation create(Authority authority,
                                      EquipmentGym equipmentGym,
                                      LocalDateTime startAt,
-                                     LocalDateTime endAt,
-                                     Long repetitionNumber) {
+                                     LocalDateTime endAt) {
         return Reservation.builder()
                 .authority(authority)
                 .equipmentGym(equipmentGym)
                 .startAt(startAt)
                 .endAt(endAt)
-                .repetitionNumber(repetitionNumber)
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.newfit.reservation.domains.user.domain;
 
+import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.common.model.BaseTimeEntity;
 import com.newfit.reservation.domains.auth.domain.OAuthHistory;
 import com.newfit.reservation.domains.authority.domain.Authority;
@@ -15,6 +16,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.newfit.reservation.common.exception.ErrorCodeType.USER_EMAIL_VERIFICATION_FAIL;
 
 @Entity
 @Getter
@@ -58,7 +61,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "file_path", nullable = false)
     private String filePath;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
     private OAuthHistory oAuthHistory;
 
     // 양방향 연관관계를 나타냅니다.
@@ -70,17 +73,21 @@ public class User extends BaseTimeEntity {
     private List<Proposal> proposalList = new ArrayList<>();
 
     // 양방향 연관관계를 나타냅니다.
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Authority> authorityList = new ArrayList<>();
 
     /* =========== update method  =========== */
 
     public void updateEmail(String email) {
-        this.email = email;
+        if (email != null) {
+            this.email = email;
+        }
     }
 
     public void updateTel(String tel) {
-        this.tel = tel;
+        if (tel != null) {
+            this.tel = tel;
+        }
     }
 
     public void updateNickname(String nickname) {
@@ -88,7 +95,9 @@ public class User extends BaseTimeEntity {
     }
 
     public void updateFilePath(String filePath) {
-        this.filePath = filePath;
+        if (filePath != null) {
+            this.filePath = filePath;
+        }
     }
 
     public void addBalance(Long balance) {
@@ -101,6 +110,12 @@ public class User extends BaseTimeEntity {
                 .map(authority -> authority.getTermCredit(term))
                 .mapToLong(Long::longValue)
                 .sum();
+    }
+
+    public void verifyByEmail(String email) {
+        if (!email.equals(this.email)) {
+            throw new CustomException(USER_EMAIL_VERIFICATION_FAIL);
+        }
     }
 
     @Builder(access = AccessLevel.PRIVATE)
