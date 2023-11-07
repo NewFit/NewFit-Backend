@@ -59,8 +59,7 @@ public class AuthorityService {
     }
 
     public void delete(Long authorityId, HttpServletResponse response) {
-        Authority authority = authorityRepository.findById(authorityId)
-                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+        Authority authority = findById(authorityId);
         User user = authority.getUser();
         user.getAuthorityList().remove(authority);
 
@@ -76,10 +75,7 @@ public class AuthorityService {
 
     private void deleteRelatedRoutines(Authority authority) {
         List<Routine> routines = routineRepository.findAllByAuthority(authority);
-        routines.forEach(routine -> {
-            equipmentRoutineRepository.deleteAllByRoutine(routine);
-            routineRepository.delete(routine);
-        });
+        routineRepository.deleteAll(routines);
     }
 
     private void deleteRelationWithReservation(Long authorityId) {

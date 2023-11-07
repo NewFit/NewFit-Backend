@@ -148,10 +148,7 @@ public class UserService {
 
     private void deleteRelatedRoutines(Authority authority) {
         List<Routine> routines = routineRepository.findAllByAuthority(authority);
-        routines.forEach(routine -> {
-            equipmentRoutineRepository.deleteAllByRoutine(routine);
-            routineRepository.delete(routine);
-        });
+        routineRepository.deleteAll(routines);
     }
 
     public User findOneById(Long userId) {

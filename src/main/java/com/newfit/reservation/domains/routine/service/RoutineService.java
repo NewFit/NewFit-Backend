@@ -1,6 +1,5 @@
 package com.newfit.reservation.domains.routine.service;
 
-
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
@@ -74,9 +73,8 @@ public class RoutineService {
     특정 Routine 객체를 삭제하는 경우 해당 Routine에 묶여있는 EquipmentRoutine 객체들도 모두 삭제합니다.
      */
     public void deleteRoutine(Long routineId) {
-        Routine findRoutine = findById(routineId);
-        equipmentRoutineRepository.deleteAllByRoutine(findRoutine);
-        routineRepository.deleteById(routineId);
+        Routine routine = findById(routineId);
+        routineRepository.delete(routine);
     }
 
     /*
