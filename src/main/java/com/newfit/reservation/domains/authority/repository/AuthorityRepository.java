@@ -3,12 +3,10 @@ package com.newfit.reservation.domains.authority.repository;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.authority.domain.RoleType;
 import com.newfit.reservation.domains.gym.domain.Gym;
-import com.newfit.reservation.domains.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
-import java.util.Optional;
 
 public interface AuthorityRepository extends JpaRepository<Authority, Long> {
     List<Authority> findAllAuthorityByGym(Gym gym);
@@ -22,5 +20,6 @@ public interface AuthorityRepository extends JpaRepository<Authority, Long> {
     @Query("select a from Authority a where a.creditAcquisitionCount <> 0")
     List<Authority> findAllByCreditAcquisitionCountNotZero();
 
-    Optional<Authority> findByUserAndGym(User user, Gym gym);
+    @Query("SELECT a from Authority a where a.user.nickname =:nickname and a.gym.id =:gymId")
+    Authority findOneByUserNicknameAndGymId(@Param("nickname") String nickname, @Param("gymId") Long gymId);
 }
