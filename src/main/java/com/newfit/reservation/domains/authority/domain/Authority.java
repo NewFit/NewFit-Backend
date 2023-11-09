@@ -115,4 +115,16 @@ public class Authority extends BaseTimeEntity {
                 .map(Credit::getAmount)
                 .orElse(0L);
     }
+
+    public void updateRoleType(RoleType roleType) {
+        if (roleType != null) {
+            this.roleType = roleType;
+        }
+    }
+
+    public void updateAccepted(Boolean accepted) {
+        if (accepted != null) {
+            this.accepted = accepted;
+        }
+    }
 }
