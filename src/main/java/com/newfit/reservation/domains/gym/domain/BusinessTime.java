@@ -30,4 +30,22 @@ public class BusinessTime {
     public LocalTime getCloseAt() {
         return closeAt;
     }
+
+    public void updateOpenAt(LocalTime openAt) {
+        if (openAt != null) {
+            this.openAt = openAt;
+        }
+    }
+
+    public void updateCloseAt(LocalTime closeAt) {
+        if (closeAt != null) {
+            this.closeAt = closeAt;
+        }
+    }
+
+    public void updateAllDay(Boolean allDay) {
+        if (allDay != null) {
+            this.allDay = allDay;
+        }
+    }
 }
