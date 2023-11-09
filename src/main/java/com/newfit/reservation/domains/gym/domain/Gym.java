@@ -126,4 +126,34 @@ public class Gym extends BaseTimeEntity {
         else
             return (gymOpenHour < reservationStartHour) || (reservationStartHour < gymCloseHour);
     }
+
+    public void updateName(String name) {
+        if (name != null) {
+            this.name = name;
+        }
+    }
+
+    public void updateTel(String tel) {
+        if (tel != null) {
+            this.tel = tel;
+        }
+    }
+
+    public void updateAddress(String address) {
+        if (address != null) {
+            this.address = address;
+        }
+    }
+
+    public void updateBusinessTime(LocalTime openAt, LocalTime closeAt, Boolean allDay) {
+        if (openAt != null) {
+            this.businessTime.updateOpenAt(openAt);
+        }
+        if (closeAt != null) {
+            this.businessTime.updateCloseAt(closeAt);
+        }
+        if (allDay != null) {
+            this.businessTime.updateAllDay(allDay);
+        }
+    }
 }
