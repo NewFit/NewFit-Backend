@@ -62,6 +62,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                     .requestMatchers(Stream.of(PERMIT_ALL_PATTERNS).map(AntPathRequestMatcher::antMatcher).toArray(AntPathRequestMatcher[]::new)).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/manager/**")).hasRole("MANAGER")
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/v1/admin/**")).hasRole("ADMIN")
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/api/**")).authenticated()
                     .anyRequest().permitAll())
                 .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
