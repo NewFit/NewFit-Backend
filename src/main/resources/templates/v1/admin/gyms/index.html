@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>헬스장 목록</title>
+</head>
+<body>
+
+<div class="container" style="max-width: 600px">
+    <div class="py-5 text-center">
+        <h2>헬스장 목록</h2>
+    </div>
+
+    <hr class="my-4">
+    <div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>헬스장 이름</th>
+                <th>전화번호</th>
+                <th>주소</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="gym : ${gyms}">
+                <td><a href="gym.html" th:href="@{/v1/admin/gyms/{gymId}(gymId=${gym.id})}" th:text="${gym.id}">헬스장 id</a></td>
+                <td><a href="gym.html" th:href="@{|/v1/admin/gyms/${gym.id}|}" th:text="${gym.name}">헬스장 이름</a></td>
+                <td th:text="${gym.tel}">010000</td>
+                <td th:text="${gym.address}">서울</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div> <!-- /container -->
+
+</body>
+</html>

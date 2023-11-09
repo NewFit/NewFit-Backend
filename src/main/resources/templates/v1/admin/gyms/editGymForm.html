@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>헬스장 수정</title>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="py-5 text-center">
+        <h2>헬스장 수정 폼</h2>
+    </div>
+
+    <form action="gym.html" th:action th:object="${gym}" method="post">
+        <div>
+            <label for="name">헬스장 이름</label>
+            <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
+        </div>
+        <div>
+            <label for="tel">전화번호</label>
+            <input type="text" th:field="*{tel}" class="form-control" placeholder="전화번호를 입력하세요">
+        </div>
+        <div>
+            <label for="address">주소</label>
+            <input type="text" th:field="*{address}" class="form-control" placeholder="주소를 입력하세요">
+        </div>
+
+        <div>
+            <label for="openAt">시작 시간</label>
+            <input type="time" th:field="*{openAt}" class="form-control">
+        </div>
+
+        <div>
+            <label for="closeAt">종료 시간</label>
+            <input type="time" th:field="*{closeAt}" class="form-control">
+        </div>
+
+        <div>
+            <div class="form-check">
+                <label for="allDay" class="form-check-label">24시간 영업</label>
+                <input type="checkbox" th:field="*{allDay}" th:value="${allDay}" class="form-check-input">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <button type="submit">헬스장 수정</button>
+            </div>
+            <div class="col">
+                <button onclick="location.href='gyms.html'"
+                        th:onclick="|location.href='@{/v1/admin/gyms}'|"
+                        type="button">취소</button>
+            </div>
+        </div>
+
+    </form>
+
+</div> <!-- /container -->
+</body>
+</html>

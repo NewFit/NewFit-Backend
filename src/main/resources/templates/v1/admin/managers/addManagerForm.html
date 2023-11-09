@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>매니저 권한</title>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="py-5 text-center">
+    <h2>매니저 권한 폼</h2>
+  </div>
+
+  <form th:action="@{/v1/admin/managers/addManagerForm}" method="post">
+    <div>
+      <label for="nickname">헬스장 이름</label>
+      <input type="text" th:field="${form.nickname}" class="form-control" placeholder="닉네임을 입력하세요">
+    </div>
+    <div>
+      <label for="gymId">헬스장 Id</label>
+      <input type="text" th:field="${form.gymId}" class="form-control" placeholder="헬스장 Id를 입력하세요">
+    </div>
+
+
+    <div class="row">
+      <div class="col">
+        <button type="submit">매니저 권한 등록</button>
+      </div>
+      <div class="col">
+        <button th:onclick="|location.href='@{/v1/admin}'|"
+                type="button">취소</button>
+      </div>
+    </div>
+
+  </form>
+
+</div> <!-- /container -->
+</body>
+</html>
