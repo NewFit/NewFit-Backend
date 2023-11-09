@@ -2,8 +2,10 @@ package com.newfit.reservation.domains.gym.domain;
 
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.common.model.BaseTimeEntity;
+import com.newfit.reservation.domains.gym.dto.request.admin.CreateGymRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
@@ -30,6 +32,24 @@ public class Gym extends BaseTimeEntity {
 
     @Embedded
     private BusinessTime businessTime;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    public Gym(String name, String tel, String address, BusinessTime businessTime) {
+        this.name = name;
+        this.tel = tel;
+        this.address = address;
+        this.businessTime = businessTime;
+    }
+
+    public static Gym from(CreateGymRequest request) {
+        BusinessTime businessTime = BusinessTime.create(request.getOpenAt(), request.getCloseAt(), request.getAllDay());
+        return Gym.builder()
+                .name(request.getName())
+                .tel(request.getTel())
+                .address(request.getAddress())
+                .businessTime(businessTime)
+                .build();
+    }
 
     public void checkBusinessHour(LocalDateTime startAt, LocalDateTime endAt) {
 
