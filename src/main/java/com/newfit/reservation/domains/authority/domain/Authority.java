@@ -121,10 +121,4 @@ public class Authority extends BaseTimeEntity {
             this.roleType = roleType;
         }
     }
-
-    public void updateAccepted(Boolean accepted) {
-        if (accepted != null) {
-            this.accepted = accepted;
-        }
-    }
 }

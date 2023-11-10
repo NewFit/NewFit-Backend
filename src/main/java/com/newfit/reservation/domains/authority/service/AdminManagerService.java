@@ -18,6 +18,6 @@ public class AdminManagerService {
         Authority authority = authorityRepository.findOneByUserNicknameAndGymId(request.getNickname(), request.getGymId());
 
         authority.updateRoleType(RoleType.MANAGER);
-        authority.updateAccepted(true);
+        authority.acceptUser();
     }
 }
