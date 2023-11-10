@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.util.Optional;
 
 public interface AuthorityRepository extends JpaRepository<Authority, Long> {
     List<Authority> findAllAuthorityByGym(Gym gym);
@@ -21,5 +22,5 @@ public interface AuthorityRepository extends JpaRepository<Authority, Long> {
     List<Authority> findAllByCreditAcquisitionCountNotZero();
 
     @Query("SELECT a from Authority a where a.user.nickname =:nickname and a.gym.id =:gymId")
-    Authority findOneByUserNicknameAndGymId(@Param("nickname") String nickname, @Param("gymId") Long gymId);
+    Optional<Authority> findOneByUserNicknameAndGymId(@Param("nickname") String nickname, @Param("gymId") Long gymId);
 }
