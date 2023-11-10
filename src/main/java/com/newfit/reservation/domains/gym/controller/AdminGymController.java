@@ -25,8 +25,8 @@ public class AdminGymController {
     }
 
     @PostMapping("/addGymForm")
-    public String createGym(@ModelAttribute CreateGymRequest request, Model model) {
-        Gym gym = adminGymService.createGym(request);
+    public String createGym(@ModelAttribute CreateGymRequest request) {
+        adminGymService.createGym(request);
         return "redirect:/v1/admin/gyms";
     }
 

@@ -18,8 +18,8 @@ import static com.newfit.reservation.common.exception.ErrorCodeType.GYM_NOT_FOUN
 public class AdminGymService {
     private final GymRepository gymRepository;
 
-    public Gym createGym(CreateGymRequest request) {
-        return gymRepository.save(Gym.from(request));
+    public void createGym(CreateGymRequest request) {
+        gymRepository.save(Gym.from(request));
     }
 
     public List<Gym> getAllGyms() {
