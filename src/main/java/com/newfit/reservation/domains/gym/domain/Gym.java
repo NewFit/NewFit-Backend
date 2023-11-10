@@ -34,7 +34,7 @@ public class Gym extends BaseTimeEntity {
     private BusinessTime businessTime;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public Gym(String name, String tel, String address, BusinessTime businessTime) {
+    private Gym(String name, String tel, String address, BusinessTime businessTime) {
         this.name = name;
         this.tel = tel;
         this.address = address;
