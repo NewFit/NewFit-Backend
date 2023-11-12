@@ -20,7 +20,7 @@ import java.io.IOException;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
-    
+
     @Value("${admin.attributeName}")
     private String attributeName;
 
