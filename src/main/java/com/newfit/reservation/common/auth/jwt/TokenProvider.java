@@ -8,10 +8,7 @@ import com.newfit.reservation.domains.authority.domain.RoleType;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
 import com.newfit.reservation.domains.user.domain.User;
 import com.newfit.reservation.domains.user.repository.UserRepository;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 
@@ -32,6 +30,7 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
     private final static Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(30);
     private final static Duration ACCESS_TEMPORARY_TOKEN_DURATION = Duration.ofMinutes(10);
     private final static Duration REFRESH_TOKEN_DURATION = Duration.ofDays(7);
+    private final static Duration ADMIN_TOKEN_DURATION = Duration.ofMinutes(10);
 
     private final JwtProperties jwtProperties;
     private final AuthorityRepository authorityRepository;
@@ -88,12 +87,37 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
                 .getToken();
     }
 
+    public String generateAdminToken() {
+        Date now = new Date();
+        Date expiryAt = new Date(now.getTime() + ADMIN_TOKEN_DURATION.toMillis());
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(now)
+                .setExpiration(expiryAt)
+                .setSubject("admin")
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
+                .compact();
+    }
+
     public void validAccessToken(String token, HttpServletRequest request, HttpServletResponse response) {
         validToken(token);
         try {
             checkAuthorityIdList(token, request);
         } catch (CustomException exception) {
             checkExceptionAndProceed(response, exception, getUserId(token));
+        }
+    }
+
+    public void validAdminToken(String token, HttpServletResponse response) throws IOException {
+        try {
+            validToken(token);
+            Claims claims = getClaims(token);
+            if (!claims.getSubject().equals("admin")) {
+                throw new CustomException(ADMIN_UNAUTHORIZED_REQUEST);
+            }
+        } catch (ExpiredJwtException exception) {
+            response.sendRedirect("/login");
         }
     }
 
@@ -171,6 +195,12 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
             return new UsernamePasswordAuthenticationToken(
                 new org.springframework.security.core.userdetails.User("anonymous", "", authorities), token, authorities);
         }
+    }
+
+    public Authentication getAdminAuthentication() {
+        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(RoleType.ADMIN.getDescription()));
+
+        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User("admin", "", authorities), null, authorities);
     }
 
     private List<Integer> getAuthorityIdList(String token) {
