@@ -17,6 +17,7 @@ public enum ErrorCodeType {
 
     // 401 UNAUTHORIZED
     UNAUTHORIZED_REQUEST(HttpStatus.UNAUTHORIZED, "인가에 실패하였습니다."),
+    ADMIN_UNAUTHORIZED_REQUEST(HttpStatus.UNAUTHORIZED, "어드민 인가에 실패하였습니다."),
 
     // 404 NOT_FOUND 잘못된 리소스 접근
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
@@ -30,6 +31,7 @@ public enum ErrorCodeType {
     OAUTH_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "OAuth 내역을 찾을 수 없습니다."),
     CREDIT_NOT_FOUND(HttpStatus.NOT_FOUND, "크레딧을 찾을 수 없습니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "리프레쉬 토큰을 찾을 수 없습니다."),
+    ADMIN_COOKIE_NOT_FOUND(HttpStatus.NOT_FOUND, "어드민 쿠키를 찾을 수 없습니다."),
 
     // 409 CONFLICT
     ALREADY_ACCEPTED_AUTHORITY(HttpStatus.CONFLICT, "이미 승인된 사용자입니다."),

@@ -7,6 +7,7 @@ import com.newfit.reservation.domains.user.domain.User;
 import com.newfit.reservation.domains.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static com.newfit.reservation.common.exception.ErrorCodeType.*;
 
@@ -33,7 +35,14 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getToken(request);
-        if (request.getRequestURI().equals("/login") || token == null) {
+        if (request.getRequestURI().contains("/v1/admin")) {
+            Cookie adminCookie = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("admin-token")).findAny()
+                    .orElseThrow(() -> new CustomException(ADMIN_COOKIE_NOT_FOUND));
+            tokenProvider.validAdminToken(adminCookie.getValue(), response);
+            Authentication authentication = tokenProvider.getAdminAuthentication();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+        } else if (request.getRequestURI().equals("/login") || token == null) {
             filterChain.doFilter(request, response);
         } else if (request.getRequestURI().equals("/refresh")) {
             tokenProvider.validToken(token);

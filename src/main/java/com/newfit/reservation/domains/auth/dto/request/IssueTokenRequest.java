@@ -3,7 +3,7 @@ package com.newfit.reservation.domains.auth.dto.request;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.newfit.reservation.domains.auth.domain.ProviderType;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class IssueTokenRequest {
 
-    @NotBlank
+    @NotNull
     private ProviderType providerType;
 
-    @NotBlank
+    @NotNull
     private String attributeName;
 }
