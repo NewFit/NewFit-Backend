@@ -2,8 +2,10 @@ package com.newfit.reservation.domains.gym.domain;
 
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.common.model.BaseTimeEntity;
+import com.newfit.reservation.domains.gym.dto.request.admin.CreateGymRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
@@ -30,6 +32,24 @@ public class Gym extends BaseTimeEntity {
 
     @Embedded
     private BusinessTime businessTime;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private Gym(String name, String tel, String address, BusinessTime businessTime) {
+        this.name = name;
+        this.tel = tel;
+        this.address = address;
+        this.businessTime = businessTime;
+    }
+
+    public static Gym from(CreateGymRequest request) {
+        BusinessTime businessTime = BusinessTime.create(request.getOpenAt(), request.getCloseAt(), request.getAllDay());
+        return Gym.builder()
+                .name(request.getName())
+                .tel(request.getTel())
+                .address(request.getAddress())
+                .businessTime(businessTime)
+                .build();
+    }
 
     public void checkBusinessHour(LocalDateTime startAt, LocalDateTime endAt) {
 
@@ -105,5 +125,35 @@ public class Gym extends BaseTimeEntity {
             return gymOpenHour < reservationStartHour;
         else
             return (gymOpenHour < reservationStartHour) || (reservationStartHour < gymCloseHour);
+    }
+
+    public void updateName(String name) {
+        if (name != null) {
+            this.name = name;
+        }
+    }
+
+    public void updateTel(String tel) {
+        if (tel != null) {
+            this.tel = tel;
+        }
+    }
+
+    public void updateAddress(String address) {
+        if (address != null) {
+            this.address = address;
+        }
+    }
+
+    public void updateBusinessTime(LocalTime openAt, LocalTime closeAt, Boolean allDay) {
+        if (openAt != null) {
+            this.businessTime.updateOpenAt(openAt);
+        }
+        if (closeAt != null) {
+            this.businessTime.updateCloseAt(closeAt);
+        }
+        if (allDay != null) {
+            this.businessTime.updateAllDay(allDay);
+        }
     }
 }
