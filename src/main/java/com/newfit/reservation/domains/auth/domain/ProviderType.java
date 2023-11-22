@@ -1,5 +1,8 @@
 package com.newfit.reservation.domains.auth.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,5 +17,13 @@ public enum ProviderType {
             return ProviderType.GOOGLE;
         }
         return ProviderType.KAKAO;
+    }
+
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static ProviderType findByString(String providerType) {
+        return Stream.of(ProviderType.values())
+                .filter(type -> type.name().equals(providerType))
+                .findFirst()
+                .orElse(null);
     }
 }

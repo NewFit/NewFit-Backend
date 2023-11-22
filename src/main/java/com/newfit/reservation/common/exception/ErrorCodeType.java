@@ -14,6 +14,7 @@ public enum ErrorCodeType {
     INVALID_CREDIT_ACQUIRE_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 크레딧 획득 요청입니다."),
     INVALID_TAG_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 태그 요청입니다."),
     INVALID_SEQUENCE(HttpStatus.BAD_REQUEST, "잘못된 sequence 값입니다."),
+    INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "잘못된 enum value 입니다."),
 
     // 401 UNAUTHORIZED
     UNAUTHORIZED_REQUEST(HttpStatus.UNAUTHORIZED, "인가에 실패하였습니다."),
