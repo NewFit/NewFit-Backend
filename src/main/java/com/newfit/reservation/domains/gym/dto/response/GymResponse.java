@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.newfit.reservation.domains.gym.domain.Gym;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +15,6 @@ public class GymResponse {
     private String gymName;
     private String address;
 
-    @Builder(access = AccessLevel.PRIVATE)
     private GymResponse(Long gymId, String gymName, String address) {
         this.gymId = gymId;
         this.gymName = gymName;
