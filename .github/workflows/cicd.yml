@@ -1,0 +1,62 @@
+name: Java CI/CD for Develop Server
+
+on:
+  push:
+    branches: [ "release/dev" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Retrieve secrets
+        env:
+          MY_PROPERTIES_ARCHIVE: ${{ secrets.DEV_APPLICATION_SECRETS }}
+          MY_S3CONFIG_ARCHIVE: ${{ secrets.DEV_S3CONFIG }}
+        run: |
+          echo "$MY_PROPERTIES_ARCHIVE" | base64 --decode > secrets.tar.gz
+          tar xzvf secrets.tar.gz -C src/main/resources
+          echo "$MY_S3CONFIG_ARCHIVE" | base64 --decode > s3config.tar.gz
+          tar xzvf s3config.tar.gz -C src/main/java/com/newfit/reservation/common/config
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
+        with:
+          arguments: build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: cicdsample
+          path: build/libs/reservation-0.0.1-SNAPSHOT.jar
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: cicdsample
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Add remote server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+      - name: SCP transfer
+        run: scp *.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/
+      - name: Execute remote commands
+        run: |
+          ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "fuser -k 8080/tcp || true"
+          ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "nohup java -jar reservation-0.0.1-SNAPSHOT.jar &"
