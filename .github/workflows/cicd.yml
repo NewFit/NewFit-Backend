@@ -60,4 +60,3 @@ jobs:
         run: |
           ssh -vv ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "fuser -k 8080/tcp || true"
           ssh -vv ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "nohup java -jar reservation-0.0.1-SNAPSHOT.jar > nohup.log 2>&1 &"
-Editing NewFit-Backend/.github/workflows/cicd.yml at release/dev · NewFit/NewFit-Backend 
