@@ -24,9 +24,9 @@ public class GymService {
 
     private String processQueryParam(String gymName) {
         if (gymName == null) {
-            return "'()'";
+            return "()";
         }
         String processedGymName = gymName.replace("헬스장", "").trim().replaceAll("\s+", "|");
-        return "'(" + processedGymName + ")'";
+        return "(" + processedGymName + ")";
     }
 }
