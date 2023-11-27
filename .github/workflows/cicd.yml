@@ -28,10 +28,10 @@ jobs:
           tar xzvf secrets.tar.gz -C src/main/resources
           echo "$MY_S3CONFIG_ARCHIVE" | base64 --decode > s3config.tar.gz
           tar xzvf s3config.tar.gz -C src/main/java/com/newfit/reservation/common/config
+      - name: Run chmod to make gradlew executable
+        run: chmod +x ./gradlew
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
-        with:
-          arguments: build
+        run : ./gradlew clean build --exclude-task test
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
@@ -58,5 +58,6 @@ jobs:
         run: scp *.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/
       - name: Execute remote commands
         run: |
-          ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "fuser -k 8080/tcp || true"
-          ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "nohup java -jar reservation-0.0.1-SNAPSHOT.jar &"
+          ssh -vv ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "fuser -k 8080/tcp || true"
+          ssh -vv ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "nohup java -jar reservation-0.0.1-SNAPSHOT.jar > nohup.log 2>&1 &"
+Editing NewFit-Backend/.github/workflows/cicd.yml at release/dev · NewFit/NewFit-Backend 
