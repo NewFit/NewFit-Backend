@@ -7,6 +7,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface GymRepository extends JpaRepository<Gym, Long> {
-    @Query(value = "select * from gym where name ~ :keywordString", nativeQuery = true)
+    @Query(value = "select * from gym where name ~* :keywordString", nativeQuery = true)
     List<Gym> findAllByNameContaining(@Param("keywordString") String keywordString);
 }
