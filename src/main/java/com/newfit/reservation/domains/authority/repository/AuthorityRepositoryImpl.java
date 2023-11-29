@@ -15,10 +15,10 @@ public class AuthorityRepositoryImpl implements AuthorityRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Authority> findAllAuthorityByUserId(Long id) {
+    public List<Authority> findAllAuthorityByUserId(Long userId) {
         return queryFactory
                 .selectFrom(authority)
-                .where(authority.id.eq(id))
+                .where(authority.user.id.eq(userId))
                 .fetch();
     }
 
