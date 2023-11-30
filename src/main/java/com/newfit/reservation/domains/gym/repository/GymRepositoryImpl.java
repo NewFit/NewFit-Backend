@@ -13,16 +13,16 @@ public class GymRepositoryImpl implements GymRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Gym> findAllByNameContaining(List<String> keywordString) {
+    public List<Gym> findAllByNameContaining(List<String> keywords) {
         return queryFactory
                 .selectFrom(gym)
-                .where(containsKeyword(keywordString))
+                .where(containsKeyword(keywords))
                 .fetch();
     }
 
-    private BooleanBuilder containsKeyword(List<String> keywordString) {
-        return keywordString.stream()
-                .map(string -> gym.name.toLowerCase().contains(string.toLowerCase()))
+    private BooleanBuilder containsKeyword(List<String> keywords) {
+        return keywords.stream()
+                .map(keyword -> gym.name.toLowerCase().contains(keyword.toLowerCase()))
                 .reduce(new BooleanBuilder(), BooleanBuilder::or, BooleanBuilder::or);
     }
 }
