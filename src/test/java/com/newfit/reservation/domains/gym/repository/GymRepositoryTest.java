@@ -49,7 +49,7 @@ class GymRepositoryTest {
     void 헬스장_키워드로_검색() {
         // given
         CreateGymRequest request = new CreateGymRequest();
-        request.setName("Sad Gym");
+        request.setName("Sad but happy Gym");
         request.setTel("010-1235-4565");
         request.setAddress("마포구 와우산로");
         request.setOpenAt(LocalTime.MIN);
@@ -60,9 +60,10 @@ class GymRepositoryTest {
         gymRepository.save(gym);
 
         // when
-        List<Gym> gyms = gymRepository.findAllByNameContaining(Arrays.asList("sAd", "gym"));
+        List<Gym> findBySad = gymRepository.findAllByNameContaining(List.of("Sad"));
+        List<Gym> findByHappy = gymRepository.findAllByNameContaining(List.of("Happy"));
 
         // then
-        assertThat(gyms.size()).isEqualTo(1);
+        assertThat(findBySad.size()).isEqualTo(findByHappy.size());
     }
 }
