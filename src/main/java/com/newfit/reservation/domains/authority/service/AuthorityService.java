@@ -61,8 +61,8 @@ public class AuthorityService {
     }
 
     private void validateAuthorityDuplicate(Long userId, Long gymId) {
-        Authority findAuthority = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, RoleType.USER);
-        if (findAuthority != null) {
+        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, RoleType.USER);
+        if (authority != null) {
             throw new CustomException(DUPLICATE_AUTHORITY_REQUEST);
         }
     }
