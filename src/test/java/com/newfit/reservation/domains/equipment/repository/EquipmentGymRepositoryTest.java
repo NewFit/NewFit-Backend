@@ -40,6 +40,6 @@ class EquipmentGymRepositoryTest {
         List<EquipmentGym> result = equipmentGymRepository.findAllByGymAndPurpose(gymId, purpose);
 
         // then
-        assertThat(result.size()).isEqualTo(equipmentGyms.size());
+        assertThat(result).isEqualTo(equipmentGyms);
     }
 }
