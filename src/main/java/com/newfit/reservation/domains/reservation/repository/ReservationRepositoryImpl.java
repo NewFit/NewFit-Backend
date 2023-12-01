@@ -8,7 +8,7 @@ import java.util.List;
 import static com.newfit.reservation.domains.reservation.domain.QReservation.*;
 
 @RequiredArgsConstructor
-public class ReservationRepositoryImpl implements ReservationRepositoryCustom{
+public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
