@@ -37,6 +37,7 @@ public enum ErrorCodeType {
     // 409 CONFLICT
     ALREADY_ACCEPTED_AUTHORITY(HttpStatus.CONFLICT, "이미 승인된 사용자입니다."),
     DUPLICATE_ROUTINE_NAME(HttpStatus.CONFLICT, "중복된 루틴 이름입니다."),
+    DUPLICATE_AUTHORITY_REQUEST(HttpStatus.CONFLICT, "중복된 헬스장 등록 요청입니다."),
     ALREADY_TAGGED_RESERVATION(HttpStatus.CONFLICT, "이미 태그하였습니다."),
     ALREADY_RESERVED_EQUIPMENT_GYM(HttpStatus.CONFLICT, "이미 다른 사용자가 해당 시간에 예약했습니다."),
     ALREADY_EXISTING_EQUIPMENT(HttpStatus.CONFLICT, "이미 존재하는 기구입니다."),
