@@ -29,8 +29,7 @@ class ReservationRepositoryTest {
 
         // then
         assertThat(reservations.size()).isEqualTo(3); // db 내부 데이터 수에 따라 변경
-        reservations.forEach(reservation -> {
-            assertThat(reservation.getAuthority().getId()).isEqualTo(authorityId);
-        });
+        reservations.forEach(reservation ->
+                assertThat(reservation.getAuthority().getId()).isEqualTo(authorityId));
     }
 }
