@@ -53,9 +53,18 @@ public class AuthorityService {
         Gym gym = gymRepository.findById(gymId)
                 .orElseThrow(() -> new CustomException(GYM_NOT_FOUND));
 
+        validateAuthorityDuplicate(userId, gymId);
+
         Authority authority = authorityRepository.save(Authority.createAuthority(user, gym));
 
         response.setHeader("authority-id", String.valueOf(authority.getId()));
+    }
+
+    private void validateAuthorityDuplicate(Long userId, Long gymId) {
+        Authority findAuthority = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, RoleType.USER);
+        if (findAuthority != null) {
+            throw new CustomException(DUPLICATE_AUTHORITY_REQUEST);
+        }
     }
 
     public void delete(Long authorityId, HttpServletResponse response) {
