@@ -28,6 +28,6 @@ public class GymService {
         if (gymName == null || gymName.trim().equals("헬스장")) {
             return new ArrayList<>();
         }
-        return Arrays.stream(gymName.replace("헬스장", "").trim().split("\s")).toList();
+        return Arrays.stream(gymName.replace("헬스장", "").trim().split("\s+")).toList();
     }
 }
