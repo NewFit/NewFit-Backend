@@ -47,13 +47,12 @@ public class AuthorityService {
     private final EquipmentRoutineRepository equipmentRoutineRepository;
 
     public void register(Long userId, Long gymId, HttpServletResponse response) {
+        validateAuthorityDuplicate(userId, gymId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         Gym gym = gymRepository.findById(gymId)
                 .orElseThrow(() -> new CustomException(GYM_NOT_FOUND));
-
-        validateAuthorityDuplicate(userId, gymId);
 
         Authority authority = authorityRepository.save(Authority.createAuthority(user, gym));
 
@@ -61,8 +60,7 @@ public class AuthorityService {
     }
 
     private void validateAuthorityDuplicate(Long userId, Long gymId) {
-        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, RoleType.USER);
-        if (authority != null) {
+        if (authorityRepository.existsByUser_IdAndGym_IdAndRoleType(userId, gymId, RoleType.USER)) {
             throw new CustomException(DUPLICATE_AUTHORITY_REQUEST);
         }
     }
