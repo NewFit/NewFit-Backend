@@ -108,9 +108,8 @@ public class AuthorityService {
     accepted 컬럼값을 true로 업데이트 합니다. 그 다음에 업데이트 결과를 반환할 Dto를 생성후 반환합니다.
      */
     public void acceptUser(Long userId, Long gymId) {
-        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, RoleType.USER);
-        if (authority == null)
-            throw new CustomException(AUTHORITY_NOT_FOUND);
+        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, RoleType.USER)
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         if (authority.getAccepted())
             throw new CustomException(ALREADY_ACCEPTED_AUTHORITY);
 
