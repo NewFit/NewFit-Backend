@@ -10,10 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-
-    @Query("select r from Reservation r where r.authority.id = :authorityId")
-    List<Reservation> findAllByAuthorityId(@Param("authorityId") Long authorityId);
+public interface ReservationRepository extends JpaRepository<Reservation, Long>, ReservationRepositoryCustom {
 
     List<Reservation> findAllByEquipmentGym(EquipmentGym equipmentGym);
 
