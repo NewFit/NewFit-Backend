@@ -66,7 +66,7 @@ public class EquipmentGymService {
     }
 
     public EquipmentGymListResponse findAllInGymByPurpose(Gym gym, PurposeType purposeType) {
-        List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGymAndPurpose(gym.getId(), purposeType.toString());
+        List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGymAndPurpose(gym.getId(), purposeType);
         List<EquipmentResponse> equipmentResponses = allByGym.stream()
                 .map(EquipmentResponse::new).toList();
 
