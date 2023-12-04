@@ -42,7 +42,8 @@ class AuthorityRepositoryTest {
         RoleType roleType = RoleType.ADMIN;
 
         // when
-        Authority result = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, roleType);
+        Authority result = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, roleType)
+                .orElseThrow(() -> new IllegalArgumentException("authority가 없습니다."));
 
         // then
         assertThat(result.getUser().getId()).isEqualTo(userId);

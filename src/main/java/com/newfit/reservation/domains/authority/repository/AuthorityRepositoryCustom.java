@@ -9,7 +9,7 @@ public interface AuthorityRepositoryCustom {
 
     List<Authority> findAllAuthorityByUserId(Long id);
 
-    Authority findOneByUserIdAndGymIdAndRoleType(Long userId, Long gymId, RoleType roleType);
+    Optional<Authority> findOneByUserIdAndGymIdAndRoleType(Long userId, Long gymId, RoleType roleType);
 
     List<Authority> findAllByCreditAcquisitionCountNotZero();
 

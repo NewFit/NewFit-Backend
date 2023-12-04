@@ -47,6 +47,7 @@ public class AuthorityService {
     private final EquipmentRoutineRepository equipmentRoutineRepository;
 
     public void register(Long userId, Long gymId, HttpServletResponse response) {
+        validateAuthorityDuplicate(userId, gymId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
@@ -56,6 +57,12 @@ public class AuthorityService {
         Authority authority = authorityRepository.save(Authority.createAuthority(user, gym));
 
         response.setHeader("authority-id", String.valueOf(authority.getId()));
+    }
+
+    private void validateAuthorityDuplicate(Long userId, Long gymId) {
+        if (authorityRepository.existsByUser_IdAndGym_IdAndRoleType(userId, gymId, RoleType.USER)) {
+            throw new CustomException(DUPLICATE_AUTHORITY_REQUEST);
+        }
     }
 
     public void delete(Long authorityId, HttpServletResponse response) {
@@ -101,9 +108,8 @@ public class AuthorityService {
     accepted 컬럼값을 true로 업데이트 합니다. 그 다음에 업데이트 결과를 반환할 Dto를 생성후 반환합니다.
      */
     public void acceptUser(Long userId, Long gymId) {
-        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, RoleType.USER);
-        if (authority == null)
-            throw new CustomException(AUTHORITY_NOT_FOUND);
+        Authority authority = authorityRepository.findOneByUserIdAndGymIdAndRoleType(userId, gymId, RoleType.USER)
+                .orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
         if (authority.getAccepted())
             throw new CustomException(ALREADY_ACCEPTED_AUTHORITY);
 

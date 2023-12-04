@@ -23,14 +23,13 @@ public class AuthorityRepositoryImpl implements AuthorityRepositoryCustom {
     }
 
     @Override
-    public Authority findOneByUserIdAndGymIdAndRoleType(Long userId, Long gymId, RoleType roleType) {
-        return queryFactory
+    public Optional<Authority> findOneByUserIdAndGymIdAndRoleType(Long userId, Long gymId, RoleType roleType) {
+        return Optional.ofNullable(queryFactory
                 .selectFrom(authority)
                 .where(authority.user.id.eq(userId)
                         .and(authority.gym.id.eq(gymId))
                         .and(authority.roleType.eq(roleType)))
-                .fetchOne();
-
+                .fetchOne());
     }
 
     @Override
