@@ -6,6 +6,8 @@ import com.newfit.reservation.domains.gym.dto.response.GymResponse;
 import com.newfit.reservation.domains.gym.repository.GymRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -14,19 +16,18 @@ public class GymService {
     private final GymRepository gymRepository;
 
     public GymListResponse searchGyms(String gymName) {
-        String keywordString = processQueryParam(gymName);
-        List<Gym> findGyms = gymRepository.findAllByNameContaining(keywordString);
+        List<String> keywords = processQueryParam(gymName);
+        List<Gym> findGyms = gymRepository.findAllByNameContaining(keywords);
         List<GymResponse> gyms = findGyms.stream()
                 .map(GymResponse::new).toList();
 
         return GymListResponse.createResponse(gyms);
     }
 
-    private String processQueryParam(String gymName) {
-        if (gymName == null) {
-            return "()";
+    private List<String> processQueryParam(String gymName) {
+        if (gymName == null || gymName.trim().equals("헬스장")) {
+            return new ArrayList<>();
         }
-        String processedGymName = gymName.replace("헬스장", "").trim().replaceAll("\s+", "|");
-        return "(" + processedGymName + ")";
+        return Arrays.stream(gymName.replace("헬스장", "").trim().split("\s+")).toList();
     }
 }
