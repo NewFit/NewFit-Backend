@@ -19,8 +19,8 @@ public interface CreditRepository extends JpaRepository<Credit, Long> {
             "   WHERE gym_id = :gymId " +
             "       AND credit_year = :year " +
             "       AND credit_month = :month " +
-            "   ORDER BY rank)" +
-            "WHERE rank <= 10", nativeQuery = true)
+            "   ORDER BY rank) as c " +
+            "WHERE c.rank <= 10", nativeQuery = true)
     List<CreditRanking> findTop10ByGymIdAndYearAndMonth(@Param("gymId") Long gymId,
                                                         @Param("year") Short year,
                                                         @Param("month") Short month);
@@ -31,8 +31,8 @@ public interface CreditRepository extends JpaRepository<Credit, Long> {
             "   WHERE gym_Id = :gymId " +
             "       AND credit_year = :year " +
             "       AND credit_month = :month " +
-            "   ORDER BY rank)" +
-            "WHERE authority_id = :authorityId", nativeQuery = true)
+            "   ORDER BY rank) as c " +
+            "WHERE c.authority_id = :authorityId", nativeQuery = true)
     Optional<CreditRanking> findRank(@Param("authorityId") Long authorityId,
                                      @Param("gymId") Long gymId,
                                      @Param("year") Short year,
