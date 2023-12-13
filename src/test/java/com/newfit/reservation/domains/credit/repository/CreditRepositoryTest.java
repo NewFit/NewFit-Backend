@@ -30,7 +30,7 @@ class CreditRepositoryTest {
 
 
     @Test
-    void findTop10ByGymIdAndYearAndMonth() {
+    void findTop10ByGymIdAndYearAndMonth의_쿼리_syntax() {
         // given
         Long gymId = 1L;
         LocalDateTime now = now();
@@ -44,7 +44,7 @@ class CreditRepositoryTest {
     }
 
     @Test
-    void findRank() {
+    void findRank의_쿼리_syntax() {
         // given
         Long authorityId = 1L;
         Long gymId = 1L;
