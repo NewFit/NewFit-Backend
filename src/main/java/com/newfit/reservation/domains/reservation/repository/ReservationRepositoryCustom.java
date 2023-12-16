@@ -1,8 +1,9 @@
 package com.newfit.reservation.domains.reservation.repository;
 
-import com.newfit.reservation.domains.reservation.domain.Reservation;
 import java.util.List;
 
+import com.newfit.reservation.domains.reservation.domain.Reservation;
+
 public interface ReservationRepositoryCustom {
-    List<Reservation> findAllByAuthorityId(Long authorityId);
+	List<Reservation> findAllByAuthorityId(Long authorityId);
 }
