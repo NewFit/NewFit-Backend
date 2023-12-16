@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserDropRequest {
 
-    @Email
-    private String email;
+	@Email
+	private String email;
 }

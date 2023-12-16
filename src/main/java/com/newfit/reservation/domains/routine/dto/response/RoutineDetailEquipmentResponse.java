@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.newfit.reservation.domains.equipment.domain.Equipment;
 import com.newfit.reservation.domains.equipment.domain.PurposeType;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,11 +14,11 @@ import lombok.RequiredArgsConstructor;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoutineDetailEquipmentResponse {
 
-    private final Long equipmentId;
-    private final String name;
-    private final PurposeType purpose;
+	private final Long equipmentId;
+	private final String name;
+	private final PurposeType purpose;
 
-    public RoutineDetailEquipmentResponse(Equipment equipment) {
-        this(equipment.getId(), equipment.getName(), equipment.getPurposeType());
-    }
+	public RoutineDetailEquipmentResponse(Equipment equipment) {
+		this(equipment.getId(), equipment.getName(), equipment.getPurposeType());
+	}
 }
