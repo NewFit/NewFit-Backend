@@ -119,7 +119,8 @@ public class EquipmentRoutineService {
 			&& (IntStream.range(0, sequences.size() - 1)
 			.allMatch(i -> sequences.get(i + 1) == sequences.get(i) + 1));
 
-		if (!result)
+		if (!result) {
 			throw new CustomException(INVALID_SEQUENCE);
+		}
 	}
 }
