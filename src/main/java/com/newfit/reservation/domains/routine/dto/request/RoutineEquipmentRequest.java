@@ -2,6 +2,7 @@ package com.newfit.reservation.domains.routine.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -13,13 +14,13 @@ import lombok.NoArgsConstructor;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoutineEquipmentRequest {
 
-    @NotNull
-    private Short sequence;
+	@NotNull
+	private Short sequence;
 
-    @NotNull
-    private Long equipmentId;
+	@NotNull
+	private Long equipmentId;
 
-    @NotNull
-    @Max(value = 30)
-    private Long duration;
+	@NotNull
+	@Max(value = 30)
+	private Long duration;
 }

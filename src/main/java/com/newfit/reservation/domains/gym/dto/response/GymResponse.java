@@ -3,6 +3,7 @@ package com.newfit.reservation.domains.gym.dto.response;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.newfit.reservation.domains.gym.domain.Gym;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,18 +12,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GymResponse {
-    private Long gymId;
-    private String gymName;
-    private String address;
+	private Long gymId;
+	private String gymName;
+	private String address;
 
-    private GymResponse(Long gymId, String gymName, String address) {
-        this.gymId = gymId;
-        this.gymName = gymName;
-        this.address = address;
-    }
+	private GymResponse(Long gymId, String gymName, String address) {
+		this.gymId = gymId;
+		this.gymName = gymName;
+		this.address = address;
+	}
 
-    // Gym 객체로부터 GymResponseDto를 생성합니다.
-    public GymResponse(Gym gym) {
-        this(gym.getId(), gym.getName(), gym.getAddress());
-    }
+	// Gym 객체로부터 GymResponseDto를 생성합니다.
+	public GymResponse(Gym gym) {
+		this(gym.getId(), gym.getName(), gym.getAddress());
+	}
 }
