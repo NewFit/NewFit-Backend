@@ -102,7 +102,7 @@ public class EquipmentRoutineService {
 				Equipment equipment = equipmentRepository.findById(equipmentRequest.getEquipmentId())
 					.orElseThrow(() -> new CustomException(EQUIPMENT_NOT_FOUND));
 				return EquipmentRoutine.createEquipmentRoutine(equipment, routine,
-					Duration.ofMinutes(equipmentRequest.getDuration()), (short)sequence.incrementAndGet());
+					Duration.ofMinutes(equipmentRequest.getDuration()), (short)sequence.getAndIncrement());
 			}).toList();
 		equipmentRoutineRepository.saveAll(saveList);
 	}
