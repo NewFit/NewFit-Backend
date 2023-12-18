@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newfit.reservation.common.exception.CustomException;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
-import com.newfit.reservation.domains.equipment.domain.Equipment;
 import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
 import com.newfit.reservation.domains.equipment.repository.EquipmentGymRepository;
 import com.newfit.reservation.domains.reservation.domain.Reservation;
@@ -96,11 +95,10 @@ public class RoutineService {
 
 		List<EquipmentRoutine> findEquipmentRoutines = equipmentRoutineRepository.findAllByRoutine(findRoutine);
 
-		List<Equipment> findEquipments = findEquipmentRoutines.stream()
-			.map(EquipmentRoutine::getEquipment).toList();
-
-		List<RoutineDetailEquipmentResponse> equipments = findEquipments.stream()
-			.map(RoutineDetailEquipmentResponse::new).toList();
+		List<RoutineDetailEquipmentResponse> equipments = findEquipmentRoutines.stream()
+			.map(equipmentRoutine -> RoutineDetailEquipmentResponse.create(equipmentRoutine.getEquipment(),
+				equipmentRoutine.getDuration()))
+			.toList();
 
 		return RoutineDetailResponse.createResponse(findRoutine.getId(), findRoutine.getName(), equipments);
 	}
