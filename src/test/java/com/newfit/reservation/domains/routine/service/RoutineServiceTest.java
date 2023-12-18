@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newfit.reservation.domains.routine.domain.Routine;
+import com.newfit.reservation.domains.routine.dto.response.RoutineDetailResponse;
 
 @SpringBootTest
 @Transactional
@@ -28,5 +29,17 @@ class RoutineServiceTest {
 
 		// then
 		assertThat(routine.getName()).isEqualTo(newRoutineName);
+	}
+
+	@Test
+	void 루틴의_상세정보_조회시_count와_실제_개수가_일치하는가() {
+		// given
+		Long routineId = 2L;
+
+		// when
+		RoutineDetailResponse response = routineService.findRoutineDetail(routineId);
+
+		// then
+		assertThat(response.getEquipments().size()).isEqualTo(response.getEquipmentsCount());
 	}
 }
