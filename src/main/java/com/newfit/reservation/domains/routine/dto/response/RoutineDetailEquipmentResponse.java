@@ -22,7 +22,7 @@ public class RoutineDetailEquipmentResponse {
 	private final PurposeType purpose;
 	private final Long duration;
 
-	@Builder
+	@Builder(access = AccessLevel.PRIVATE)
 	private RoutineDetailEquipmentResponse(Equipment equipment, Duration duration) {
 		this(equipment.getId(), equipment.getName(), equipment.getPurposeType(), duration.toMinutes());
 	}
