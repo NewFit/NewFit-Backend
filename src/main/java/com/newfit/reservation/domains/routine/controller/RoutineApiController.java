@@ -81,7 +81,7 @@ public class RoutineApiController {
 	public ResponseEntity<Void> updateEquipmentInRoutine(Authentication authentication,
 		@RequestHeader(value = "authority-id") Long authorityId,
 		@Valid @RequestBody UpdateEquipmentRoutineRequest request,
-		@RequestParam("routineId") Long routineId) {
+		@RequestParam("routine_id") Long routineId) {
 		authorityCheckService.validateByAuthorityId(authentication, authorityId);
 		equipmentRoutineService.updateEquipmentRoutinesInRoutine(routineId, request);
 
