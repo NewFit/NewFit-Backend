@@ -1,5 +1,8 @@
 package com.newfit.reservation.domains.auth.service;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,6 +11,7 @@ import com.newfit.reservation.domains.auth.domain.IdType;
 import com.newfit.reservation.domains.auth.domain.OAuthHistory;
 import com.newfit.reservation.domains.auth.domain.ProviderType;
 import com.newfit.reservation.domains.auth.dto.request.IssueTokenRequest;
+import com.newfit.reservation.domains.auth.dto.response.IdInformationResponse;
 import com.newfit.reservation.domains.auth.dto.response.IssuedTokenResponse;
 import com.newfit.reservation.domains.auth.repository.OAuthHistoryRepository;
 import com.newfit.reservation.domains.authority.domain.Authority;
@@ -30,7 +34,9 @@ public class TokenService {
 		if (!oAuthHistory.isRegistered()) {
 			String accessToken = tokenProvider.generateAccessToken(oAuthHistory.getUser());
 			log.info("BeforeSignup.accessToken = {}", accessToken);
-			return IssuedTokenResponse.unregisteredUser(accessToken, oAuthHistory.getId(), IdType.OAUTH_HISTORY);
+			IdInformationResponse idInformation = IdInformationResponse.createResponse(oAuthHistory.getId(),
+				IdType.OAUTH_HISTORY);
+			return IssuedTokenResponse.unregisteredUser(accessToken, idInformation);
 		}
 
 		// 회원가입이 완료된 경우
@@ -45,11 +51,13 @@ public class TokenService {
 		String refreshToken = tokenProvider.generateRefreshToken(user);
 		log.info("AfterSignup.accessToken = {}", accessToken);
 
+		List<IdInformationResponse> idInformations = Arrays.asList(
+			IdInformationResponse.createResponse(user.getId(), IdType.USER));
+
 		if (authority != null) {    // 등록된 gym이 있는 경우
-			return IssuedTokenResponse.registeredUser(accessToken, refreshToken, authority.getId(), IdType.AUTHORITY);
-		} else {  // 등록된 gym이 없는 경우
-			return IssuedTokenResponse.registeredUser(accessToken, refreshToken, user.getId(), IdType.USER);
+			idInformations.add(IdInformationResponse.createResponse(authority.getId(), IdType.AUTHORITY));
 		}
+		return IssuedTokenResponse.registeredUser(accessToken, refreshToken, idInformations);
 	}
 
 	private OAuthHistory getOAuthHistory(ProviderType providerType, String attributeName) {
