@@ -1,8 +1,9 @@
 package com.newfit.reservation.domains.auth.dto.response;
 
+import java.util.List;
+
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.newfit.reservation.domains.auth.domain.IdType;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,31 +17,28 @@ public class IssuedTokenResponse {
 	private String accessToken;
 	private String refreshToken;
 
-	private Long id;
-	private String idType;
+	private List<IdInformationResponse> idInformations;
 
 	@Builder(access = AccessLevel.PRIVATE)
-	private IssuedTokenResponse(String accessToken, String refreshToken, Long id, String idType) {
+	private IssuedTokenResponse(String accessToken, String refreshToken, List<IdInformationResponse> idInformations) {
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
-		this.id = id;
-		this.idType = idType;
+		this.idInformations = idInformations;
 	}
 
-	public static IssuedTokenResponse registeredUser(String accessToken, String refreshToken, Long id, IdType idType) {
+	public static IssuedTokenResponse registeredUser(String accessToken, String refreshToken,
+		List<IdInformationResponse> idInformations) {
 		return IssuedTokenResponse.builder()
 			.accessToken(accessToken)
 			.refreshToken(refreshToken)
-			.id(id)
-			.idType(idType.getDescription())
+			.idInformations(idInformations)
 			.build();
 	}
 
-	public static IssuedTokenResponse unregisteredUser(String accessToken, Long id, IdType idType) {
+	public static IssuedTokenResponse unregisteredUser(String accessToken, IdInformationResponse idInformation) {
 		return IssuedTokenResponse.builder()
 			.accessToken(accessToken)
-			.id(id)
-			.idType(idType.getDescription())
+			.idInformations(List.of(idInformation))
 			.build();
 	}
 }
