@@ -11,15 +11,17 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ProviderType {
-	GOOGLE("google"), KAKAO("kakao");
+	GOOGLE("google"), KAKAO("kakao"), APPLE("apple");
 
 	private final String description;
 
 	public static ProviderType getProviderType(String description) {
 		if (description.equals(ProviderType.GOOGLE.description)) {
 			return ProviderType.GOOGLE;
+		} else if (description.equals(ProviderType.KAKAO.description)) {
+			return ProviderType.KAKAO;
 		}
-		return ProviderType.KAKAO;
+		return ProviderType.APPLE;
 	}
 
 	@JsonCreator(mode = Mode.DELEGATING)
