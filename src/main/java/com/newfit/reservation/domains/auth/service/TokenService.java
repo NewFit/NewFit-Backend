@@ -1,6 +1,6 @@
 package com.newfit.reservation.domains.auth.service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -51,13 +51,18 @@ public class TokenService {
 		String refreshToken = tokenProvider.generateRefreshToken(user);
 		log.info("AfterSignup.accessToken = {}", accessToken);
 
-		List<IdInformationResponse> idInformations = Arrays.asList(
-			IdInformationResponse.createResponse(user.getId(), IdType.USER));
+		List<IdInformationResponse> idInformations = getUserInformation(user);
 
 		if (authority != null) {    // 등록된 gym이 있는 경우
 			idInformations.add(IdInformationResponse.createResponse(authority.getId(), IdType.AUTHORITY));
 		}
 		return IssuedTokenResponse.registeredUser(accessToken, refreshToken, idInformations);
+	}
+
+	private List<IdInformationResponse> getUserInformation(User user) {
+		List<IdInformationResponse> idInformations = new ArrayList<>();
+		idInformations.add(IdInformationResponse.createResponse(user.getId(), IdType.USER));
+		return idInformations;
 	}
 
 	private OAuthHistory getOAuthHistory(ProviderType providerType, String attributeName) {
