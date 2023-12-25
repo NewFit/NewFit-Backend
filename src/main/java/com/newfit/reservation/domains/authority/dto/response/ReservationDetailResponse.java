@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ReservationDetailResponse extends ReservationResponse {
+
+	private Long equipmentId;
 	private LocalDateTime startAt;
 	private LocalDateTime endAt;
 
@@ -21,5 +23,6 @@ public class ReservationDetailResponse extends ReservationResponse {
 		super(reservation.getId());
 		this.startAt = reservation.getStartAt();
 		this.endAt = reservation.getEndAt();
+		this.equipmentId = reservation.getEquipmentGym().getEquipment().getId();
 	}
 }
