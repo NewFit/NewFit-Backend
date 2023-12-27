@@ -82,8 +82,7 @@ public class WebSecurityConfig {
 				.logoutUrl("/logout")
 				.addLogoutHandler((request, response, authentication) -> {
 					tokenProvider.disableRefreshToken(getToken(request));
-				})
-				.logoutSuccessUrl("/login"))
+				}))
 			.build();
 	}
 
