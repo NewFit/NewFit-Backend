@@ -39,4 +39,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
 	List<Reservation> findAllByEquipmentGymIdIdAndStartAtAndEndAt(@Param("equipmentGymId") Long equipmentGymId,
 		@Param("startAt") LocalDateTime startAt,
 		@Param("endAt") LocalDateTime endAt);
+
+	@Query(value = "select r.* from Reservation r " +
+		"join authority a " +
+		"on a.id=:authorityId " +
+		"where ( " +
+		"(:startAt BETWEEN r.start_at AND r.end_at) " +
+		"OR (:endAt BETWEEN r.start_at AND r.end_at) " +
+		"OR (:startAt <= r.start_at AND r.end_at <= :endAt)) " +
+		"AND (r.id <> :reservationId);", nativeQuery = true)
+	List<Reservation> findAllByAuthorityIdAndStartAtAndEndAtExcludeCurrent(@Param("authorityId") Long authorityId,
+		@Param("startAt") LocalDateTime startAt,
+		@Param("endAt") LocalDateTime endAt,
+		@Param("reservationId") Long reservationId);
 }
