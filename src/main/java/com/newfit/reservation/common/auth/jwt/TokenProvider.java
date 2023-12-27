@@ -237,5 +237,6 @@ public class TokenProvider {    // JWT의 생성 및 검증 로직 담당 클래
 		Claims claims = getClaims(accessToken);
 		Long userId = claims.get("id", Long.class);
 		refreshTokenRepository.deleteById(userId);
+		log.info("logout: userId = {}", userId);
 	}
 }
