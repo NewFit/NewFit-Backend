@@ -114,6 +114,7 @@ public class ReservationService {
 	}
 
 	private void validateTime(LocalDateTime startAt, LocalDateTime endAt, Authority authority) {
+		validateStartAtLowerBound(startAt);
 		validateLastTagAt(authority);
 		validateReservationIn2Hours(startAt, endAt);
 
@@ -121,6 +122,12 @@ public class ReservationService {
 		gym.checkBusinessHour(startAt, endAt);
 
 		validateMyReservationOverlap(authority, startAt, endAt);
+	}
+
+	private void validateStartAtLowerBound(LocalDateTime startAt) {
+		if (startAt.isBefore(now().minusMinutes(1))) {
+			throw new CustomException(INVALID_RESERVATION_REQUEST);
+		}
 	}
 
 	private void validateMyReservationOverlap(Authority authority, LocalDateTime startAt, LocalDateTime endAt) {
