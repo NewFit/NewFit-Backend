@@ -14,8 +14,9 @@ public class AuthorityGymResponse {
 
 	private final Long authorityId;
 	private final String gymName;
+	private final Boolean accepted;
 
 	public AuthorityGymResponse(Authority authority) {
-		this(authority.getId(), authority.getGym().getName());
+		this(authority.getId(), authority.getGym().getName(), authority.getAccepted());
 	}
 }
