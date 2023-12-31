@@ -82,7 +82,7 @@ public class ReservationService {
 		LocalDateTime endAt = request.getEndAt();
 
 		validateTime(startAt, endAt, authority);
-		validateMyReservationOverlap(authority, startAt, endAt, reservationId);
+		validateMyReservationOverlapExcludingCurrent(authority, startAt, endAt, reservationId);
 
 		if (equipmentGymId == null) {
 			targetReservation.updateTime(startAt, endAt);
@@ -138,9 +138,10 @@ public class ReservationService {
 		}
 	}
 
-	private void validateMyReservationOverlap(Authority authority, LocalDateTime startAt, LocalDateTime endAt,
+	private void validateMyReservationOverlapExcludingCurrent(Authority authority, LocalDateTime startAt,
+		LocalDateTime endAt,
 		Long reservationId) {
-		List<Reservation> reservations = reservationRepository.findAllByAuthorityIdAndStartAtAndEndAtExcludeCurrent(
+		List<Reservation> reservations = reservationRepository.findAllByAuthorityIdAndStartAtAndEndAtExcludingCurrent(
 			authority.getId(),
 			startAt, endAt, reservationId);
 		if (!reservations.isEmpty()) {

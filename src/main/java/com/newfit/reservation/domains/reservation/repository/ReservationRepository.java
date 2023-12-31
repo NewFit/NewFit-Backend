@@ -48,7 +48,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
 		"OR (:endAt BETWEEN r.start_at AND r.end_at) " +
 		"OR (:startAt <= r.start_at AND r.end_at <= :endAt)) " +
 		"AND (r.id <> :reservationId);", nativeQuery = true)
-	List<Reservation> findAllByAuthorityIdAndStartAtAndEndAtExcludeCurrent(@Param("authorityId") Long authorityId,
+	List<Reservation> findAllByAuthorityIdAndStartAtAndEndAtExcludingCurrent(@Param("authorityId") Long authorityId,
 		@Param("startAt") LocalDateTime startAt,
 		@Param("endAt") LocalDateTime endAt,
 		@Param("reservationId") Long reservationId);
