@@ -1,4 +1,4 @@
-package com.newfit.reservation.common.fcm.service;
+package com.newfit.reservation.domains.fcm.service;
 
 import org.springframework.stereotype.Service;
 
@@ -6,7 +6,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.newfit.reservation.common.fcm.dto.NotificationRequest;
+import com.newfit.reservation.domains.fcm.dto.NotificationRequest;
 import com.newfit.reservation.domains.user.domain.User;
 import com.newfit.reservation.domains.user.repository.UserRepository;
 

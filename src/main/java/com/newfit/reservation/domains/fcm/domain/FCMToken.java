@@ -1,4 +1,4 @@
-package com.newfit.reservation.common.fcm.domain;
+package com.newfit.reservation.domains.fcm.domain;
 
 import com.newfit.reservation.domains.user.domain.User;
 

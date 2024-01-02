@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.newfit.reservation.common.exception.CustomException;
-import com.newfit.reservation.common.fcm.domain.FCMToken;
 import com.newfit.reservation.common.model.BaseTimeEntity;
 import com.newfit.reservation.domains.auth.domain.OAuthHistory;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.dev.domain.Proposal;
 import com.newfit.reservation.domains.dev.domain.Report;
+import com.newfit.reservation.domains.fcm.domain.FCMToken;
 import com.newfit.reservation.domains.user.dto.request.UserSignUpRequest;
 
 import jakarta.persistence.CascadeType;
