@@ -17,8 +17,9 @@ import lombok.NoArgsConstructor;
 public class ReservationUpdateRequest {
 	@Min(1)
 	private Long equipmentGymId;
-	@Future
+
 	private LocalDateTime startAt;
+	
 	@Future
 	private LocalDateTime endAt;
 }

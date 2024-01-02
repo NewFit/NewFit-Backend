@@ -49,6 +49,7 @@ public class ReservationService {
 		LocalDateTime endAt = request.getEndAt();
 
 		validateTime(startAt, endAt, authority);
+		validateMyReservationOverlap(authority, startAt, endAt);
 
 		EquipmentGym equipmentGym = equipmentGymRepository.findAvailableByEquipmentGymIdAndStartAtAndEndAt(
 				equipmentGymId, startAt, endAt)
@@ -56,12 +57,6 @@ public class ReservationService {
 		Reservation reservation = Reservation.create(authority, equipmentGym, startAt, endAt);
 
 		reservationRepository.save(reservation);
-	}
-
-	private void validateLastTagAt(Authority authority) {
-		LocalDateTime tagAt = authority.getTagAt();
-		if (tagAt.isBefore(now().minusHours(2)))
-			throw new CustomException(EXPIRED_TAG);
 	}
 
 	@Transactional(readOnly = true)
@@ -87,6 +82,7 @@ public class ReservationService {
 		LocalDateTime endAt = request.getEndAt();
 
 		validateTime(startAt, endAt, authority);
+		validateMyReservationOverlapExcludingCurrent(authority, startAt, endAt, reservationId);
 
 		if (equipmentGymId == null) {
 			targetReservation.updateTime(startAt, endAt);
@@ -114,18 +110,40 @@ public class ReservationService {
 	}
 
 	private void validateTime(LocalDateTime startAt, LocalDateTime endAt, Authority authority) {
+		validateStartAtLowerBound(startAt);
 		validateLastTagAt(authority);
 		validateReservationIn2Hours(startAt, endAt);
 
 		Gym gym = authority.getGym();
 		gym.checkBusinessHour(startAt, endAt);
+	}
 
-		validateMyReservationOverlap(authority, startAt, endAt);
+	private void validateStartAtLowerBound(LocalDateTime startAt) {
+		if (startAt.isBefore(now().minusMinutes(1))) {
+			throw new CustomException(INVALID_RESERVATION_REQUEST);
+		}
+	}
+
+	private void validateLastTagAt(Authority authority) {
+		LocalDateTime tagAt = authority.getTagAt();
+		if (tagAt.isBefore(now().minusHours(2)))
+			throw new CustomException(EXPIRED_TAG);
 	}
 
 	private void validateMyReservationOverlap(Authority authority, LocalDateTime startAt, LocalDateTime endAt) {
 		List<Reservation> reservations = reservationRepository.findAllByAuthorityIdAndStartAtAndEndAt(authority.getId(),
 			startAt, endAt);
+		if (!reservations.isEmpty()) {
+			throw new CustomException(INVALID_RESERVATION_REQUEST);
+		}
+	}
+
+	private void validateMyReservationOverlapExcludingCurrent(Authority authority, LocalDateTime startAt,
+		LocalDateTime endAt,
+		Long reservationId) {
+		List<Reservation> reservations = reservationRepository.findAllByAuthorityIdAndStartAtAndEndAtExcludingCurrent(
+			authority.getId(),
+			startAt, endAt, reservationId);
 		if (!reservations.isEmpty()) {
 			throw new CustomException(INVALID_RESERVATION_REQUEST);
 		}
