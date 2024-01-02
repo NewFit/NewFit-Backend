@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReservationRequest {
 
-	@Future
 	private LocalDateTime startAt;
 
 	@Future
