@@ -30,9 +30,16 @@ public class FCMToken {
 	@Column(name = "fcm_token")
 	private String fcmToken;
 
-	@Builder
+	@Builder(access = AccessLevel.PRIVATE)
 	private FCMToken(User user, String fcmToken) {
 		this.user = user;
 		this.fcmToken = fcmToken;
+	}
+
+	public static FCMToken createFCMToken(User user, String fcmToken) {
+		return FCMToken.builder()
+			.user(user)
+			.fcmToken(fcmToken)
+			.build();
 	}
 }
