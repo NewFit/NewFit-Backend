@@ -1,4 +1,4 @@
-package com.newfit.reservation.domains.fcm.dto;
+package com.newfit.reservation.domains.fcm.dto.request;
 
 import com.newfit.reservation.domains.reservation.domain.Reservation;
 

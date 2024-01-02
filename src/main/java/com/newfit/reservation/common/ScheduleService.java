@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
-import com.newfit.reservation.domains.fcm.dto.NotificationRequest;
+import com.newfit.reservation.domains.fcm.dto.request.NotificationRequest;
 import com.newfit.reservation.domains.fcm.service.FCMService;
 import com.newfit.reservation.domains.reservation.domain.Reservation;
 import com.newfit.reservation.domains.reservation.repository.ReservationRepository;
