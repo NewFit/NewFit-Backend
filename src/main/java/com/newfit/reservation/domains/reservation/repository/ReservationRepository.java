@@ -16,6 +16,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
 
 	List<Reservation> findAllByEquipmentGym(EquipmentGym equipmentGym);
 
+	List<Reservation> findAllByStartAt(LocalDateTime startAt);
+
 	Optional<Reservation> findByAuthorityAndEquipmentGym(Authority authority, EquipmentGym equipmentGym);
 
 	@Query(value = "select r.* from Reservation r " +

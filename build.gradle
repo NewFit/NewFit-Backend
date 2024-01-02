@@ -36,6 +36,9 @@ dependencies {
 	// aws
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+	//firebase fcm
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
 	// postgresql
 	implementation 'org.postgresql:postgresql:42.6.0'
 	runtimeOnly 'org.postgresql:postgresql'

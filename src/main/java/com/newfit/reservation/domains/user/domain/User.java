@@ -12,6 +12,7 @@ import com.newfit.reservation.domains.auth.domain.OAuthHistory;
 import com.newfit.reservation.domains.authority.domain.Authority;
 import com.newfit.reservation.domains.dev.domain.Proposal;
 import com.newfit.reservation.domains.dev.domain.Report;
+import com.newfit.reservation.domains.fcm.domain.FCMToken;
 import com.newfit.reservation.domains.user.dto.request.UserSignUpRequest;
 
 import jakarta.persistence.CascadeType;
@@ -71,6 +72,9 @@ public class User extends BaseTimeEntity {
 	// 사용자의 프로필 사진 정보를 나타냅니다.
 	@Column(name = "file_path", nullable = false)
 	private String filePath;
+
+	@OneToOne(mappedBy = "user")
+	private FCMToken fcmToken;
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
 	private OAuthHistory oAuthHistory;
