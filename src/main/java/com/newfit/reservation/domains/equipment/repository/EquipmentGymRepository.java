@@ -8,14 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.newfit.reservation.domains.equipment.domain.Equipment;
 import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
 import com.newfit.reservation.domains.gym.domain.Gym;
 
 public interface EquipmentGymRepository extends JpaRepository<EquipmentGym, Long>, EquipmentGymRepositoryCustom {
 	List<EquipmentGym> findAllByGym(Gym gym);
-
-	List<EquipmentGym> findAllByGymAndEquipment(Gym gym, Equipment equipment);
 
 	List<EquipmentGym> findAllByEquipment_Id(Long equipmentId);
 
