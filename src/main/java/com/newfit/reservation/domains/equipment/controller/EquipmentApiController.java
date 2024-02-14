@@ -25,7 +25,7 @@ public class EquipmentApiController {
 	private final EquipmentGymService equipmentGymService;
 	private final ReservationService reservationService;
 
-	@GetMapping("")
+	@GetMapping
 	public ResponseEntity<EquipmentGymListResponse> getAllEquipment(
 		@RequestHeader(name = "authority-id") Long authorityId, EquipmentQueryRequest request) {
 		EquipmentGymListResponse allInGym = equipmentGymService.findAllByQuery(authorityId, request);
