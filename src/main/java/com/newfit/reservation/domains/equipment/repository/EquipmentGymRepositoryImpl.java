@@ -35,15 +35,15 @@ public class EquipmentGymRepositoryImpl implements EquipmentGymRepositoryCustom 
 		BooleanBuilder booleanBuilder = new BooleanBuilder();
 
 		return booleanBuilder
-			.and(eqPurpose(request.purposeType()))
-			.and(eqEquipmentId(request.equipmentId()));
+			.and(eqPurpose(request.purpose()))
+			.and(eqEquipmentId(request.equipment_id()));
 	}
 
 	private BooleanExpression eqEquipmentId(Long equipmentId) {
 		return equipmentId == null ? null : equipmentGym.equipment.id.eq(equipmentId);
 	}
 
-	private BooleanExpression eqPurpose(PurposeType purposeType) {
-		return purposeType == null ? null : equipment.purposeType.eq(purposeType);
+	private BooleanExpression eqPurpose(PurposeType purpose) {
+		return purpose == null ? null : equipment.purposeType.eq(purpose);
 	}
 }
