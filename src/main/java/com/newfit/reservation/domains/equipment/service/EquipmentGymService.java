@@ -71,7 +71,7 @@ public class EquipmentGymService {
 	public EquipmentGymListResponse findAllByQuery(Long authorityId, EquipmentQueryRequest request) {
 		Gym gym = getGymByAuthorityId(authorityId);
 
-		List<EquipmentGym> allByGym = equipmentGymRepository.findAllByQuery(gym, request);
+		List<EquipmentGym> allByGym = equipmentGymRepository.findAllByQueryOption(gym, request);
 
 		List<EquipmentResponse> equipmentResponses = allByGym.stream()
 			.map(EquipmentResponse::new)

@@ -20,7 +20,7 @@ public class EquipmentGymRepositoryImpl implements EquipmentGymRepositoryCustom 
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<EquipmentGym> findAllByQuery(Gym gym, EquipmentQueryRequest request) {
+	public List<EquipmentGym> findAllByQueryOption(Gym gym, EquipmentQueryRequest request) {
 		return queryFactory.selectFrom(equipmentGym)
 			.join(equipmentGym.equipment, equipment).fetchJoin()
 			.where(eqId(gym.getId()), queryOption(request))

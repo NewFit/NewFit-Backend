@@ -7,5 +7,5 @@ import com.newfit.reservation.domains.equipment.dto.request.EquipmentQueryReques
 import com.newfit.reservation.domains.gym.domain.Gym;
 
 public interface EquipmentGymRepositoryCustom {
-	List<EquipmentGym> findAllByQuery(Gym gym, EquipmentQueryRequest request);
+	List<EquipmentGym> findAllByQueryOption(Gym gym, EquipmentQueryRequest request);
 }
