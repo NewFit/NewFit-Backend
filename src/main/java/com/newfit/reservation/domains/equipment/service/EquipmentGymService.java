@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newfit.reservation.common.exception.CustomException;
+import com.newfit.reservation.domains.authority.domain.Authority;
+import com.newfit.reservation.domains.authority.repository.AuthorityRepository;
 import com.newfit.reservation.domains.equipment.domain.ConditionType;
 import com.newfit.reservation.domains.equipment.domain.Equipment;
 import com.newfit.reservation.domains.equipment.domain.EquipmentGym;
-import com.newfit.reservation.domains.equipment.domain.PurposeType;
+import com.newfit.reservation.domains.equipment.dto.request.EquipmentQueryRequest;
 import com.newfit.reservation.domains.equipment.dto.response.EquipmentGymListResponse;
 import com.newfit.reservation.domains.equipment.dto.response.EquipmentResponse;
 import com.newfit.reservation.domains.equipment.repository.EquipmentGymRepository;
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class EquipmentGymService {
 
 	private final EquipmentGymRepository equipmentGymRepository;
+	private final AuthorityRepository authorityRepository;
 
 	/*
 	입력받은 개수(count)만큼 등록
@@ -37,19 +40,6 @@ public class EquipmentGymService {
 		IntStream.range(0, count)
 			.forEach(repeat -> equipmentGymRepository
 				.save(EquipmentGym.createEquipmentGym(equipment, gym, equipmentGymNames.get(repeat))));
-	}
-
-	/*
-	Gym으로 EquipmentGym을 모두 조회
-	Response를 위한 Dto에 담아 반환
-	 */
-	public EquipmentGymListResponse findAllInGym(Gym gym) {
-		List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGym(gym);
-
-		List<EquipmentResponse> equipmentResponses = allByGym.stream()
-			.map(EquipmentResponse::new).toList();
-
-		return EquipmentGymListResponse.createResponse(gym.getName(), equipmentResponses);
 	}
 
 	/*
@@ -68,22 +58,6 @@ public class EquipmentGymService {
 		equipmentGym.deactivate();
 	}
 
-	public EquipmentGymListResponse findAllInGymByPurpose(Gym gym, PurposeType purposeType) {
-		List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGymAndPurpose(gym.getId(), purposeType);
-		List<EquipmentResponse> equipmentResponses = allByGym.stream()
-			.map(EquipmentResponse::new).toList();
-
-		return EquipmentGymListResponse.createResponse(gym.getName(), equipmentResponses);
-	}
-
-	public EquipmentGymListResponse findAllInGymByEquipment(Gym gym, Equipment equipment) {
-		List<EquipmentGym> allByGym = equipmentGymRepository.findAllByGymAndEquipment(gym, equipment);
-		List<EquipmentResponse> equipmentResponses = allByGym.stream()
-			.map(EquipmentResponse::new).toList();
-
-		return EquipmentGymListResponse.createResponse(gym.getName(), equipmentResponses);
-	}
-
 	/*
 	EquipmentGymId로 EquipmentGym 조회
 	 */
@@ -91,5 +65,24 @@ public class EquipmentGymService {
 		return equipmentGymRepository
 			.findById(equipmentGymId)
 			.orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
+	}
+
+	public EquipmentGymListResponse findAllByQuery(Long authorityId, EquipmentQueryRequest request) {
+		Gym gym = getGymByAuthorityId(authorityId);
+
+		List<EquipmentGym> allByGym = equipmentGymRepository.findAllByQuery(gym, request);
+
+		List<EquipmentResponse> equipmentResponses = allByGym.stream()
+			.map(EquipmentResponse::new)
+			.toList();
+
+		return EquipmentGymListResponse.createResponse(gym.getName(), equipmentResponses);
+	}
+
+	private Gym getGymByAuthorityId(Long authorityId) {
+		Authority authority = authorityRepository.findById(authorityId)
+			.orElseThrow(() -> new CustomException(AUTHORITY_NOT_FOUND));
+
+		return authority.getGym();
 	}
 }
