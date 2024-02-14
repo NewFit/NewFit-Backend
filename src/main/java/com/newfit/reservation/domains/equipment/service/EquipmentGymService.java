@@ -67,6 +67,7 @@ public class EquipmentGymService {
 			.orElseThrow(() -> new CustomException(EQUIPMENT_GYM_NOT_FOUND));
 	}
 
+	@Transactional(readOnly = true)
 	public EquipmentGymListResponse findAllByQuery(Long authorityId, EquipmentQueryRequest request) {
 		Gym gym = getGymByAuthorityId(authorityId);
 
